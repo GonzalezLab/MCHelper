@@ -28,6 +28,37 @@ Then, locate the MCHelper folder and find the file named "curation.yml". Then, i
 conda env create -f MCHelper/curation.yml
 ```
 
+Now, download the pfam databases, put it into db folder, and unzip all the databases needed by MCHelper:
+```
+cd MCHelper/db
+wget path_to_pfam 
+unzip '*.zip'
+```
+And that's it. You have now installed MCHelper.
+
 ## Testing:
 <a name="testing"/>
+To test MCHelper, we provide some example inputs and also the expected results to allow you to compare with your own outputs. To check MCHelper is running properly, you can do:
 
+First, activate the anaconda enviroment:
+```
+conda activate curation
+```
+
+Then, unzip the D. melanogaster genome:
+```
+unzip Test_dir/repet_input/Dmel_genome.zip
+```
+
+Now, be sure you are in the main folder (this one where MCHelper.py is located), and run:
+```
+python3 MCHelper.py -r 123 -t 8 -i Test_dir/repet_input/ -o Test_dir/repet_output -g Test_dir/repet_input/Dmel_genome.fasta --input_type repet -b Test_dir/repet_input/diptera_odb10.fa -a F -n Dmel
+```
+
+This test will take the REPET's output and will do the curation automatically, using most of the parameters by default.
+If you want to run the test for the fasta input, you can execute:
+```
+unzip Test_dir/fasta_input/Dmel_genome.zip
+
+python3 MCHelper.py -r 123 -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.fa -a F
+```
