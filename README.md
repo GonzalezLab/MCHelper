@@ -121,7 +121,7 @@ MCHelper is a modular pipeline (see figure below), which can be run in a integra
 
 ## Inputs
 <a name="inputs"/>
-The input files required by MCHelper will depend of the tool you used to create the TE library. *If you used REPET*, the you will need the following files:
+The input files required by MCHelper will depend of the tool you used to create the TE library. **If you used REPET**, the you will need the following files:
 
 * the genome assembly 
 * the library created by the TEdenovo pipeline. This library is named as projName_refTEs.fa, where projName is the name of your own REPET project. 
@@ -144,4 +144,4 @@ In the lastest case, MCHelper will find the information required to do the curat
 
 ## Important notes
 <a name="notes"/>
-MCHelper is currently under development and has not yet been thoroughly tested. This version may change to improve both technical and methodological aspects. Please, if you wish to use this software, do so with moderation and always check that the results you get are more or less as expected. If you wish to report any issues, please do so in the appropriate section of this repository. *Thank you very much for your interest in MCHelper.*
+MCHelper is currently under development and has not yet been thoroughly tested. This version may change to improve both technical and methodological aspects. Please, if you wish to use this software, do so with moderation and always check that the results you get are more or less as expected. If you wish to report any issues, please do so in the appropriate section of this repository. **Thank you very much for your interest in MCHelper.**
