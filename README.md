@@ -66,3 +66,25 @@ mkdir Test_dir/fasta_output_own
 
 python3 MCHelper.py -r 123 -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output_own -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.fa -a F
 ```
+## Usage:
+<a name="usage"/>
+
+Be sure you have activated the anaconda environment:
+```
+conda activate curation
+```
+
+Then, execute MCHelper with default parameters. For REPET input (see [Testing](#testing) for a practical example):
+```
+python3 MCHelper.py -i path/to/repet_output -o path/to/MCHelper_output -n repet_name_project --input_type repet -b path/to/reference_genes -a F
+```
+
+For fasta input:
+```
+python3 MCHelper.py -l path/to/TE_library_in_fasta -o path/to/MCHelper_output --input_type fasta -b path/to/reference_genes -a F
+```
+
+To see the full help documentation run:
+```
+python3 MCHelper.py -h
+```
