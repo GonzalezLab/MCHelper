@@ -116,7 +116,7 @@ MCHelper can be run in three different modes: Fully automatic (F), semi-automati
 MCHelper is a modular pipeline (see figure below), which can be run in a integrated way or module by module. You can control this with the -r or --module parameter, indicating which of the three modules you want to run. **If you want to run the whole pipeline, select -r 123**. Otherwise, if you want just run one of them, select the number corresponding to the module (classified module=1, unclassified module=3, and extension module=2).
 
 <p align="center">
-  <img src="https://github.com/GonzalezLab/MCHelper/blob/main/curation_process-General.png">
+  <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_process.png">
 </p>
 
 ## Inputs
