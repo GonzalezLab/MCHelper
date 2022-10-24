@@ -1,4 +1,4 @@
-# MCHelper
+# MCHelper (Beta, non-fully tested version)
 MCHelper: An automatic tool to curate transposable element libraries
 
 ## Table of Contents  
@@ -8,6 +8,7 @@ MCHelper: An automatic tool to curate transposable element libraries
 * [Usage](#usage) 
 * [Inputs](#input) 
 * [Outputs](#output)
+* [Important notes](#notes)
 
 ## Introduction
 <a name="introduction"/>
@@ -86,5 +87,8 @@ python3 MCHelper.py -l path/to/TE_library_in_fasta -o path/to/MCHelper_output --
 
 To see the full help documentation run:
 ```
-python3 MCHelper.py -h
+python3 MCHelper.py
 ```
+## Important notes
+<a name="notes"/>
+MCHelper is currently under development and has not yet been thoroughly tested. This version may change to improve both technical and methodological aspects. Please, if you wish to use this software, do so with moderation and always check that the results you get are more or less as expected. If you wish to report any issues, please do so in the appropriate section of this repository. **Thank you very much for your interest in MCHelper.** 
