@@ -87,8 +87,31 @@ python3 MCHelper.py -l path/to/TE_library_in_fasta -o path/to/MCHelper_output --
 
 To see the full help documentation run:
 ```
-python3 MCHelper.py
+python3 MCHelper.py --help
 ```
+
+Full list of parameters include:
+* -h, --help            show this help message and exit
+* -r MODULE, --module MODULE: module of curation [1-3], being 123 the whole pipeline. Required*
+* -i INPUT_DIR, --input INPUT_DIR:  Directory with the files required to do the curation (REPET output directory). Required*
+* -g GENOME, --genome GENOME: Genome used to detect the TEs. Required*
+* -o OUTPUTDIR, --output OUTPUTDIR: Path to the output directory. Required*
+* --te_aid TE_AID:       Do you want to use TE-aid? [Y or N]. Default=Y
+* -a AUTOMATIC:          Level of automation: F: fully automated, S: semi-automated, M: fully manual?. Default=S
+* -n PROJ_NAME:          REPET project name. Required*
+* -t CORES:              cores to execute some steps in parallel. Default=all available cores
+* -j EXTENSION_MODULE_SEQS_FILE:  Path to the sequences to be used in the extension module.
+* -k UNCLASSIFIED_MODULE_SEQS_FILE  Path to the sequences to be used in the unclassified module.
+* -m REF_LIBRARY_UNCLASSIFIED_MODULE: Path to the sequences to be used as references in the unclassified module.
+* -v VERBOSE            Verbose? [Y or N]. Default=N
+* --input_type INPUT_TYPE:  Input type: fasta or REPET.
+* -l USER_LIBRARY:       User defined library to be used with input type fasta.
+* -b BUSCO_LIBRARY:      Reference/BUSCO genes to filter out TEs.
+* -c MINFULLLENCOPIES:   Minimum number of full-length copies to process an element. Default=1
+* -s PERC_SSR:           Maximum length covered by single repetitions (in percentage between 0-100) allowed for a TE not to be removed. Default=60
+* --version             show program's version number and exit
+
+
 ## Important notes
 <a name="notes"/>
 MCHelper is currently under development and has not yet been thoroughly tested. This version may change to improve both technical and methodological aspects. Please, if you wish to use this software, do so with moderation and always check that the results you get are more or less as expected. If you wish to report any issues, please do so in the appropriate section of this repository. **Thank you very much for your interest in MCHelper.** 
