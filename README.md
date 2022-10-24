@@ -45,12 +45,12 @@ First, activate the anaconda enviroment:
 conda activate curation
 ```
 
-Then, unzip the D. melanogaster genome:
+Then, be sure you are in the main folder (this one where MCHelper.py is located) and unzip the D. melanogaster genome:
 ```
-unzip Test_dir/repet_input/Dmel_genome.zip
+unzip Test_dir/repet_input/Dmel_genome.zip -d Test_dir/repet_input/
 ```
 
-Now, be sure you are in the main folder (this one where MCHelper.py is located), and run:
+Now, run the MCHelper script:
 ```
 mkdir Test_dir/repet_output_own
 
@@ -60,7 +60,7 @@ python3 MCHelper.py -r 123 -t 8 -i Test_dir/repet_input/ -o Test_dir/repet_outpu
 This test will take the REPET's output and will do the curation automatically, using most of the parameters by default.
 If you want to run the test for the fasta input, you can execute:
 ```
-unzip Test_dir/fasta_input/Dmel_genome.zip
+unzip Test_dir/fasta_input/Dmel_genome.zip -d Test_dir/fasta_input/
 
 mkdir Test_dir/fasta_output_own
 
