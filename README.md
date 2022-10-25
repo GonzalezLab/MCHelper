@@ -29,12 +29,18 @@ Then, locate the MCHelper folder and find the file named "curation.yml". Then, i
 conda env create -f MCHelper/curation.yml
 ```
 
-Now, download the pfam databases, put it into db folder, and unzip all the databases needed by MCHelper:
+Now, unzip all the databases needed by MCHelper:
 ```
 cd MCHelper/db
-wget https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.dat.gz 
 unzip '*.zip'
 ```
+
+Then, download the pfam database, renamed it put it into db folder:
+```
+wget https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
+gunzip Pfam-A.hmm.dat.gz
+```
+
 And that's it. You have now installed MCHelper.
 
 ## Testing:
