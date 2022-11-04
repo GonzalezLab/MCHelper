@@ -7,7 +7,6 @@ MCHelper: An automatic tool to curate transposable element libraries
 * [Testing](#testing)  
 * [Usage](#usage) 
 * [Inputs](#inputs) 
-* [Outputs](#outputs)
 
 ## Introduction
 <a name="introduction"/>
@@ -145,7 +144,3 @@ In the lastest case, MCHelper will find the information required to do the curat
 * to find how many full length copies and fragment have each consensus
 * Structural features such as terminal repeats, and coding domains
 * BLASTn, BLASTx, and tBLASTx with TE databases
- 
-## Outputs
-<a name="outputs"/>
-
