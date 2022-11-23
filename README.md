@@ -33,6 +33,7 @@ Now, unzip all the databases needed by MCHelper:
 ```
 cd MCHelper/db
 unzip '*.zip'
+makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
 ```
 
 Then, download the pfam database, renamed it put it into db folder:
