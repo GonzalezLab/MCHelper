@@ -40,6 +40,7 @@ Then, download the pfam database, renamed it put it into db folder:
 ```
 wget https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
 gunzip Pfam-A.hmm.dat.gz
+mv Pfam-A.hmm.dat Pfam35.0.hmm
 ```
 
 And that's it. You have now installed MCHelper.
@@ -62,7 +63,7 @@ Now, run the MCHelper script:
 ```
 mkdir Test_dir/repet_output_own
 
-python3 MCHelper.py -r 123 -t 8 -i Test_dir/repet_input/ -o Test_dir/repet_output_own -g Test_dir/repet_input/Dmel_genome.fasta --input_type repet -b Test_dir/repet_input/diptera_odb10.fa -a F -n Dmel
+python3 MCHelper.py -r A -t 8 -i Test_dir/repet_input/ -o Test_dir/repet_output_own -g Test_dir/repet_input/Dmel_genome.fasta --input_type repet -b Test_dir/repet_input/diptera_odb10.hmm -a F -n Dmel
 ```
 
 This test will take the REPET's output and will do the curation automatically, using most of the parameters by default.
@@ -72,7 +73,7 @@ unzip Test_dir/fasta_input/Dmel_genome.zip -d Test_dir/fasta_input/
 
 mkdir Test_dir/fasta_output_own
 
-python3 MCHelper.py -r 123 -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output_own -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.fa -a F
+python3 MCHelper.py -r A -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output_own -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.fa -a F
 ```
 ## Usage:
 <a name="usage"/>
@@ -84,12 +85,12 @@ conda activate curation
 
 Then, execute MCHelper with default parameters. For REPET input (see [Testing](#testing) for a practical example):
 ```
-python3 MCHelper.py -i path/to/repet_output -o path/to/MCHelper_output -g path/to/genome -n repet_name_project --input_type repet -b path/to/reference_genes -a F
+python3 MCHelper.py -i path/to/repet_output -o path/to/MCHelper_output -g path/to/genome -n repet_name_project --input_type repet -b path/to/reference_genes.hmm -a F
 ```
 
 For fasta input:
 ```
-python3 MCHelper.py -l path/to/TE_library_in_fasta -o path/to/MCHelper_output -g path/to/genome --input_type fasta -b path/to/reference_genes -a F
+python3 MCHelper.py -l path/to/TE_library_in_fasta -o path/to/MCHelper_output -g path/to/genome --input_type fasta -b path/to/reference_genes.hmm -a F
 ```
 
 To see the full help documentation run:
@@ -99,28 +100,30 @@ python3 MCHelper.py --help
 
 Full list of parameters include:
 * -h, --help            show this help message and exit
-* -r MODULE, --module MODULE: module of curation [1-3], being 123 the whole pipeline. Required*
+* -r MODULE, --module MODULE:  module of curation [A, C, U, E]. Required*
 * -i INPUT_DIR, --input INPUT_DIR:  Directory with the files required to do the curation (REPET output directory). Required*
 * -g GENOME, --genome GENOME: Genome used to detect the TEs. Required*
 * -o OUTPUTDIR, --output OUTPUTDIR: Path to the output directory. Required*
 * --te_aid TE_AID:       Do you want to use TE-aid? [Y or N]. Default=Y
-* -a AUTOMATIC:          Level of automation: F: fully automated, S: semi-automated, M: fully manual?. Default=S
-* -n PROJ_NAME:          REPET project name. Required*
+* -a AUTOMATIC:          Level of automation: F: fully automated, S: semi-automated, M: fully manual?. Default=F
+* -n PROJ_NAME:          REPET project name. Required for repet input*
 * -t CORES:              cores to execute some steps in parallel. Default=all available cores
-* -j EXTENSION_MODULE_SEQS_FILE:  Path to the sequences to be used in the extension module.
-* -k UNCLASSIFIED_MODULE_SEQS_FILE  Path to the sequences to be used in the unclassified module.
+* -j MODULE2_SEQS_FILE  Path to the sequences to be used in the extension module
+* -k MODULE3_SEQS_FILE  Path to the sequences to be used in the unclassified module
 * -m REF_LIBRARY_UNCLASSIFIED_MODULE: Path to the sequences to be used as references in the unclassified module.
 * -v VERBOSE            Verbose? [Y or N]. Default=N
 * --input_type INPUT_TYPE:  Input type: fasta or REPET.
 * -l USER_LIBRARY:       User defined library to be used with input type fasta.
-* -b BUSCO_LIBRARY:      Reference/BUSCO genes to filter out TEs.
+* -b BUSCO_LIBRARY:      Reference/BUSCO genes to filter out TEs (HMM format required).
 * -c MINFULLLENCOPIES:   Minimum number of full-length copies to process an element. Default=1
 * -s PERC_SSR:           Maximum length covered by single repetitions (in percentage between 0-100) allowed for a TE not to be removed. Default=60
+* -e EXT_NUCL           Number of nucleotides to extend each size of the element. Default=1000
+* -x NUM_ITE            Number of iterations to extend the elements
 * --version             show program's version number and exit
 
 MCHelper can be run in three different modes: Fully automatic (F), semi-automatic (S) and manual (M). The way you can control this is with the parameter **-a [F,S or M]**. Notice that the fully automatic mode will make all the decision by you and, at the end, will generate different outputs curated and non-curated sequences. In contrast, the semi-automatic mode runs the structural check and allows the user to inspect the consensus sequences that do not fit the structural requirements. The manual mode does not run the structural check and sends all the consensus sequences to manual inspection. 
 
-MCHelper is a modular pipeline (see figure below), which can be run in a integrated way or module by module. You can control this with the -r or --module parameter, indicating which of the three modules you want to run. **If you want to run the whole pipeline, select -r 123**. Otherwise, if you want just run one of them, select the number corresponding to the module (classified module=1, unclassified module=3, and extension module=2).
+MCHelper is a modular pipeline (see figure below), which can be run in a integrated way or module by module. You can control this with the -r or --module parameter, indicating which of the three modules you want to run. **If you want to run the whole pipeline, select -r A**. Otherwise, if you want just run one of them, select the letter corresponding to the module (classified module=C, unclassified module=U, and extension module=E).
 
 <p align="center">
   <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_process.png">
