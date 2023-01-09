@@ -36,11 +36,11 @@ unzip '*.zip'
 makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
 ```
 
-Then, download the pfam database, renamed it put it into db folder:
+Then, download the pfam database released by REPET group, renamed it put it into db folder:
 ```
-wget https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
-gunzip Pfam-A.hmm.dat.gz
-mv Pfam-A.hmm.dat Pfam35.0.hmm
+wget https://urgi.versailles.inrae.fr/download/repet/profiles/ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
+gunzip ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
+mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
 ```
 
 And that's it. You have now installed MCHelper.
