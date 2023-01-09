@@ -59,6 +59,17 @@ Then, be sure you are in the main folder (this one where MCHelper.py is located)
 unzip Test_dir/repet_input/Dmel_genome.zip -d Test_dir/repet_input/
 ```
 
+Next step is download and format the host genes from BUSCO
+
+```
+wget https://busco-data.ezlab.org/v4/data/lineages/diptera_odb10.2020-08-05.tar.gz
+mv diptera_odb10.2020-08-05.tar.gz Test_dir/repet_input/ 
+cd Test_dir/repet_input/
+tar xvf Test_dir/repet_input/diptera_odb10.2020-08-05.tar.gz
+cat Test_dir/repet_input/hmms/*.hmm > diptera_odb10.hmm
+cd -
+```
+
 Now, run the MCHelper script:
 ```
 mkdir Test_dir/repet_output_own
