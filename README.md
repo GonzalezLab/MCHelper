@@ -40,7 +40,7 @@ makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
 Then, download the pfam database released by REPET group and renamed it:
 ```
 wget https://urgi.versailles.inrae.fr/download/repet/profiles/ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
-gunzip ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
+tar xvf ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
 mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
 ```
 
