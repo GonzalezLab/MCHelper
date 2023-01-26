@@ -1027,6 +1027,7 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
         if verbose:
             print("MESSAGE: TE Feature table was created [" + str(end_time - start_time) + " seconds]")
         keep_seqs, orders = [], []
+
     # those seqs that after finished the iterations, don't have structural features yet. Manual Inspection if S mode
     # or marked as incomplete elements if A mode
     if te_aid == 'Y':
@@ -1546,13 +1547,13 @@ def filter_bad_candidates(new_ref_tes, perc_ssr, outputdir, tools_path, busco_li
         if hmm_results.loc[x, "query"] not in tes_with_rnas:
             tes_with_rnas.append(hmm_results.loc[x, "query"])
 
-    # Remove those TEs with SSR > 60% or those that match with genes
+    # Remove those TEs with SSR > given threshold or those that match with genes
     for te in SeqIO.parse(new_ref_tes, "fasta"):
         if te.id not in tes_with_matches and te.id not in tes_with_rnas:  # It hasn't a match with Reference/BUSCO genes neither with RNAs
             if te.id in dicc_sr.keys():
                 te_len = len(str(te.seq))
                 lenSR = dicc_sr[te.id]
-                if (lenSR * 100) / te_len < perc_ssr:  # It hasn't less than 60% of SSR in its sequence
+                if ((lenSR * 100) / te_len) < perc_ssr:  # It hasn't less than the given threshold of SSR in its sequence
                     kept_seqs.append(te)
                 else:
                     deleted_seqs.append(te)
@@ -1598,6 +1599,7 @@ def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, int
     end_time = time.time()
     print("MESSAGE: BLASTn successfully run [" + str(end_time - start_time) + " seconds]")
 
+    # Structural checks
     start_time = time.time()
     struc_table = pd.read_csv(outputdir + "/unclassifiedModule/denovoLibTEs_PC.classif", sep='\t')
     num_infered_tes = 0
@@ -1852,8 +1854,8 @@ if __name__ == '__main__':
     parser.add_argument('-e', required=False, dest='ext_nucl',
                         help='Number of nucleotides to extend each size of the element. Default=1000')
     parser.add_argument('-x', required=False, dest='num_ite',
-                        help='Number of iterations to extend the elements')
-    parser.add_argument('--version', action='version', version='%(prog)s v1.1.0')
+                        help='Number of iterations to extend the elements. Default=1')
+    parser.add_argument('--version', action='version', version='%(prog)s v1.3.5')
 
 
     options = parser.parse_args()
@@ -1882,7 +1884,7 @@ if __name__ == '__main__':
     ####################################################################################################################
     module = 0
     if module_user.upper() not in ['A', 'C', 'U', 'E', '3333']:  # 3333 for debugging only
-        print('FATAL ERROR: module (-r parameter) must be A (all steps), U (unclassified module), or E (BEE extension)')
+        print('FATAL ERROR: module (-r parameter) must be A (all steps), C (classified module), U (unclassified module), or E (BEE extension)')
         sys.exit(0)
     else:
         if module_user.upper() == 'A':
@@ -1941,7 +1943,7 @@ if __name__ == '__main__':
     elif not ext_nucl.isnumeric():
         print('FATAL ERROR: -e must be numeric, but I received: '+str(ext_nucl))
         sys.exit(0)
-    elif int(ext_nucl) < 1 or int(perc_ssr) > 1500:
+    elif int(ext_nucl) < 1 or int(ext_nucl) > 1500:
         print('FATAL ERROR: -e must be between 1 and 1500')
         sys.exit(0)
     else:
