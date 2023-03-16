@@ -2493,6 +2493,24 @@ if __name__ == '__main__':
             # First step: Extend all the consensus
             ############################################################################################################
             start_time = time.time()
+            # If repet, we need to include the classification info into the library
+            if use_repet:
+                rename_tes = []
+                struc_table = pd.read_csv(repet_table, sep='\t')
+                for i in range(struc_table.shape[0]):
+                    is_in_lib = [x for x in SeqIO.parse(ref_tes, "fasta") if
+                                 str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]]
+                    if len(is_in_lib) > 0:
+                        bad_named_te = is_in_lib[0]
+                        classif = "CLASS" + str(struc_table.at[i, "class"]) + "/" + str(
+                            struc_table.at[i, "order"]) + "/" + str(struc_table.at[i, "sFamily"])
+                        bad_named_te.id = str(bad_named_te.id).split("#")[0] + "#" + classif
+                        bad_named_te.description = ""
+                        rename_tes.append(bad_named_te)
+
+                write_sequences_file(rename_tes, ref_tes + "_tmp")
+                delete_files(ref_tes)
+                shutil.move(ref_tes + "_tmp", ref_tes)
             run_extension_by_saturation_parallel(genome, ref_tes, ext_nucl, num_ite, outputdir+ "/classifiedModule/", max_nns, cores,
                                                      min_perc_model, min_cluster, max_sequences, cluster_factor,
                                                      group_outliers, min_plurality, end_threshold)
@@ -2532,23 +2550,6 @@ if __name__ == '__main__':
             # Fourth step: Structural checks, BEE method, and Visualize plots
             ############################################################################################################
             start_time = time.time()
-            # If repet, we need to include the classification info into the library
-            if use_repet:
-                rename_tes = []
-                struc_table = pd.read_csv(repet_table, sep='\t')
-                for i in range(struc_table.shape[0]):
-                    is_in_lib = [x for x in SeqIO.parse(new_ref_tes, "fasta") if str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]]
-                    if len(is_in_lib) > 0:
-                        bad_named_te = is_in_lib[0]
-                        classif = "CLASS" + str(struc_table.at[i, "class"]) + "/" + str(struc_table.at[i, "order"]) + "/" + str(struc_table.at[i, "sFamily"])
-                        bad_named_te.id = str(bad_named_te.id).split("#")[0] + "#" + classif
-                        bad_named_te.description = ""
-                        rename_tes.append(bad_named_te)
-
-                write_sequences_file(rename_tes, new_ref_tes+"_tmp")
-                delete_files(new_ref_tes)
-                shutil.move(new_ref_tes+"_tmp", new_ref_tes)
-
             new_module1(plots_dir, new_ref_tes, gff_files, outputdir, proj_name, te_aid, automatic, minDomLTR,
                         num_copies, minFLNA, verbose, use_repet, blastn_db, blastx_db, tools_path,
                         ref_profiles, library_path, min_perc_model)
