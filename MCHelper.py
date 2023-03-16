@@ -564,12 +564,12 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, to
         if blastx == "" and blasttx == "" and profiles == "":
             final_coding_string = "NA"
 
-        class_df = class_df.append(
-            {'Seq_name': seq_name, 'length': length, 'strand': '+', 'confused': 'False', 'class': classTE,
-             'order': order, 'Wcode': 'NA', 'sFamily': sFamily, 'CI': 0,
+        class_df = pd.concat([class_df, pd.DataFrame(
+            {'Seq_name': seq_name, 'length': [length], 'strand': '+', 'confused': 'False', 'class': classTE,
+             'order': order, 'Wcode': 'NA', 'sFamily': sFamily, 'CI': [0],
              'coding': 'coding=(' + final_coding_string + ')',
              'struct': 'struct=(TElength: ' + str(length) + 'bps; ' + terminals + ' ' + struc_dom + ')',
-             'other': 'other=(NA)'}, ignore_index=True)
+             'other': 'other=(NA)'})], ignore_index=True)
 
     return class_df
 
