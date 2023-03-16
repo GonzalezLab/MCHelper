@@ -27,7 +27,7 @@ git clone https://github.com/gonzalezlab/mchelper.git
 
 Then, locate the MCHelper folder and find the file named "curation.yml". Then, install the environment: 
 ```
-conda env create -f MCHelper/curation.yml
+conda env create -f MCHelper/MCHelper.yml
 ```
 
 Now, unzip all the databases needed by MCHelper:
