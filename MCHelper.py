@@ -7,6 +7,7 @@ Novelties:
   * deleted the first CD-HIT (the one just after BEE)
   * Added the option of running TE+Aid tool in parallel using as input a multifasta library
   * Changed the df.append to df.concat because of Future Warning in count_flf_fasta
+  * Changed the df.append to df.concat because of Future Warning in build_class_table
 
 """
 
