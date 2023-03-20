@@ -13,15 +13,16 @@ dependencies:
   - blas=1.1=openblas
   - blast=2.5.0=hc0b0e79_3
   - boost=1.73.0=py38h06a4308_12
+  - bottleneck=1.3.5=py38h7deecbd_0
   - brotli=1.0.9=h166bdaf_7
   - brotli-bin=1.0.9=h166bdaf_7
   - bwidget=1.9.14=ha770c72_1
   - bzip2=1.0.8=h7f98852_4
   - c-ares=1.18.1=h7f98852_0
-  - ca-certificates=2023.01.10=h06a4308_0
+  - ca-certificates=2022.12.7=ha878542_0
   - cairo=1.16.0=h18b612c_1001
   - cd-hit=4.8.1=h2e03b76_5
-  - certifi=2022.12.7=py38h06a4308_0
+  - certifi=2022.12.7=pyhd8ed1ab_0
   - cialign=1.0.18=pyhb7b1952_0
   - configargparse=1.4=pyhd3eb1b0_0
   - contourpy=1.0.5=py38hdb19cb5_0
@@ -116,6 +117,7 @@ dependencies:
   - nettle=3.6=he412f7d_0
   - nspr=4.33=h295c915_0
   - nss=3.74=h0370c37_0
+  - numexpr=2.8.4=py38hd2a5715_0
   - numpy=1.22.3=py38h99721a1_2
   - olefile=0.46=pyh9f0ad1d_1
   - openblas=0.3.20=pthreads_h320a7e8_0
@@ -124,6 +126,7 @@ dependencies:
   - openjpeg=2.4.0=h3ad879b_0
   - openssl=1.1.1t=h7f8727e_0
   - packaging=23.0=pyhd8ed1ab_0
+  - pandas=1.5.3=py38h417a72b_0
   - pango=1.50.7=h05da053_0
   - pcre=8.45=h9c3ff4c_0
   - pcre2=10.37=h032f7d1_0
@@ -140,6 +143,7 @@ dependencies:
   - python=3.8.16=h7a1cb2a_3
   - python-dateutil=2.8.2=pyhd8ed1ab_0
   - python_abi=3.8=2_cp38
+  - pytz=2022.7.1=pyhd8ed1ab_0
   - qt-main=5.15.2=h327a75a_7
   - qt-webengine=5.15.9=hd2b0992_4
   - qtwebkit=5.212=h4eab89a_4

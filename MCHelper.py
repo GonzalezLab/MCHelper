@@ -1,13 +1,12 @@
 """
 
-Manual Curation Helper Version 1.6.2
+Manual Curation Helper Version 1.6.3
 Novelties:
   * Bugs corrected
-  * Changed the way is produced the MSA seeds and plots (moved from BEE to TE_aid functions)
-  * deleted the first CD-HIT (the one just after BEE)
-  * Added the option of running TE+Aid tool in parallel using as input a multifasta library
-  * Changed the df.append to df.concat because of Future Warning in count_flf_fasta
-  * Changed the df.append to df.concat because of Future Warning in build_class_table
+  * Performance improved:
+    - Max number of hits used limited to 200
+    - Re-written the function to calculare the Kimura distance
+  * Corrected bug with classification names in REPET input
 
 """
 
@@ -1283,34 +1282,28 @@ def K2Pdistance(maf):
     p = transition frequency
     q = transversion frequency
     """
+    start = time.time()
     distance_matrix = np.zeros((maf.shape[0], maf.shape[0]), dtype=float)
-    for i in range(maf.shape[0]):
+    transitions = ["AG", "GA", "CT", "TC"]
+    transversions = ["AC", "CA", "AT", "TA", "GC", "CG", "GT", "TG"]
+    for i in range(maf.shape[0]-1):
         seq1 = "".join(maf.iloc[i, 1:]).upper()
-        for j in range(maf.shape[0]):
+        for j in range(i + 1, maf.shape[0]):
             seq2 = "".join(maf.iloc[j, 1:]).upper()
-            pairs = []
             # collect ungapped pairs
-            for x in zip(seq1, seq2):
-                if '-' not in x:
-                    pairs.append(x)
-            ts_count = 0
-            tv_count = 0
+            pairs = [x for x in zip(seq1, seq2) if '-' not in x]
             length = len(pairs)
-            transitions = ["AG", "GA", "CT", "TC"]
-            transversions = ["AC", "CA", "AT", "TA",
-                             "GC", "CG", "GT", "TG"]
-            for (x, y) in pairs:
-                if x + y in transitions:
-                    ts_count += 1
-                elif x + y in transversions:
-                    tv_count += 1
+            ts_count = len([(x, y) for (x, y) in pairs if x + y in transitions])
+            tv_count = len([(x, y) for (x, y) in pairs if x + y in transversions])
             try:
                 p = float(ts_count) / length
                 q = float(tv_count) / length
                 d = -0.5 * math.log((1 - 2 * p - q) * math.sqrt(1 - 2 * q))
             except:
                 d = 1
-            distance_matrix[j][i] = d
+            distance_matrix[j][i] = distance_matrix[i][j] = d
+    end = time.time()
+    #print(maf.iloc[0, 0] + ": " + str(end - start))
     return distance_matrix
 
 
@@ -1587,11 +1580,13 @@ def extension_by_saturation(genome, tes_to_extend, exe_nucl, num_ite, outputdir,
                     blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
                                                 names=['qseqid', 'sseqid', 'pident', 'length', 'mismatch', 'gapopen',
                                                        'qstart', 'qend', 'sstart', 'send', 'evalue', 'bitscore'])
+                    blastresult = blastresult.sort_values(by=['bitscore', 'pident', 'length'],
+                                                          ascending=[False, False, False])
                     delete_files(outputdir + "/" + str(seq_name) + ".blast")
                     result_file = open(outputdir + "/" + str(seq_name) + ".copies.fa", "w")
                     hit = 0
                     copies_to_use = 0
-                    while hit < blastresult.shape[0]:  # and hit < 20:
+                    while hit < blastresult.shape[0] and hit < 200:
                         # Adding 300 on completed ends to allow the method to find the edges again.
                         if fasta_table.loc[index, "end_l"]:
                             exe_nucl_5prime = 300
@@ -1657,6 +1652,7 @@ def extension_by_saturation(genome, tes_to_extend, exe_nucl, num_ite, outputdir,
                             mafft_output = open(outputdir + "/" + str(seq_name) + ".copies.mafft", "w")
                             mafft_output.write(mafft_comm_output)
                             mafft_output.close()
+                            del mafft_comm_output   # clean the variable
 
                             mafft_df = read_maf(outputdir + "/" + str(seq_name) + ".copies.mafft")
                             delete_files(outputdir + "/" + str(seq_name) + ".copies.mafft")
@@ -2502,8 +2498,18 @@ if __name__ == '__main__':
                                  str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]]
                     if len(is_in_lib) > 0:
                         bad_named_te = is_in_lib[0]
-                        classif = "CLASS" + str(struc_table.at[i, "class"]) + "/" + str(
-                            struc_table.at[i, "order"]) + "/" + str(struc_table.at[i, "sFamily"])
+                        classif = ""
+                        if str(struc_table.at[i, "class"]).upper() in ["UNCLASSIFIED", "UNKNOWN", "NA", "NAN"]:
+                            classif = "UNCLASSIFIED"
+                        else:
+                            classif = "CLASS" + str(struc_table.at[i, "class"])
+                            if str(struc_table.at[i, "order"]).upper() not in ["LARD", "TRIM"]:
+                                classif += "/" + str(struc_table.at[i, "order"])
+                                if str(struc_table.at[i, "sFamily"]).upper() != ["NA"]:
+                                    classif += "/" + str(struc_table.at[i, "sFamily"])
+                            else:
+                                classif += "/LTR/" + str(struc_table.at[i, "order"])
+
                         bad_named_te.id = str(bad_named_te.id).split("#")[0] + "#" + classif
                         bad_named_te.description = ""
                         rename_tes.append(bad_named_te)
