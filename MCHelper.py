@@ -5,6 +5,7 @@ Novelties:
   * Parallel strategy changed
   * if output folder doesn't exist, MCH will create it.
   * Changed the way to check TE classification, now MCH will use those that it can
+  * refine_extension now receives a list of TEs to fit better in the new parallel strategy
 
 """
 
@@ -1545,8 +1546,8 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
         # Run in parallel the checking
         pool = multiprocessing.Pool(processes=cores)
         localresults = [pool.apply_async(extension_by_saturation,
-                                         args=[genome, fasta_table.loc[ini_per_thread[x]:end_per_thread[x]-1, :], exe_nucl, num_ite,
-                                               outputdir, max_nns, x, min_perc_model, min_cluster, max_sequences,
+                                         args=[genome, fasta_table.loc[ini_per_thread[x]:end_per_thread[x]-1, :], exe_nucl,
+                                               outputdir, min_perc_model, min_cluster, max_sequences,
                                                cluster_factor, group_outliers, min_plurality, end_threshold]) for x in range(cores)]
 
         localChecks = [p.get() for p in localresults]
@@ -1564,20 +1565,42 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
         if fasta_table[~((fasta_table['end_l'] == True) & (fasta_table['end_r'] == True))].shape[0] == 0:
             all_finished = True
 
-    final_results = []
+    merged_results = []
     for index in range(fasta_table.shape[0]):
-
         final_seq = SeqRecord(Seq(fasta_table.loc[index, "cons"]), id=fasta_table.loc[index, "seq"]+"#"+fasta_table.loc[index, "class"])
+        merged_results.append(final_seq)
 
-        # refine TE extension, removing over-extended regions
-        final_seq = refine_extension(final_seq, genome, outputdir, cores)
+    # refine TE extension, removing over-extended regions
+    n = len(merged_results)
+    seqs_per_procs = int(n / cores)
+    remain = n % cores
+    ini_per_thread = []
+    end_per_thread = []
+    for p in range(cores):
+        if p < remain:
+            init = p * (seqs_per_procs + 1)
+            end = n if init + seqs_per_procs + 1 > n else init + seqs_per_procs + 1
+        else:
+            init = p * seqs_per_procs + remain
+            end = n if init + seqs_per_procs > n else init + seqs_per_procs
+        ini_per_thread.append(init)
+        end_per_thread.append(end)
 
-        final_results.append(final_seq)
+    # Run in parallel the checking
+    pool = multiprocessing.Pool(processes=cores)
+    localresults = [pool.apply_async(refine_extension, args=[merged_results[ini_per_thread[x]:end_per_thread[x]],
+                                                             genome, outputdir, x]) for x in range(cores)]
+
+    localChecks = [p.get() for p in localresults]
+    final_results = []
+    for i in range(len(localChecks)):
+        final_results.extend(localChecks[i])
+    pool.close()
 
     write_sequences_file(final_results, outputdir + "/extended_cons.fa")
 
 
-def extension_by_saturation(genome, fasta_table, exe_nucl, num_ite, outputdir, max_nns, id_thread, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold):
+def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold):
     fasta_table_ite = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
     if fasta_table.shape[0] > 0:
         fasta_table = fasta_table.reset_index()
@@ -1690,51 +1713,54 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, num_ite, outputdir, m
     return fasta_table_ite
 
 
-def refine_extension(te, genome, outputdir, cores):
-    # set values for query, db, and evalue variables
-    write_sequences_file([te], outputdir+"/torefine.fa")
-    query = outputdir+"/torefine.fa"
-    cons_len = len(str(te.seq))
+def refine_extension(tes_to_refine, genome, outputdir, id_thread):
+    te_refined = []
+    for te in tes_to_refine:
+        # set values for query, db, and evalue variables
+        write_sequences_file([te], outputdir+"/torefine.fa_"+str(id_thread))
+        query = outputdir+"/torefine.fa_"+str(id_thread)
+        cons_len = len(str(te.seq))
 
-    # run blastn command and read output into pandas dataframe
-    command = f"blastn -query {query} -db {genome} -evalue 10e-8 -num_threads {cores} -outfmt '6 qstart qend'"
-    output = subprocess.check_output(command, shell=True).decode()
+        # run blastn command and read output into pandas dataframe
+        command = f"blastn -query {query} -db {genome} -evalue 10e-8 -num_threads 1 -outfmt '6 qstart qend'"
+        output = subprocess.check_output(command, shell=True).decode()
 
-    if len(output) > 0:
-        blast = pd.read_csv(io.StringIO(output), sep='\t', header=None)
-        # create matrix of zeros with dimensions based on length of blast dataframe and cons_len variable
-        coverage = np.zeros((len(blast), cons_len))
+        if len(output) > 0:
+            blast = pd.read_csv(io.StringIO(output), sep='\t', header=None)
+            # create matrix of zeros with dimensions based on length of blast dataframe and cons_len variable
+            coverage = np.zeros((len(blast), cons_len))
 
-        # iterate over rows of blast dataframe and set corresponding values in coverage matrix
-        for i, row in blast.iterrows():
-            start = int(row[0]) - 1
-            end = int(row[1]) - 1
-            if start <= end:
-                coverage[i][start:end + 1] = 1
-            else:
-                coverage[i][end:start + 1] = 1
+            # iterate over rows of blast dataframe and set corresponding values in coverage matrix
+            for i, row in blast.iterrows():
+                start = int(row[0]) - 1
+                end = int(row[1]) - 1
+                if start <= end:
+                    coverage[i][start:end + 1] = 1
+                else:
+                    coverage[i][end:start + 1] = 1
 
-        # calculate column sums of coverage matrix and write to file
-        coverage_sum = np.sum(coverage, axis=0).T
+            # calculate column sums of coverage matrix and write to file
+            coverage_sum = np.sum(coverage, axis=0).T
 
-        # remove the over-extended regions based on coverage
-        # 5' end
-        index = 0
-        while coverage_sum[index] == 0 and index < coverage_sum.shape[0]:
-            index += 1
-        new_start = index
+            # remove the over-extended regions based on coverage
+            # 5' end
+            index = 0
+            while coverage_sum[index] == 0 and index < coverage_sum.shape[0]:
+                index += 1
+            new_start = index
 
-        # 3' end
-        index = coverage_sum.shape[0] - 1
-        while coverage_sum[index] == 0 and index >= 0:
-            index -= 1
-        new_end = index
+            # 3' end
+            index = coverage_sum.shape[0] - 1
+            while coverage_sum[index] == 0 and index >= 0:
+                index -= 1
+            new_end = index
 
-        te.seq = Seq(str(te.seq)[new_start:new_end])
-        te.description = ""
+            te.seq = Seq(str(te.seq)[new_start:new_end])
+            te.description = ""
 
-    delete_files(query)
-    return te
+        delete_files(query)
+        te_refined.append(te)
+    return te_refined
 
 
 def filter_bad_candidates(new_ref_tes, perc_ssr, outputdir, tools_path, busco_library, RNAs_library, cores):
