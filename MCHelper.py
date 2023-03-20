@@ -1,12 +1,10 @@
 """
 
-Manual Curation Helper Version 1.6.3
+Manual Curation Helper Version 1.6.4
 Novelties:
-  * Bugs corrected
-  * Performance improved:
-    - Max number of hits used limited to 200
-    - Re-written the function to calculare the Kimura distance
-  * Corrected bug with classification names in REPET input
+  * Parallel strategy changed
+  * if output folder doesn't exist, MCH will create it.
+  * Changed the way to check TE classification, now MCH will use those that it can
 
 """
 
@@ -173,6 +171,7 @@ def count_flf_fasta(ref_tes, genome, cores, outputdir):
 def check_classification_Userlibrary(user_library, outputdir):
     ids_no_contained = []
     reasons = []
+    fine_tes = []
     for te in SeqIO.parse(user_library, "fasta"):
         if "#" not in str(te.id):  # it doesn't have the correct format
             ids_no_contained.append(te.id)
@@ -195,12 +194,15 @@ def check_classification_Userlibrary(user_library, outputdir):
             else:
                 ids_no_contained.append(te.id)
                 reasons.append(
-                    "The sequence ID has more than 3 levels of classification. I can work with the following formats: 1) Class/Order/Superfamily 2) Order/Superfamily or Class/Order or 3) order")
+                    "The sequence ID has more than 3 levels of classification. I can work with the following formats: 1) Class/Order/Superfamily 2) Order/Superfamily or Class/Order or 3) order or superfamily")
             if superfamily not in orders_superfamilies and order_given not in orders_superfamilies:
                 ids_no_contained.append(te.id)
                 reasons.append(
                         "The classification wasn't find in my classification system. Remember that I use the Wicker nomenclature.")
+            else:
+                fine_tes.append(te)
 
+    write_sequences_file(fine_tes, outputdir + "/candidate_tes.fa")
     if len(ids_no_contained) == 0:  # Congrats!! everything looks great!
         return 0
     else:
@@ -1513,193 +1515,189 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
         print("FATAL ERROR: "+ref_tes+" is empty. Please check the file and re-run the software")
         sys.exit(0)
 
+    ite = 0
+    all_finished = False
     tes = [te for te in SeqIO.parse(ref_tes, "fasta")]
-    n = len(tes)
-    seqs_per_procs = int(n / cores)
-    remain = n % cores
-    ini_per_thread = []
-    end_per_thread = []
-    for p in range(cores):
-        if p < remain:
-            init = p * (seqs_per_procs + 1)
-            end = n if init + seqs_per_procs + 1 > n else init + seqs_per_procs + 1
-        else:
-            init = p * seqs_per_procs + remain
-            end = n if init + seqs_per_procs > n else init + seqs_per_procs
-        ini_per_thread.append(init)
-        end_per_thread.append(end)
+    # Fasta table for the sequences will be extended
+    fasta_table = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
+    for i in range(len(tes)):
+        fasta_table = pd.concat([fasta_table, pd.DataFrame(
+            {"seq": tes[i].id.split("#")[0], "cons": str(tes[i].seq).lower(),
+             "cons_size": [len(tes[i].seq)], "class": str(tes[i].id).split("#")[1], "end_l": False,
+             "end_r": False})], ignore_index=True)
+    while ite < num_ite and not all_finished:
+        start_time = time.time()
+        n = fasta_table.shape[0]
+        seqs_per_procs = int(n / cores)
+        remain = n % cores
+        ini_per_thread = []
+        end_per_thread = []
+        for p in range(cores):
+            if p < remain:
+                init = p * (seqs_per_procs + 1)
+                end = n if init + seqs_per_procs + 1 > n else init + seqs_per_procs + 1
+            else:
+                init = p * seqs_per_procs + remain
+                end = n if init + seqs_per_procs > n else init + seqs_per_procs
+            ini_per_thread.append(init)
+            end_per_thread.append(end)
 
-    # Run in parallel the checking
-    pool = multiprocessing.Pool(processes=cores)
-    localresults = [pool.apply_async(extension_by_saturation,
-                                     args=[genome, tes[ini_per_thread[x]:end_per_thread[x]], exe_nucl, num_ite,
-                                           outputdir, max_nns, x, min_perc_model, min_cluster, max_sequences,
-                                           cluster_factor, group_outliers, min_plurality, end_threshold]) for x in range(cores)]
+        # Run in parallel the checking
+        pool = multiprocessing.Pool(processes=cores)
+        localresults = [pool.apply_async(extension_by_saturation,
+                                         args=[genome, fasta_table.loc[ini_per_thread[x]:end_per_thread[x]-1, :], exe_nucl, num_ite,
+                                               outputdir, max_nns, x, min_perc_model, min_cluster, max_sequences,
+                                               cluster_factor, group_outliers, min_plurality, end_threshold]) for x in range(cores)]
 
-    localChecks = [p.get() for p in localresults]
-    final_seqs = []
-    for i in range(len(localChecks)):
-        for te in SeqIO.parse(outputdir + "/extended_cons.fa_" + str(i), "fasta"):
-            final_seqs.append(te)
-        delete_files(outputdir + "/extended_cons.fa_" + str(i))
-    pool.close()
+        localChecks = [p.get() for p in localresults]
+        final_seqs = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
+        for i in range(len(localChecks)):
+            final_seqs = pd.concat([final_seqs, localChecks[i]], ignore_index=True)
+        pool.close()
 
-    write_sequences_file(final_seqs, outputdir + "/extended_cons.fa")
+        if verbose:
+            end_time = time.time()
+            print("MESSAGE: iteration  " + str(ite + 1) + "/" + str(num_ite) + " done ["+str(end_time-start_time)+" seconds]. Generated " + str(final_seqs.shape[0]) + " sequences.")
+        ite += 1
+        fasta_table = final_seqs
 
+        if fasta_table[~((fasta_table['end_l'] == True) & (fasta_table['end_r'] == True))].shape[0] == 0:
+            all_finished = True
 
-def extension_by_saturation(genome, tes_to_extend, exe_nucl, num_ite, outputdir, max_nns, id_thread, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold):
     final_results = []
-    num_seq = 0
-    if len(tes_to_extend) > 0:
-        ite = 0
-        all_finished = False
+    for index in range(fasta_table.shape[0]):
 
-        # Fasta table for the sequences will be extended
-        fasta_table = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
-        for i in range(len(tes_to_extend)):
-            fasta_table = pd.concat([fasta_table, pd.DataFrame({"seq": tes_to_extend[i].id.split("#")[0], "cons": str(tes_to_extend[i].seq).lower(), "cons_size": [len(tes_to_extend[i].seq)], "class": str(tes_to_extend[i].id).split("#")[1], "end_l": False, "end_r": False})], ignore_index=True)
+        final_seq = SeqRecord(Seq(fasta_table.loc[index, "cons"]), id=fasta_table.loc[index, "seq"]+"#"+fasta_table.loc[index, "class"])
 
-        while ite < num_ite and not all_finished:
-            fasta_table_ite = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
-            for index in range(fasta_table.shape[0]):
-                if not fasta_table.loc[index, "end_l"] or not fasta_table.loc[index, "end_r"]:
-                    seq_name = fasta_table.loc[index, "seq"]
-                    te_class = fasta_table.loc[index, "class"]
-                    te = SeqRecord(Seq(fasta_table.loc[index, "cons"]), id=fasta_table.loc[index, "seq"])
-                    write_sequences_file([te], outputdir + "/" + str(seq_name) + ".consensus.fasta")
+        # refine TE extension, removing over-extended regions
+        final_seq = refine_extension(final_seq, genome, outputdir, cores)
 
-                    # First step: BLASTn
-                    # parameters from Anna Protasio github
-                    output = subprocess.run(
-                        ['blastn', '-query', outputdir + "/" + str(seq_name) + ".consensus.fasta", '-db',
-                         genome, '-out', outputdir + "/" + str(seq_name) + ".blast", '-num_threads', "1",
-                         "-outfmt", "6", "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
-                    delete_files(outputdir + "/" + str(seq_name) + ".consensus.fasta")
+        final_results.append(final_seq)
 
-                    # Second step EXTRACT and EXTEND
-                    blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
-                                                names=['qseqid', 'sseqid', 'pident', 'length', 'mismatch', 'gapopen',
-                                                       'qstart', 'qend', 'sstart', 'send', 'evalue', 'bitscore'])
-                    blastresult = blastresult.sort_values(by=['bitscore', 'pident', 'length'],
-                                                          ascending=[False, False, False])
-                    delete_files(outputdir + "/" + str(seq_name) + ".blast")
-                    result_file = open(outputdir + "/" + str(seq_name) + ".copies.fa", "w")
-                    hit = 0
-                    copies_to_use = 0
-                    while hit < blastresult.shape[0] and hit < 200:
-                        # Adding 300 on completed ends to allow the method to find the edges again.
-                        if fasta_table.loc[index, "end_l"]:
-                            exe_nucl_5prime = 300
-                        else:
-                            exe_nucl_5prime = exe_nucl
-                        if fasta_table.loc[index, "end_r"]:
-                            exe_nucl_3prime = 300
-                        else:
-                            exe_nucl_3prime = exe_nucl
-                        reverse = False
-                        subject_seq = blastresult.at[hit, 'sseqid']
-                        ini_hit = int(blastresult.at[hit, 'sstart'])
-                        end_hit = int(blastresult.at[hit, 'send'])
-                        if float(blastresult.at[hit, 'length']) > float(fasta_table.loc[index, "cons_size"]) * min_perc_model:
-                            scaff_seq = [x.seq for x in SeqIO.parse(genome, 'fasta') if
-                                         str(x.id).split(" ")[0] == subject_seq]
-                            if len(scaff_seq) > 0:
-                                scaff_seq = str(scaff_seq[0])
-                                # for reversed hits
-                                if end_hit < ini_hit:
-                                    tem = ini_hit
-                                    ini_hit = end_hit
-                                    end_hit = tem
-                                    tem = exe_nucl_5prime
-                                    exe_nucl_5prime = exe_nucl_3prime
-                                    exe_nucl_3prime = tem
-                                    reverse = True
+    write_sequences_file(final_results, outputdir + "/extended_cons.fa")
 
-                                if ini_hit - exe_nucl_5prime < 0:
-                                    ini_hit = 0
-                                else:
-                                    ini_hit -= exe_nucl_5prime
-                                if end_hit + exe_nucl_3prime > len(scaff_seq):
-                                    end_hit = len(scaff_seq)
-                                else:
-                                    end_hit += exe_nucl_3prime
 
-                                if reverse is False:
-                                    result_file.write(
-                                        ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(
-                                            end_hit) + "\n" + scaff_seq[ini_hit:end_hit].lower() + "\n")
-                                else:
-                                    result_file.write(
-                                        ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_reversed\n" + str(
-                                            Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
-                            else:
-                                print(
-                                    'WARNING: A subject id (sseqid in blast output file) was not found in the genome, please check:')
-                                print(subject_seq)
-                            copies_to_use += 1
-                        hit += 1
-                    result_file.close()
-
-                    if copies_to_use > 1:  # if there is at least two hits of the consensus and the genome
-                        # parameters from Anna Protasio's gitHub
-                        output = subprocess.run(['mafft', '--quiet', '--thread', '1', '--reorder',
-                                                 outputdir + "/" + str(seq_name) + '.copies.fa'],
-                                                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
-
-                        mafft_comm_output = str(output.stdout)
-
-                        if len(mafft_comm_output) > 0:
-                            mafft_output = open(outputdir + "/" + str(seq_name) + ".copies.mafft", "w")
-                            mafft_output.write(mafft_comm_output)
-                            mafft_output.close()
-                            del mafft_comm_output   # clean the variable
-
-                            mafft_df = read_maf(outputdir + "/" + str(seq_name) + ".copies.mafft")
-                            delete_files(outputdir + "/" + str(seq_name) + ".copies.mafft")
-                            maffts_df_list = seq_clus(mafft_df, min_cluster, max_sequences, cluster_factor, group_outliers)
-                            for mafft in maffts_df_list:
-                                fasta_table_ite = process_maf(mafft, min_plurality, fasta_table_ite, te_class, end_threshold)
-                    else:
-                        # Model doesn't have enough copies to be extended
-                        fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
-                    delete_files(outputdir + "/" + str(seq_name) + '.copies.fa')
-                else:
-                    # Model is complete
-                    fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
-
-            fasta_table = fasta_table_ite
-
-            if verbose:
-                if id_thread == 0:
-                    print("MESSAGE: iteration  " + str(ite+1) + "/" + str(num_ite) + " done.")
-
-            if fasta_table[~((fasta_table['end_l'] == True) & (fasta_table['end_r'] == True))].shape[0] == 0:
-                all_finished = True
-
-            ite += 1
-
+def extension_by_saturation(genome, fasta_table, exe_nucl, num_ite, outputdir, max_nns, id_thread, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold):
+    fasta_table_ite = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
+    if fasta_table.shape[0] > 0:
+        fasta_table = fasta_table.reset_index()
         for index in range(fasta_table.shape[0]):
+            if not fasta_table.loc[index, "end_l"] or not fasta_table.loc[index, "end_r"]:
+                seq_name = fasta_table.loc[index, "seq"]
+                te_class = fasta_table.loc[index, "class"]
+                te = SeqRecord(Seq(fasta_table.loc[index, "cons"]), id=fasta_table.loc[index, "seq"])
+                write_sequences_file([te], outputdir + "/" + str(seq_name) + ".consensus.fasta")
 
-            final_seq = SeqRecord(Seq(fasta_table.loc[index, "cons"]), id=fasta_table.loc[index, "seq"]+"#"+fasta_table.loc[index, "class"])
-            num_seq += 1
+                # First step: BLASTn
+                # parameters from Anna Protasio github
+                output = subprocess.run(
+                    ['blastn', '-query', outputdir + "/" + str(seq_name) + ".consensus.fasta", '-db',
+                     genome, '-out', outputdir + "/" + str(seq_name) + ".blast", '-num_threads', "1",
+                     "-outfmt", "6", "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
+                delete_files(outputdir + "/" + str(seq_name) + ".consensus.fasta")
 
-            # refine TE extension, removing over-extended regions
-            final_seq = refine_extension(final_seq, genome, outputdir, id_thread)
+                # Second step EXTRACT and EXTEND
+                blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
+                                            names=['qseqid', 'sseqid', 'pident', 'length', 'mismatch', 'gapopen',
+                                                   'qstart', 'qend', 'sstart', 'send', 'evalue', 'bitscore'])
+                blastresult = blastresult.sort_values(by=['bitscore', 'pident', 'length'],
+                                                      ascending=[False, False, False])
+                delete_files(outputdir + "/" + str(seq_name) + ".blast")
+                result_file = open(outputdir + "/" + str(seq_name) + ".copies.fa", "w")
+                hit = 0
+                copies_to_use = 0
+                while hit < blastresult.shape[0] and hit < 200:
+                    # Adding 300 on completed ends to allow the method to find the edges again.
+                    if fasta_table.loc[index, "end_l"]:
+                        exe_nucl_5prime = 300
+                    else:
+                        exe_nucl_5prime = exe_nucl
+                    if fasta_table.loc[index, "end_r"]:
+                        exe_nucl_3prime = 300
+                    else:
+                        exe_nucl_3prime = exe_nucl
+                    reverse = False
+                    subject_seq = blastresult.at[hit, 'sseqid']
+                    ini_hit = int(blastresult.at[hit, 'sstart'])
+                    end_hit = int(blastresult.at[hit, 'send'])
+                    if float(blastresult.at[hit, 'length']) > float(fasta_table.loc[index, "cons_size"]) * min_perc_model:
+                        scaff_seq = [x.seq for x in SeqIO.parse(genome, 'fasta') if
+                                     str(x.id).split(" ")[0] == subject_seq]
+                        if len(scaff_seq) > 0:
+                            scaff_seq = str(scaff_seq[0])
+                            # for reversed hits
+                            if end_hit < ini_hit:
+                                tem = ini_hit
+                                ini_hit = end_hit
+                                end_hit = tem
+                                tem = exe_nucl_5prime
+                                exe_nucl_5prime = exe_nucl_3prime
+                                exe_nucl_3prime = tem
+                                reverse = True
 
-            final_results.append(final_seq)
+                            if ini_hit - exe_nucl_5prime < 0:
+                                ini_hit = 0
+                            else:
+                                ini_hit -= exe_nucl_5prime
+                            if end_hit + exe_nucl_3prime > len(scaff_seq):
+                                end_hit = len(scaff_seq)
+                            else:
+                                end_hit += exe_nucl_3prime
 
-    write_sequences_file(final_results, outputdir + "/extended_cons.fa_" + str(id_thread))
-    return num_seq
+                            if reverse is False:
+                                result_file.write(
+                                    ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(
+                                        end_hit) + "\n" + scaff_seq[ini_hit:end_hit].lower() + "\n")
+                            else:
+                                result_file.write(
+                                    ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_reversed\n" + str(
+                                        Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
+                        else:
+                            print(
+                                'WARNING: A subject id (sseqid in blast output file) was not found in the genome, please check:')
+                            print(subject_seq)
+                        copies_to_use += 1
+                    hit += 1
+                result_file.close()
+
+                if copies_to_use > 1:  # if there is at least two hits of the consensus and the genome
+                    # parameters from Anna Protasio's gitHub
+                    output = subprocess.run(['mafft', '--quiet', '--thread', '1', '--reorder',
+                                             outputdir + "/" + str(seq_name) + '.copies.fa'],
+                                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+
+                    mafft_comm_output = str(output.stdout)
+
+                    if len(mafft_comm_output) > 0:
+                        mafft_output = open(outputdir + "/" + str(seq_name) + ".copies.mafft", "w")
+                        mafft_output.write(mafft_comm_output)
+                        mafft_output.close()
+                        del mafft_comm_output   # clean the variable
+
+                        mafft_df = read_maf(outputdir + "/" + str(seq_name) + ".copies.mafft")
+                        delete_files(outputdir + "/" + str(seq_name) + ".copies.mafft")
+                        maffts_df_list = seq_clus(mafft_df, min_cluster, max_sequences, cluster_factor, group_outliers)
+                        for mafft in maffts_df_list:
+                            fasta_table_ite = process_maf(mafft, min_plurality, fasta_table_ite, te_class, end_threshold)
+                else:
+                    # Model doesn't have enough copies to be extended
+                    fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
+                delete_files(outputdir + "/" + str(seq_name) + '.copies.fa')
+            else:
+                # Model is complete
+                fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
+
+    return fasta_table_ite
 
 
-def refine_extension(te, genome, outputdir, id_thread):
+def refine_extension(te, genome, outputdir, cores):
     # set values for query, db, and evalue variables
-    write_sequences_file([te], outputdir+"/torefine.fa_"+str(id_thread))
-    query = outputdir+"/torefine.fa_"+str(id_thread)
+    write_sequences_file([te], outputdir+"/torefine.fa")
+    query = outputdir+"/torefine.fa"
     cons_len = len(str(te.seq))
 
     # run blastn command and read output into pandas dataframe
-    command = f"blastn -query {query} -db {genome} -evalue 10e-8 -outfmt '6 qstart qend'"
+    command = f"blastn -query {query} -db {genome} -evalue 10e-8 -num_threads {cores} -outfmt '6 qstart qend'"
     output = subprocess.check_output(command, shell=True).decode()
 
     if len(output) > 0:
@@ -1718,7 +1716,6 @@ def refine_extension(te, genome, outputdir, id_thread):
 
         # calculate column sums of coverage matrix and write to file
         coverage_sum = np.sum(coverage, axis=0).T
-        #np.savetxt("holi.tab", coverage_sum, delimiter="\t", fmt="%d", header="Coverage", comments="")
 
         # remove the over-extended regions based on coverage
         # 5' end
@@ -2275,7 +2272,7 @@ if __name__ == '__main__':
                         help='Number of nucleotides to extend each size of the element. Default=500')
     parser.add_argument('-x', required=False, dest='num_ite',
                         help='Number of iterations to extend the elements. Default=1')
-    parser.add_argument('--version', action='version', version='%(prog)s v.1.6.2')
+    parser.add_argument('--version', action='version', version='MCHelper version 1.6.4')
 
 
     options = parser.parse_args()
@@ -2324,8 +2321,9 @@ if __name__ == '__main__':
         outputdir = os.getcwd()
         print('MESSAGE: Output directory will be '+outputdir)
     elif not os.path.exists(outputdir):
-        print('FATAL ERROR: Output folder ' + outputdir + " doesn't exist.")
-        sys.exit(0)
+        os.mkdir(outputdir)
+        outputdir = os.path.abspath(outputdir)
+        print('MESSAGE: Output folder ' + outputdir + " created.")
     else:
         outputdir = os.path.abspath(outputdir)
 
@@ -2445,7 +2443,6 @@ if __name__ == '__main__':
 
             if input_valid:
                 ref_tes = input_dir + "/" + proj_name + "_refTEs.fa"
-                # flf_file = input_dir + "/TEannot/" + proj_name + "_chr_allTEs_nr_noSSR_join_path.annotStatsPerTE_FullLengthFrag.txt"
                 repet_table = input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
                 plots_dir = input_dir + "/plotCoverage"
                 gff_files = input_dir + "/gff_reversed"
@@ -2460,10 +2457,9 @@ if __name__ == '__main__':
             if not os.path.exists(user_library):
                 print("FATAL ERROR: TE library file " + user_library + " doesn't exist.")
                 sys.exit(0)
-            ref_tes = user_library
 
             start_time = time.time()
-            if check_classification_Userlibrary(ref_tes, outputdir) == 0:
+            if check_classification_Userlibrary(user_library, outputdir) == 0:
                 # flf_file = count_flf_fasta(ref_tes, genome, cores, outputdir)
                 if not os.path.exists(outputdir + "/classifiedModule/denovoLibTEs_PC.classif") and not os.path.exists(
                         outputdir + "/classifiedModule/new_user_lib.fa"):
@@ -2477,9 +2473,9 @@ if __name__ == '__main__':
                 plots_dir = ""
             else:
                 print(
-                    'FATAL ERROR: There are some sequences with problems in your library. Please check the file: ' + outputdir + '/sequences_with_problems.txt')
-                sys.exit(0)
+                    'WARNING: There are some sequences with problems in your library and MCHelper cannot process them. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
 
+            ref_tes = outputdir + "/candidate_tes.fa"
             end_time = time.time()
             if verbose:
                 print("MESSAGE: Fasta pre-processing done: [" + str(end_time - start_time) + " seconds]")
@@ -2580,6 +2576,7 @@ if __name__ == '__main__':
                 print("WARNING: Classified module didn't find any TE")
                 ref_library_module3 = ""
             module3_seqs_file = outputdir + "/classifiedModule/input_to_unclassified_module_seqs.fa"
+        delete_files(outputdir + "/candidate_tes.fa")
 
     ####################################################################################################################
     # Unclassified module
