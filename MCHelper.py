@@ -6,6 +6,8 @@ Novelties:
   * if output folder doesn't exist, MCH will create it.
   * Changed the way to check TE classification, now MCH will use those that it can
   * refine_extension now receives a list of TEs to fit better in the new parallel strategy
+  * reduction of redundancy before extension using REPET's parameters
+  * Heuristic implemented to stop combinational bursts in subfamily division
 
 """
 
@@ -1342,18 +1344,19 @@ def read_maf(maf_file):
     return df
 
 
-def seq_clus(maf, min_cluster, max_sequences, cluster_factor, group_outliers):
+def seq_clus(maf, min_cluster, max_sequences, cluster_factor, group_outliers, num_subfamilies, max_num_subfamilies):
     if maf is None:
         return None
+    elif num_subfamilies > max_num_subfamilies:
+        return [maf]
     else:
         name = maf.iloc[0, 0]
-        d = K2Pdistance(maf)
+        num_seqs = maf.shape[0]
         if maf.shape[0] > min_cluster:  # Don't try to cluster if less than min_cluster sequences
             if maf.shape[0] > max_sequences:  # If more than max_sequences get a sample of them
                 maf = maf.sample(n=max_sequences, axis=0)
-                d = K2Pdistance(maf)
-            num_seqs = maf.shape[0]
 
+            d = K2Pdistance(maf)
             # Calculating mp value for DBSCAN based on the clustering factor and the minimum size of cluster
             mp = num_seqs // cluster_factor
             mp = max(mp, min_cluster // 2)
@@ -1384,14 +1387,14 @@ def seq_clus(maf, min_cluster, max_sequences, cluster_factor, group_outliers):
             labels = dbscan.fit_predict(d)
             clusters = labels + 1  # add 1 to start clusters at 1 instead of -1 for noise points
             mafs = []
-
-            for i in set(clusters):
-                if i != 0:
-                    if len([x for x in set(clusters) if x != 0]) == 1:  # No subfamily split
-                        clus = maf[clusters == i].reset_index(drop=True)
-                        clus.iloc[:, 0] = name
-                        mafs.append(clus)
-                    else:  # Subfamily divided so we need to add postfixes
+            uniq_clusters = [x for x in set(clusters) if x != 0]
+            if len(uniq_clusters) == 1:  # No subfamily split
+                clus = maf[clusters == uniq_clusters[0]].reset_index(drop=True)
+                clus.iloc[:, 0] = name
+                mafs.append(clus)
+            else:  # Subfamily divided so we need to add postfixes
+                for i in set(clusters):
+                    if i != 0:
                         clus = maf[clusters == i].reset_index(drop=True)
                         clus.iloc[:, 0] = name + '_s_' + str(i)
                         mafs.append(clus)
@@ -1404,7 +1407,7 @@ def seq_clus(maf, min_cluster, max_sequences, cluster_factor, group_outliers):
         return mafs
 
 
-def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold):
+def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold, num_subfamilies):
     if r is None:
         return None
     else:
@@ -1492,14 +1495,14 @@ def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold):
                                   np.sum(r[r['ID'] > minmin_r.loc[min_l - 1, 'ID']]['res']) / seqs) > end_threshold
 
             # add the consensus to the fasta_table
-            fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": name, "cons": s, "cons_size": [len(s)], "class": te_class, "end_l": end_l_te, "end_r":  end_r_te})], ignore_index=True)
+            fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": name, "cons": s, "cons_size": [len(s)], "class": te_class, "subfamilies": [num_subfamilies], "end_l": end_l_te, "end_r":  end_r_te})], ignore_index=True)
         else:
             # the MSA doesn't have the enough contiguity so, I won't extend it
             print("WARNING: Sequence "+name+" couldn't be processed because the MSA didn't have enough contiguity. I will discard it")
     return fasta_table_ite
 
 
-def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, outputdir, max_nns, cores, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold):
+def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, outputdir, max_nns, cores, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies):
     create_output_folders(outputdir)
 
     print('MESSAGE: Starting with BEE step ...')
@@ -1520,11 +1523,11 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
     all_finished = False
     tes = [te for te in SeqIO.parse(ref_tes, "fasta")]
     # Fasta table for the sequences will be extended
-    fasta_table = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
+    fasta_table = pd.DataFrame(columns=["seq", "cons_size", "class", "subfamilies", "end_l", "end_r"])
     for i in range(len(tes)):
         fasta_table = pd.concat([fasta_table, pd.DataFrame(
             {"seq": tes[i].id.split("#")[0], "cons": str(tes[i].seq).lower(),
-             "cons_size": [len(tes[i].seq)], "class": str(tes[i].id).split("#")[1], "end_l": False,
+             "cons_size": [len(tes[i].seq)], "class": str(tes[i].id).split("#")[1], "subfamilies": 0, "end_l": False,
              "end_r": False})], ignore_index=True)
     while ite < num_ite and not all_finished:
         start_time = time.time()
@@ -1548,10 +1551,10 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
         localresults = [pool.apply_async(extension_by_saturation,
                                          args=[genome, fasta_table.loc[ini_per_thread[x]:end_per_thread[x]-1, :], exe_nucl,
                                                outputdir, min_perc_model, min_cluster, max_sequences,
-                                               cluster_factor, group_outliers, min_plurality, end_threshold]) for x in range(cores)]
+                                               cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies]) for x in range(cores)]
 
         localChecks = [p.get() for p in localresults]
-        final_seqs = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
+        final_seqs = pd.DataFrame(columns=["seq", "cons_size", "class", "subfamilies", "end_l", "end_r"])
         for i in range(len(localChecks)):
             final_seqs = pd.concat([final_seqs, localChecks[i]], ignore_index=True)
         pool.close()
@@ -1561,7 +1564,6 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
             print("MESSAGE: iteration  " + str(ite + 1) + "/" + str(num_ite) + " done ["+str(end_time-start_time)+" seconds]. Generated " + str(final_seqs.shape[0]) + " sequences.")
         ite += 1
         fasta_table = final_seqs
-
         if fasta_table[~((fasta_table['end_l'] == True) & (fasta_table['end_r'] == True))].shape[0] == 0:
             all_finished = True
 
@@ -1600,7 +1602,7 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
     write_sequences_file(final_results, outputdir + "/extended_cons.fa")
 
 
-def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold):
+def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies):
     fasta_table_ite = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
     if fasta_table.shape[0] > 0:
         fasta_table = fasta_table.reset_index()
@@ -1699,16 +1701,19 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
 
                         mafft_df = read_maf(outputdir + "/" + str(seq_name) + ".copies.mafft")
                         delete_files(outputdir + "/" + str(seq_name) + ".copies.mafft")
-                        maffts_df_list = seq_clus(mafft_df, min_cluster, max_sequences, cluster_factor, group_outliers)
+                        maffts_df_list = seq_clus(mafft_df, min_cluster, max_sequences, cluster_factor, group_outliers, fasta_table.loc[index, "subfamilies"], max_num_subfamilies)
+                        if len(maffts_df_list) > 1:
+                            fasta_table.loc[index, "subfamilies"] += len(maffts_df_list)  # increase the number of created subfamilies
+
                         for mafft in maffts_df_list:
-                            fasta_table_ite = process_maf(mafft, min_plurality, fasta_table_ite, te_class, end_threshold)
+                            fasta_table_ite = process_maf(mafft, min_plurality, fasta_table_ite, te_class, end_threshold, fasta_table.loc[index, "subfamilies"])
                 else:
                     # Model doesn't have enough copies to be extended
-                    fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
+                    fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "subfamilies": fasta_table.loc[index, "subfamilies"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
                 delete_files(outputdir + "/" + str(seq_name) + '.copies.fa')
             else:
                 # Model is complete
-                fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
+                fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "subfamilies": fasta_table.loc[index, "subfamilies"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
 
     return fasta_table_ite
 
@@ -2099,7 +2104,7 @@ def run_te_aid(te_aid_path, genome, outputdir, tes, min_perc_model):
         result_file = open(outputdir + "/" + str(seq_name) + ".copies.fa", "w")
         hit = 0
         copies_to_use = 0
-        while hit < blastresult.shape[0]:  # and hit < 20:
+        while hit < blastresult.shape[0] and hit < 200:
             reverse = False
             subject_seq = blastresult.at[hit, 'sseqid']
             ini_hit = int(blastresult.at[hit, 'sstart'])
@@ -2205,12 +2210,12 @@ def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov):
     return keep_seqs, orders
 
 
-def run_cdhit(ref_tes, outputdir, cores):
+def run_cdhit(ref_tes, outputdir, cores, identity, coverage):
     create_output_folders(outputdir)
 
     if not os.path.exists(outputdir + "/non_redundant_lib.fa"):
         output = subprocess.run(
-            ['cd-hit-est', '-i', ref_tes, '-o', outputdir + '/non_redundant_lib.fa', '-c', '0.8', '-aS', '0.8', '-G', '0', '-g' , '1', '-b', '500', '-T', str(cores), '-M', '0'],
+            ['cd-hit-est', '-i', ref_tes, '-o', outputdir + '/non_redundant_lib.fa', '-c', str(identity), '-aS', str(coverage), '-G', '0', '-g' , '1', '-b', '500', '-T', str(cores), '-M', '0'],
             stdout=subprocess.PIPE, text=True)
     else:
         print("WARNING: cd-hit-est output already exists, skipping cd-hit-est....")
@@ -2243,6 +2248,7 @@ if __name__ == '__main__':
     max_sequences = 200
     cluster_factor = 10
     group_outliers = True
+    max_num_subfamilies = 4
 
     # Parameter for calculating the saturation
     min_plurality = 40
@@ -2513,8 +2519,9 @@ if __name__ == '__main__':
                 print("MESSAGE: Fasta pre-processing done: [" + str(end_time - start_time) + " seconds]")
 
         if not os.path.exists(outputdir + "/classifiedModule/kept_seqs_classified_module_curated.fa"):
+
             ############################################################################################################
-            # First step: Extend all the consensus
+            # First step: Reduce redundancy
             ############################################################################################################
             start_time = time.time()
             # If repet, we need to include the classification info into the library
@@ -2545,9 +2552,17 @@ if __name__ == '__main__':
                 write_sequences_file(rename_tes, ref_tes + "_tmp")
                 delete_files(ref_tes)
                 shutil.move(ref_tes + "_tmp", ref_tes)
-            run_extension_by_saturation_parallel(genome, ref_tes, ext_nucl, num_ite, outputdir+ "/classifiedModule/", max_nns, cores,
+            ref_tes_non_redundat = run_cdhit(ref_tes, outputdir, cores, 0.95, 0.98)
+            delete_files(outputdir + "/non_redundant_lib.fa.clstr")
+
+            ############################################################################################################
+            # First step: Extend all the consensus
+            ############################################################################################################
+            start_time = time.time()
+            run_extension_by_saturation_parallel(genome, ref_tes_non_redundat, ext_nucl, num_ite, outputdir+ "/classifiedModule/", max_nns, cores,
                                                      min_perc_model, min_cluster, max_sequences, cluster_factor,
-                                                     group_outliers, min_plurality, end_threshold)
+                                                     group_outliers, min_plurality, end_threshold, max_num_subfamilies)
+            delete_files(outputdir + "/non_redundant_lib.fa")
             ref_tes = outputdir + "/classifiedModule/extended_cons.fa"
             end_time = time.time()
             if verbose:
@@ -2659,7 +2674,7 @@ if __name__ == '__main__':
                     run_extension_by_saturation_parallel(genome, ref_tes, ext_nucl, num_ite,
                                                          outputdir + "/unclassifiedModule/", max_nns, cores,
                                                          min_perc_model, min_cluster, max_sequences, cluster_factor,
-                                                         group_outliers, min_plurality, end_threshold)
+                                                         group_outliers, min_plurality, end_threshold, max_num_subfamilies)
                     end_time = time.time()
                     if verbose:
                         print("MESSAGE: The sequences were extended successfully [" + str(
@@ -2732,7 +2747,7 @@ if __name__ == '__main__':
         run_extension_by_saturation_parallel(genome, ref_tes, ext_nucl, num_ite,
                                              outputdir + "/bee_module/", max_nns, cores,
                                              min_perc_model, min_cluster, max_sequences, cluster_factor,
-                                             group_outliers, min_plurality, end_threshold)
+                                             group_outliers, min_plurality, end_threshold, max_num_subfamilies)
 
     ####################################################################################################################
     # TE+aid in Parallel
@@ -2791,6 +2806,6 @@ if __name__ == '__main__':
     # Reduce the final redundancy
     if len(final_seqs) > 0:
         write_sequences_file(final_seqs, outputdir + "/curated_sequences_R.fa")
-        non_redundat = run_cdhit(outputdir + "/curated_sequences_R.fa", outputdir, cores)
+        non_redundat = run_cdhit(outputdir + "/curated_sequences_R.fa", outputdir, cores, 0.95, 0.98)
         shutil.move(non_redundat, outputdir + "/curated_sequences_NR.fa")
 
