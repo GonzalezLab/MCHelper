@@ -439,7 +439,7 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
         columns=['Seq_name', 'length', 'strand', 'confused', 'class', 'order', 'Wcode', 'sFamily', 'CI', 'coding',
                  'struct', 'other'])
     for i in range(len(local_dfs)):
-        class_df = class_df.append(local_dfs[i], ignore_index=True)
+        class_df = pd.concat([class_df, local_dfs[i]], ignore_index=True)
     pool.close()
 
     class_df.to_csv(outputdir + "/denovoLibTEs_PC.classif", header=True, sep='\t', index=False)
@@ -1916,6 +1916,12 @@ def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, int
             keep_seqs.append(keep_seqs_internal[te_index])
             orders.append(orders_internal[te_index])
 
+    for i in range(len(keep_seqs)):
+        te_selected = [x for x in SeqIO.parse(ref_tes, "fasta") if x.id.split("#")[0] == keep_seqs[i]]
+        te_selected[0].id = te_selected[0].id.split("#")[0]
+        te_selected[0].description = ""
+        keep_seqs_records.append(te_selected[0])
+
     end_time = time.time()
     print("MESSAGE: BLASTn successfully run [" + str(end_time - start_time) + " seconds]")
 
@@ -2347,7 +2353,7 @@ if __name__ == '__main__':
         outputdir = os.getcwd()
         print('MESSAGE: Output directory will be '+outputdir)
     elif not os.path.exists(outputdir):
-        os.mkdir(outputdir)
+        create_output_folders(outputdir)
         outputdir = os.path.abspath(outputdir)
         print('MESSAGE: Output folder ' + outputdir + " created.")
     else:
@@ -2654,6 +2660,12 @@ if __name__ == '__main__':
                                                          outputdir + "/unclassifiedModule/", max_nns, cores,
                                                          min_perc_model, min_cluster, max_sequences, cluster_factor,
                                                          group_outliers, min_plurality, end_threshold)
+                    end_time = time.time()
+                    if verbose:
+                        print("MESSAGE: The sequences were extended successfully [" + str(
+                            end_time - start_time) + " seconds]")
+
+                    start_time = time.time()
                     module3_seqs_file, num_copies = filter_flf(module3_seqs_file, flf_file, FLF_UNCLASS, outputdir + "/unclassifiedModule/")
                     end_time = time.time()
                     extendedSeqs = outputdir + "/unclassifiedModule/extended_cons.fa"
@@ -2661,7 +2673,7 @@ if __name__ == '__main__':
                         print("MESSAGE: The library was reduced to " + str(
                             len(list(SeqIO.parse(module3_seqs_file, 'fasta')))) + " after FLF filtering [" + str(
                             end_time - start_time) + " seconds]")
-                else: # do not run BEE because it was run in Classified module
+                else:  # do not run BEE because it was run in Classified module
                     ########################################################################################################
                     # Second step: Filter elements with not enough FLF copies in the genome
                     ########################################################################################################
@@ -2675,8 +2687,6 @@ if __name__ == '__main__':
                             len(list(SeqIO.parse(module3_seqs_file, 'fasta')))) + " after FLF filtering [" + str(
                             end_time - start_time) + " seconds]")
 
-                if verbose:
-                    print("MESSAGE: The sequences were extended successfully [" + str(end_time - start_time) + " seconds]")
                 ########################################################################################################
                 # Third step: find structural features
                 ########################################################################################################
@@ -2728,7 +2738,6 @@ if __name__ == '__main__':
     # TE+aid in Parallel
     ####################################################################################################################
     if module == 4:
-        print("Debugging....")
         if user_library is None:
             print('FATAL ERROR: -l parameter must be specified for the BEE extension module using input type fasta')
             sys.exit(0)
