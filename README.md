@@ -92,7 +92,7 @@ python3 MCHelper.py -r A -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_d
 
 Be sure you have activated the anaconda environment:
 ```
-conda activate curation
+conda activate MCHelper
 ```
 
 Then, execute MCHelper with default parameters. For REPET input (see [Testing](#testing) for a practical example):
