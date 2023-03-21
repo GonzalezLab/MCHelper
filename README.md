@@ -52,7 +52,7 @@ To test MCHelper, we provide some example inputs and also the expected results (
 
 First, activate the anaconda enviroment:
 ```
-conda activate curation
+conda activate MCHelper
 ```
 
 Then, be sure you are in the main folder (this one where MCHelper.py is located) and unzip the D. melanogaster genome:
