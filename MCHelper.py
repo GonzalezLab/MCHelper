@@ -2507,12 +2507,12 @@ if __name__ == '__main__':
                         do_blast = False
                 repet_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
 
-                gff_files = ""
-                plots_dir = ""
             else:
                 print(
                     'WARNING: There are some sequences with problems in your library and MCHelper cannot process them. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
 
+            gff_files = ""
+            plots_dir = ""
             ref_tes = outputdir + "/candidate_tes.fa"
             end_time = time.time()
             if verbose:
@@ -2808,4 +2808,3 @@ if __name__ == '__main__':
         write_sequences_file(final_seqs, outputdir + "/curated_sequences_R.fa")
         non_redundat = run_cdhit(outputdir + "/curated_sequences_R.fa", outputdir, cores, 0.95, 0.98)
         shutil.move(non_redundat, outputdir + "/curated_sequences_NR.fa")
-
