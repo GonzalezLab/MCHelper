@@ -896,8 +896,10 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
     orders_seqs_mi = []
     ref_tes_bee = ref_tes
     if automatic != 'M':
-
         start_time = time.time()
+        if not os.path.exists(ref_profiles):
+            print("FATAL ERROR: " + ref_profiles + " does not exist. Please check that the file 'Pfam35.0.hmm' is located at db folder and re-run the software")
+            sys.exit(0)
         build_class_table_parallel(ref_tes_bee, cores, outputdir+'/classifiedModule/', blastn_db, blastx_db,
                                    tools_path, ref_profiles, False)
         struc_table = pd.read_csv(outputdir + "/classifiedModule/denovoLibTEs_PC.classif", sep='\t')
