@@ -8,6 +8,8 @@ Novelties:
   * refine_extension now receives a list of TEs to fit better in the new parallel strategy
   * reduction of redundancy before extension using REPET's parameters
   * Heuristic implemented to stop combinational bursts in subfamily division
+  * corrected bug in contiguity confidence
+  * Added restarting point if extension was already done.
 
 """
 
@@ -1464,20 +1466,26 @@ def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold, num_
         v = v.tolist()
         stop = False
         while sum(v) < confidence_needed and not stop:
-            min_r = min_r[(confidence_needed - (len(v) - v[::-1].index(False)) + 1):]
-            v = min_r[0:confidence_needed]['rm'] >= cutpoint1
-            v = v.tolist()
-            if len(v) == 0:
+            if False in v:
+                min_r = min_r[(confidence_needed - (len(v) - v[::-1].index(False)) + 1):]
+                v = min_r[0:confidence_needed]['rm'] >= cutpoint1
+                v = v.tolist()
+                if len(v) == 0:
+                    stop = True
+            else:
                 stop = True
 
         # To calculate where is the 3' edge to cut
         v = min_r[(len(min_r) - confidence_needed):(len(min_r))]['lm'] >= cutpoint1
         v = v.tolist()
         while sum(v) < confidence_needed and not stop:
-            min_r = min_r[0:(len(min_r) - confidence_needed + v.index(False))]
-            v = min_r[(len(min_r) - confidence_needed):(len(min_r))]['lm'] >= cutpoint1
-            v = v.tolist()
-            if len(v) == 0:
+            if False in v:
+                min_r = min_r[0:(len(min_r) - confidence_needed + v.index(False))]
+                v = min_r[(len(min_r) - confidence_needed):(len(min_r))]['lm'] >= cutpoint1
+                v = v.tolist()
+                if len(v) == 0:
+                    stop = True
+            else:
                 stop = True
 
         if not stop:
@@ -2558,20 +2566,26 @@ if __name__ == '__main__':
             delete_files(outputdir + "/non_redundant_lib.fa.clstr")
 
             ############################################################################################################
-            # First step: Extend all the consensus
+            # Second step: Extend all the consensus
             ############################################################################################################
-            start_time = time.time()
-            run_extension_by_saturation_parallel(genome, ref_tes_non_redundat, ext_nucl, num_ite, outputdir+ "/classifiedModule/", max_nns, cores,
-                                                     min_perc_model, min_cluster, max_sequences, cluster_factor,
-                                                     group_outliers, min_plurality, end_threshold, max_num_subfamilies)
-            delete_files(outputdir + "/non_redundant_lib.fa")
-            ref_tes = outputdir + "/classifiedModule/extended_cons.fa"
-            end_time = time.time()
-            if verbose:
-                print("MESSAGE: The sequences were extended successfully [" + str(end_time - start_time) + " seconds]")
+            if not os.path.exists(outputdir + "/classifiedModule/extended_cons.fa"):
+                start_time = time.time()
+                run_extension_by_saturation_parallel(genome, ref_tes_non_redundat, ext_nucl, num_ite, outputdir+ "/classifiedModule/", max_nns, cores,
+                                                         min_perc_model, min_cluster, max_sequences, cluster_factor,
+                                                         group_outliers, min_plurality, end_threshold, max_num_subfamilies)
+                delete_files(outputdir + "/non_redundant_lib.fa")
+                ref_tes = outputdir + "/classifiedModule/extended_cons.fa"
+                end_time = time.time()
+                if verbose:
+                    print("MESSAGE: The sequences were extended successfully [" + str(end_time - start_time) + " seconds]")
+            else:
+                delete_files(outputdir + "/non_redundant_lib.fa")
+                ref_tes = outputdir + "/classifiedModule/extended_cons.fa"
+                if verbose:
+                    print("MESSAGE: The extension was already run, please verify or change the output directory")
 
             ############################################################################################################
-            # Second step: extract seqs with at least one full length fragment and minimum minFullLenCopies
+            # Third step: extract seqs with at least one full length fragment and minimum minFullLenCopies
             ############################################################################################################
             start_time = time.time()
             flf_file = count_flf_fasta(ref_tes, genome, cores, outputdir)
@@ -2585,7 +2599,7 @@ if __name__ == '__main__':
                 sys.exit(0)
 
             ############################################################################################################
-            # Third step: SSR, BUSCO genes, tRNA and rRNA filters
+            # Fourth step: SSR, BUSCO genes, tRNA and rRNA filters
             ############################################################################################################
             start_time = time.time()
             new_ref_tes, deleted_seqs = filter_bad_candidates(new_ref_tes, perc_ssr, outputdir+"/classifiedModule/", tools_path, busco_library, rnas_db, cores)
@@ -2598,7 +2612,7 @@ if __name__ == '__main__':
                 sys.exit(0)
 
             ############################################################################################################
-            # Fourth step: Structural checks, BEE method, and Visualize plots
+            # Fifth step: Structural checks, BEE method, and Visualize plots
             ############################################################################################################
             start_time = time.time()
             new_module1(plots_dir, new_ref_tes, gff_files, outputdir, proj_name, te_aid, automatic, minDomLTR,
