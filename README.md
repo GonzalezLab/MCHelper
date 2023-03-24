@@ -127,7 +127,8 @@ Full list of parameters include:
 * --input_type INPUT_TYPE:  Input type: fasta or REPET.
 * -l USER_LIBRARY:       User defined library to be used with input type fasta.
 * -b BUSCO_LIBRARY:      Reference/BUSCO genes to filter out TEs (HMM format required).
-* -c MINFULLLENCOPIES:   Minimum number of full-length copies to process an element. Default=1
+* -z MINBLASTHITS       Minimum number of blast hits to process an element.
+* -c MINFULLLFRAGMENTS:   Minimum number of full-length fragments to process an element. Default=1
 * -s PERC_SSR:           Maximum length covered by single repetitions (in percentage between 0-100) allowed for a TE not to be removed. Default=60
 * -e EXT_NUCL           Number of nucleotides to extend each size of the element. Default=1000
 * -x NUM_ITE            Number of iterations to extend the elements
