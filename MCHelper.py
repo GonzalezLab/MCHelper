@@ -1695,7 +1695,7 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
                     hit += 1
                 result_file.close()
 
-                if copies_to_use > 1:  # if there is at least two hits of the consensus and the genome
+                if copies_to_use >= minBlastHits:  # if there is at least minBlastHits of the consensus and the genome
                     # parameters from Anna Protasio's gitHub
                     output = subprocess.run(['mafft', '--quiet', '--thread', '1', '--reorder',
                                              outputdir + "/" + str(seq_name) + '.copies.fa'],
@@ -2312,6 +2312,8 @@ if __name__ == '__main__':
                         help='User defined library to be used with input type fasta.')
     parser.add_argument('-b', required=False, dest='busco_library',
                         help='Reference/BUSCO genes to filter out TEs (HMMs expected). ')
+    parser.add_argument('-z', required=False, dest='minBlastHits', default=2,
+                        help='Minimum number of blast hits to process an element.')
     parser.add_argument('-c', required=False, dest='minFullLenCopies', default=1,
                         help='Minimum number of full-length copies to process an element.')
     parser.add_argument('-s', required=False, dest='perc_ssr',
@@ -2340,6 +2342,7 @@ if __name__ == '__main__':
     user_library = options.user_library
     busco_library = options.busco_library
     minFullLenCopies = int(options.minFullLenCopies)
+    minBlastHits = int(options.minBlastHits)
     perc_ssr = options.perc_ssr
     ext_nucl = options.ext_nucl
     num_ite = options.num_ite
