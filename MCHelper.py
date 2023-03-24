@@ -10,6 +10,8 @@ Novelties:
   * Heuristic implemented to stop combinational bursts in subfamily division
   * corrected bug in contiguity confidence
   * Added restarting point if extension was already done.
+  * Added parameter minBlastHits to control the min number of hits needed to process a TE
+  * Bug corrected when trying to index the Pfam database
 
 """
 
@@ -79,7 +81,7 @@ def delete_files(file_path):
             print("WARNING: The file " + file_path + " couldn't be removed because I don't have permissions.")
 
 
-def filter_flf(ref_tes, flf_file, minFullLenCopies, outputdir):
+def filter_flf(ref_tes, flf_file, minFullLenFragments, outputdir):
     flf_lines = open(flf_file, 'r').readlines()[1:]
     seqsID_with_flf = [s.split("\t")[0] for s in flf_lines]
     seqs_with_flf = []
@@ -89,7 +91,7 @@ def filter_flf(ref_tes, flf_file, minFullLenCopies, outputdir):
         if seq_name in seqsID_with_flf:
             numfullCopies = int([s.split("\t")[6] for s in flf_lines if s.split("\t")[0] == seq_name][0])
             numfullFrags = int([s.split("\t")[4] for s in flf_lines if s.split("\t")[0] == seq_name][0])
-            if numfullFrags >= minFullLenCopies:  # number of copies greater or equal than threshold?
+            if numfullFrags >= minFullLenFragments:  # number of copies greater or equal than threshold?
                 seqs_with_flf.append(te)
                 numCopies[seq_name] = [numfullFrags, numfullCopies]
 
@@ -328,10 +330,6 @@ def find_profiles(te, outputdir, ref_profiles):
          outputdir + "/" + seq_name + "_putative_te_orf.fa"],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
 
-    if not os.path.exists(ref_profiles+".h3m"):
-        output = subprocess.run(['hmmpress', ref_profiles],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
-
     output = subprocess.run(
         ['hmmscan', '--tblout', outputdir + "/" + seq_name + "_profiles_found.hmm", '-E', '10', '--noali', '--cpu',
          '1', ref_profiles, outputdir + "/" + seq_name + "_putative_te_orf.fa"],
@@ -422,6 +420,12 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
     remain = n % cores
     ini_per_thread = []
     end_per_thread = []
+
+    # indexing the Pfam database if needed
+    if not os.path.exists(ref_profiles+".h3m"):
+        output = subprocess.run(['hmmpress', ref_profiles],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
+
     for p in range(cores):
         if p < remain:
             init = p * (seqs_per_procs + 1)
@@ -2314,8 +2318,8 @@ if __name__ == '__main__':
                         help='Reference/BUSCO genes to filter out TEs (HMMs expected). ')
     parser.add_argument('-z', required=False, dest='minBlastHits', default=2,
                         help='Minimum number of blast hits to process an element.')
-    parser.add_argument('-c', required=False, dest='minFullLenCopies', default=1,
-                        help='Minimum number of full-length copies to process an element.')
+    parser.add_argument('-c', required=False, dest='minFullLenFragments', default=1,
+                        help='Minimum number of full-length fragments to process an element.')
     parser.add_argument('-s', required=False, dest='perc_ssr',
                         help='Maximum length covered by single repetitions (in percentage between 0-100) allowed for a TE not to be removed')
     parser.add_argument('-e', required=False, dest='ext_nucl',
@@ -2341,7 +2345,7 @@ if __name__ == '__main__':
     input_type = options.input_type
     user_library = options.user_library
     busco_library = options.busco_library
-    minFullLenCopies = int(options.minFullLenCopies)
+    minFullLenFragments = int(options.minFullLenFragments)
     minBlastHits = int(options.minBlastHits)
     perc_ssr = options.perc_ssr
     ext_nucl = options.ext_nucl
@@ -2588,17 +2592,17 @@ if __name__ == '__main__':
                     print("MESSAGE: The extension was already run, please verify or change the output directory")
 
             ############################################################################################################
-            # Third step: extract seqs with at least one full length fragment and minimum minFullLenCopies
+            # Third step: extract seqs with at least one full length fragment and minimum minFullLenFragments
             ############################################################################################################
             start_time = time.time()
             flf_file = count_flf_fasta(ref_tes, genome, cores, outputdir)
-            new_ref_tes, num_copies = filter_flf(ref_tes, flf_file, minFullLenCopies, outputdir+"/classifiedModule/")
+            new_ref_tes, num_copies = filter_flf(ref_tes, flf_file, minFullLenFragments, outputdir+"/classifiedModule/")
             end_time = time.time()
             if verbose:
                 print("MESSAGE: The library was reduced to " + str(len(list(SeqIO.parse(new_ref_tes, 'fasta')))) + " after FLF filtering [" + str(end_time - start_time) + " seconds]")
 
             if len(list(SeqIO.parse(new_ref_tes, 'fasta'))) == 0:
-                print("FATAL ERROR: There is no TEs with at least "+str(minFullLenCopies)+" full length copies in the genome.")
+                print("FATAL ERROR: There is no TEs with at least "+str(minFullLenFragments)+" full length copies in the genome.")
                 sys.exit(0)
 
             ############################################################################################################
