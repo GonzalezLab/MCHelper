@@ -12,6 +12,7 @@ Novelties:
   * Added restarting point if extension was already done.
   * Added parameter minBlastHits to control the min number of hits needed to process a TE
   * Bug corrected when trying to index the Pfam database
+  * Bug corrected in checking REPET's input
 
 """
 
@@ -222,7 +223,7 @@ def check_classification_Userlibrary(user_library, outputdir):
 
 def check_repet_input_folder(repet_input_dir, proj_name):
     ref_tes = repet_input_dir + "/" + proj_name + "_refTEs.fa"
-    flf_file = repet_input_dir + "/TEannot/" + proj_name + "_chr_allTEs_nr_noSSR_join_path.annotStatsPerTE_FullLengthFrag.txt"
+    # flf_file = repet_input_dir + "/TEannot/" + proj_name + "_chr_allTEs_nr_noSSR_join_path.annotStatsPerTE_FullLengthFrag.txt"
     repet_table = repet_input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
     plots_dir = repet_input_dir + "/plotCoverage"
     gff_files = repet_input_dir + "/gff_reversed"
@@ -236,12 +237,12 @@ def check_repet_input_folder(repet_input_dir, proj_name):
     elif os.path.getsize(ref_tes) == 0:
         valid = False
         reason = "FATAL ERROR: "+ref_tes+" is empty. Please check the file and re-run the software"
-    elif not os.path.exists(flf_file):
-        valid = False
-        reason = "FATAL ERROR: "+flf_file+" does not exist. Please check the path and re-run the software"
-    elif os.path.getsize(flf_file) == 0:
-        valid = False
-        reason = "FATAL ERROR: "+flf_file+" is empty. Please check the file and re-run the software"
+    #elif not os.path.exists(flf_file):
+    #    valid = False
+    #    reason = "FATAL ERROR: "+flf_file+" does not exist. Please check the path and re-run the software"
+    #elif os.path.getsize(flf_file) == 0:
+    #    valid = False
+    #    reason = "FATAL ERROR: "+flf_file+" is empty. Please check the file and re-run the software"
     elif not os.path.exists(repet_table):
         valid = False
         reason = "FATAL ERROR: "+repet_table+" does not exist. Please check the path and re-run the software"
@@ -903,9 +904,11 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
     ref_tes_bee = ref_tes
     if automatic != 'M':
         start_time = time.time()
+        # Step1 create feature table
         if not os.path.exists(ref_profiles):
             print("FATAL ERROR: " + ref_profiles + " does not exist. Please check that the file 'Pfam35.0.hmm' is located at db folder and re-run the software")
             sys.exit(0)
+
         build_class_table_parallel(ref_tes_bee, cores, outputdir+'/classifiedModule/', blastn_db, blastx_db,
                                    tools_path, ref_profiles, False)
         struc_table = pd.read_csv(outputdir + "/classifiedModule/denovoLibTEs_PC.classif", sep='\t')
@@ -2010,7 +2013,7 @@ def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, int
         print("Unclassified elements recovered: " + str(len(keep_seqs_records)))
         print("-------------------------------------------")
         print("TEs recovered by homology: " + str(len(keep_seqs)))
-        print("TEs recovered by domain inferring: " + str(num_infered_tes))
+        print("TEs recovered by inference of coding domains: " + str(num_infered_tes))
         print("TEs recovered by structural features: " + str(num_structural_tes))
         print("-------------------------------------------")
         print("")
