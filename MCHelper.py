@@ -13,6 +13,7 @@ Novelties:
   * Added parameter minBlastHits to control the min number of hits needed to process a TE
   * Bug corrected when trying to index the Pfam database
   * Bug corrected in checking REPET's input
+  * Minor changes in some messages in the structural checking
 
 """
 
@@ -717,9 +718,9 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
                 else:
                     status = -1
                     if automatic != 'F':
-                        reason = "Sent to manual inspection for don't having non-LTR-RTs domains !"
+                        reason = "Sent to manual inspection for having non-LTR-RTs domains !"
                     else:
-                        reason = "Marked as incomplete TE for don't having non-LTR-RTs domains !"
+                        reason = "Marked as incomplete TE for having non-LTR-RTs domains !"
             elif len(profiles) > 0 and len(profiles[0].split(",")) > 0 and struc_table.at[i, "order"] == 'LTR':
                 rigth_doms, other_doms = count_domains_by_order(profiles[0], "LTR")
                 if rigth_doms > 0 and other_doms == 0:
@@ -1177,26 +1178,42 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
                         print("WARNING: Element " + struc_table.at[i, "Seq_name"] + "couldn't be processed")
 
                 try:
-                    keep = int(
-                        input(
-                            "Keep the sequence?[1: remove, 2: LTR, 3: LTR-Copia, 4: LTR-Gypsy, 5: LTR-Bel_pao,"
+                    if str(struc_table.at[i, "sFamily"]) in orders_superfamilies.index():
+                        current_clas = orders_superfamilies.index(str(struc_table.at[i, "sFamily"])) + 2
+                    elif str(struc_table.at[i, "order"]) in orders_superfamilies.index():
+                        current_clas = orders_superfamilies.index(str(struc_table.at[i, "order"])) + 2
+                    elif str(struc_table.at[i, "class"]) in orders_superfamilies.index():
+                        current_clas = orders_superfamilies.index(str(struc_table.at[i, "class"])) + 2
+                    else:
+                        current_clas = orders_superfamilies.index("UNCLASSIFIED") + 2
+                    keep = input(
+                            "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: LTR-Copia, 4: LTR-Gypsy, 5: LTR-Bel_pao,"
                             " 6: TRIM, 7: LARD, 8: LINE, 9: SINE, 10: R2,11: RTE, 12: JOCKEY, 13: L1, 14: I,  "
                             "15: PLE, 16: DIRS, 17: TIR, 18: MITE, 19: TC1MARINER,  20: HAT, 21: MUTATOR, 22: MERLIN,"
                             "23: TRANSIB, 24: P, 25: PIGGYBAC, 26: PIFHARBINGER,  27: CACTA, 28: HELITRON, 29: MAVERICK,"
-                            "30: CRYPTON, 31: UNCLASSIFIED/UNKNOWN, 32: CLASSI, 33: CLASSII] "))
+                            "30: CRYPTON, 31: UNCLASSIFIED/UNKNOWN, 32: CLASSI, 33: CLASSII] ") or current_clas
+                    keep = int(keep)
                 except ValueError:
                     keep = -1
 
                 while keep < 1 or keep > 34:
                     try:
                         print('You must indicate a number between 1 and 33.')
-                        keep = int(
-                            input(
-                                "Keep the sequence?[1: remove, 2: LTR, 3: LTR-Copia, 4: LTR-Gypsy, 5: LTR-Bel_pao,"
+                        if str(struc_table.at[i, "sFamily"]) in orders_superfamilies.index():
+                            current_clas = orders_superfamilies.index(str(struc_table.at[i, "sFamily"])) + 2
+                        elif str(struc_table.at[i, "order"]) in orders_superfamilies.index():
+                            current_clas = orders_superfamilies.index(str(struc_table.at[i, "order"])) + 2
+                        elif str(struc_table.at[i, "class"]) in orders_superfamilies.index():
+                            current_clas = orders_superfamilies.index(str(struc_table.at[i, "class"])) + 2
+                        else:
+                            current_clas = orders_superfamilies.index("UNCLASSIFIED") + 2
+                        keep = input(
+                                "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: LTR-Copia, 4: LTR-Gypsy, 5: LTR-Bel_pao,"
                                 " 6: TRIM, 7: LARD, 8: LINE, 9: SINE, 10: R2,11: RTE, 12: JOCKEY, 13: L1, 14: I,  "
                                 "15: PLE, 16: DIRS, 17: TIR, 18: MITE, 19: TC1MARINER,  20: HAT, 21: MUTATOR, 22: MERLIN,"
                                 "23: TRANSIB, 24: P, 25: PIGGYBAC, 26: PIFHARBINGER,  27: CACTA, 28: HELITRON, 29: MAVERICK,"
-                                "30: CRYPTON, 31: UNCLASSIFIED/UNKNOWN, 32: CLASSI, 33: CLASSII] "))
+                                "30: CRYPTON, 31: UNCLASSIFIED/UNKNOWN, 32: CLASSI, 33: CLASSII] ") or current_clas
+                        keep = int(keep)
                     except ValueError:
                         keep = -1
                 if keep == 31:
