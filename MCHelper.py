@@ -14,6 +14,7 @@ Novelties:
   * Bug corrected when trying to index the Pfam database
   * Bug corrected in checking REPET's input
   * Minor changes in some messages in the structural checking
+  * Put the default value of -r parameter as A (All modules)
 
 """
 
@@ -2306,8 +2307,8 @@ if __name__ == '__main__':
 
     ### read parameters
     parser = argparse.ArgumentParser()
-    parser.add_argument('-r', '--module', required=True, dest='module_user',
-                        help='module of curation [A, C, U, T, E]. Required*')
+    parser.add_argument('-r', '--module', required=False, dest='module_user',
+                        help='module of curation [A, C, U, T, E]. Default=A')
     parser.add_argument('-i', '--input', required=False, dest='input_dir',
                         help='Directory with the files required to do the curation (REPET output directory). Required*')
     parser.add_argument('-g', '--genome', required=False, dest='genome',
@@ -2375,8 +2376,12 @@ if __name__ == '__main__':
     # Parameter validation
     ####################################################################################################################
     module = 0
-    if module_user.upper() not in ['A', 'C', 'U', 'E', 'T', '3333']:  # 3333 for debugging only
-        print('FATAL ERROR: module (-r parameter) must be A (all steps), C (classified module), U (unclassified module), or E (BEE extension)')
+    if module_user is None:
+        module_user = 'A'
+        module = 123
+        print("MESSAGE: Missing module (-r) parameter, using by default: " + module_user)
+    elif module_user.upper() not in ['A', 'C', 'U', 'E', 'T', '3333']:  # 3333 for debugging only
+        print('FATAL ERROR: module (-r parameter) must be A (all steps), C (classified module), U (unclassified module), E (BEE extension) or T (TE_Aid in parallel)')
         sys.exit(0)
     else:
         if module_user.upper() == 'A':
