@@ -1,6 +1,6 @@
 """
 
-Manual Curation Helper Version 1.6.4
+Manual Curation Helper Version 1.6.5
 Novelties:
   * Parallel strategy changed
   * if output folder doesn't exist, MCH will create it.
@@ -15,12 +15,14 @@ Novelties:
   * Bug corrected in checking REPET's input
   * Minor changes in some messages in the structural checking
   * Put the default value of -r parameter as A (All modules)
+  * Improved the find_TRs method
 
 """
 
 import sys
 import os
 import io
+import re
 import argparse
 import pandas as pd
 import multiprocessing
@@ -68,6 +70,8 @@ def create_output_folders(folder_path):
     try:
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
+        """else:
+            print("WARNING: the folder " + folder_path + " already exists, I won't create it")"""
     except FileNotFoundError:
         print("FATAL ERROR: I couldn't create the folder " + folder_path + ". Path not found")
         sys.exit(0)
@@ -265,59 +269,49 @@ def check_repet_input_folder(repet_input_dir, proj_name):
     return valid, reason
 
 
-def find_TRs(te, outputdir, polyA_path):
-    lenTR = 0
-    typeTR = ""
+def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA):
+    lenLTR = 0
+    lenTIR = 0
+    lenPolyA = 0
+
+    mismatches = minpolyA // 8
+    if te.seq[:minpolyA + mismatches].upper().count("A") >= minpolyA:
+        lenPolyA = max(lenPolyA, te.seq[:minpolyA + mismatches].upper().count("A") + len(
+            re.match("(.*?)[^A]", str(te.seq)[minpolyA:]).group()) - 2)
+    if te.seq[:minpolyA + mismatches].upper().count("T") >= minpolyA:
+        lenPolyA = max(lenPolyA, te.seq[:minpolyA + mismatches].upper().count("T") + len(
+            re.match("(.*?)[^T]", str(te.seq)[minpolyA:]).group()) - 2)
+    if te.seq[-(minpolyA + mismatches):].upper().count("A") >= minpolyA:
+        lenPolyA = max(lenPolyA, te.seq[-(minpolyA + mismatches):].upper().count("A") + len(
+            re.match("(.*?)[^A]", str(te.seq)[:len(te.seq) - minpolyA][::-1]).group()) - 2)
+    if te.seq[-(minpolyA + mismatches):].upper().count("T") >= minpolyA:
+        lenPolyA = max(lenPolyA, te.seq[-(minpolyA + mismatches):].upper().count("T") + len(
+            re.match("(.*?)[^T]", str(te.seq)[:len(te.seq) - minpolyA][::-1]).group()) - 2)
+
     seq_name = str(te.id).split("#")[0]
-    middle = int(len(str(te.seq)) / 2)
-    firstmid = SeqRecord(Seq(str(te.seq[0:middle])), id="fivePrime")
-    secondmid = SeqRecord(Seq(str(te.seq[middle:len(str(te.seq))])), id="threeprime")
-    write_sequences_file(te, outputdir + "/" + seq_name + ".fa")
-    write_sequences_file(firstmid, outputdir + "/" + seq_name + "_fiveprime.fa")
-    write_sequences_file(secondmid, outputdir + "/" + seq_name + "_threeprime.fa")
+    write_sequences_file(te, outputdir + "/temp/" + seq_name + ".fa")
+    output = subprocess.run(['makeblastdb', '-in',  outputdir + "/temp/" + seq_name + ".fa", '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
+    output = subprocess.run(["blastn -query " + outputdir + "/temp/" + seq_name + ".fa -db " + outputdir + "/temp/" + seq_name + ".fa -num_threads " + str(cores) + " -outfmt 6 -word_size 11 -gapopen 5 -gapextend 2 -reward 2 -penalty -3 | cut -f 1,7-10 | sed 's/#/-/g' > " + outputdir + "/temp/" + str(seq_name) + ".blast"], shell=True)
+    blastresult = pd.read_table(outputdir + "/temp/" + str(seq_name) + ".blast", sep='\t', names=['qseqid', 'qstart', 'qend', 'sstart', 'send'],  dtype={'qseqid': str, 'qstart': int, 'qend': int, 'sstart': int, 'send': int} )
+    if blastresult.shape[0] > 1:
+        blastresult = blastresult[1:]
+        blastresult["len"] = abs(blastresult["qend"] - blastresult["qstart"])
+        ltr_check = blastresult[(((blastresult.qend-blastresult.qstart) * (blastresult.send-blastresult.sstart)) > 0)
+                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].min(axis=1) < len(te) * 0.1)
+                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].max(axis=1) > len(te) * 0.9)]
+        try:
+            lenLTR = max(ltr_check[ltr_check.len >= minLTR].len)
+        except:
+            lenLTR = 0
+        tir_check = blastresult[(((blastresult.qend-blastresult.qstart) * (blastresult.send-blastresult.sstart)) < 0)
+                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].min(axis=1) < len(te) * 0.1)
+                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].max(axis=1) > len(te) * 0.9)]
+        try:
+            lenTIR = max(tir_check[tir_check.len >= minTIR].len)
+        except:
+            lenTIR = 0
 
-    output = subprocess.run(
-        ['makeblastdb', '-in', outputdir + "/" + seq_name + "_threeprime.fa", '-dbtype', 'nucl'],
-        stdout=subprocess.PIPE, text=True)
-
-    output = subprocess.run(
-        ['blastn', '-query', outputdir + "/" + seq_name + "_fiveprime.fa", '-db',
-         outputdir + "/" + seq_name + "_threeprime.fa", '-out',
-         outputdir + "/" + str(seq_name) + ".blast", '-num_threads', str(cores), "-outfmt", "6",
-         "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
-
-    blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
-                                names=['qseqid', 'sseqid', 'pident', 'length', 'mismatch', 'gapopen', 'qstart', 'qend',
-                                       'sstart', 'send', 'evalue', 'bitscore'])
-
-    if blastresult.shape[0] > 0:
-        lenTR = int(blastresult.loc[0, "qend"]) - int(blastresult.loc[0, "qstart"])
-        if lenTR > 10:
-            if int(blastresult.loc[0, "sstart"]) > int(blastresult.loc[0, "send"]):  # it's a TIR
-                typeTR = "termTIR"
-            else:
-                typeTR = "termLTR"
-    else:
-        # Here we need to put the PolyATail program
-        output = subprocess.run([polyA_path+'/polyAtail', outputdir + "/" + seq_name + ".fa"],
-                                stdout=subprocess.PIPE, text=True)
-        if "termPolyA" in output.stdout:
-            for line in output.stdout.split('\n'):
-                if "termPolyA" in line and "non-termPolyA" not in line:
-                    typeTR = "polyAtail"
-                    lenTR = int(line.split("|")[1].split("=")[1])
-
-    delete_files(outputdir + "/" + str(seq_name) + ".blast")
-    delete_files(outputdir + "/" + seq_name + ".fa")
-    if os.path.exists(outputdir + "/" + seq_name + ".fa.polyA.set"):
-        delete_files(outputdir + "/" + seq_name + ".fa.polyA.set")
-    delete_files(outputdir + "/" + seq_name + "_fiveprime.fa")
-    delete_files(outputdir + "/" + seq_name + "_threeprime.fa")
-    delete_files(outputdir + "/" + seq_name + "_threeprime.fa.nhr")
-    delete_files(outputdir + "/" + seq_name + "_threeprime.fa.nin")
-    delete_files(outputdir + "/" + seq_name + "_threeprime.fa.nsq")
-
-    return lenTR, typeTR
+    return lenLTR, lenTIR, lenPolyA
 
 
 def find_profiles(te, outputdir, ref_profiles):
@@ -441,9 +435,10 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
 
     # Run in parallel the checking
     pool = multiprocessing.Pool(processes=cores)
+    create_output_folders(outputdir + "/temp")
     localresults = [pool.apply_async(build_class_table,
                                      args=[tes[ini_per_thread[x]:end_per_thread[x]], ref_profiles, outputdir, blastn_db,
-                                           blastx_db, tools_path, do_blast]) for x in range(cores)]
+                                           blastx_db, do_blast]) for x in range(cores)]
 
     local_dfs = [p.get() for p in localresults]
     class_df = pd.DataFrame(
@@ -461,10 +456,11 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
         te.description = ""
         new_tes_user.append(te)
 
+    os.system("rm -r " + outputdir + "/temp")
     write_sequences_file(new_tes_user, outputdir + "/new_user_lib.fa")
 
 
-def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, tools_path, do_blast):
+def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do_blast):
     class_df = pd.DataFrame(
         columns=['Seq_name', 'length', 'strand', 'confused', 'class', 'order', 'Wcode', 'sFamily', 'CI', 'coding',
                  'struct', 'other'])
@@ -556,7 +552,7 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, to
             order = "Unclassified"
             sFamily = "Unclassified"
 
-        lenTR, typeTR = find_TRs(te, outputdir, tools_path)
+        lenLTR, lenTIR, lenPolyA = find_TRs2(te, outputdir, 10, 10, 10)
         profiles, struc_dom = find_profiles(te, outputdir, ref_profiles)
         if do_blast:
             blastx, blasttx = find_blast_hits(te, outputdir, blastx_db, blastn_db)
@@ -564,8 +560,15 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, to
             blastx, blasttx = "", ""
 
         terminals = ''
-        if lenTR > 0:
-            terminals = 'TermRepeats: ' + typeTR + ': ' + str(lenTR) + ';'
+        terminals_list = []
+        if lenLTR > 0:
+            terminals_list.append("termLTR: "+str(lenLTR))
+        if lenTIR > 0:
+            terminals_list.append("termTIR: "+str(lenTIR))
+        if lenPolyA > 0:
+            terminals_list.append("polyAtail: "+str(lenPolyA))
+        if len(terminals_list) > 0:
+            terminals = 'TermRepeats: ' + ' '.join(terminals_list) + ';'
 
         final_coding_string = ""
         if blasttx != "":
@@ -2443,8 +2446,8 @@ if __name__ == '__main__':
     elif not ext_nucl.isnumeric():
         print('FATAL ERROR: -e must be numeric, but I received: '+str(ext_nucl))
         sys.exit(0)
-    elif int(ext_nucl) < 1 or int(ext_nucl) > 1500:
-        print('FATAL ERROR: -e must be between 1 and 1500')
+    elif int(ext_nucl) < 1 or int(ext_nucl) > 5000:
+        print('FATAL ERROR: -e must be between 1 and 5000')
         sys.exit(0)
     else:
         ext_nucl = int(ext_nucl)
@@ -2460,6 +2463,12 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         num_ite = int(num_ite)
+    if genome is None:
+        print('FATAL ERROR: -g parameter must be specified')
+        sys.exit(0)
+    if not os.path.exists(genome):
+        print("FATAL ERROR: Genome file " + genome + " doesn't exist.")
+        sys.exit(0)
 
     ####################################################################################################################
     # Classified module
@@ -2479,12 +2488,6 @@ if __name__ == '__main__':
                 sys.exit(0)
             else:
                 automatic = automatic.upper()
-        if genome is None:
-            print('FATAL ERROR: -g parameter must be specified in for the classified module')
-            sys.exit(0)
-        if not os.path.exists(genome):
-            print("FATAL ERROR: Genome file " + genome + " doesn't exist.")
-            sys.exit(0)
         if input_type == None:
             print(
                 'FATAL ERROR: You need to specify the input type parameter (--input_type). Values can be fasta or repet')
@@ -2699,16 +2702,13 @@ if __name__ == '__main__':
         if module == 123 and (os.path.getsize(module3_seqs_file) == 0 or module3_seqs_file == ""):
             print("MESSAGE: There is no sequences to unclassified Module, skipping ...")
         else:
-            if module == 3 and input_type == "fasta":
-                flf_file = count_flf_fasta(module3_seqs_file, genome, cores, outputdir)
-            elif module == 3 and input_type == "repet":
+            if module == 3 and input_type == "repet":
                 if module == 3 and input_dir is None:
                     print('FATAL ERROR: -i parameter must be specified for the unclassified module')
                     sys.exit(0)
                 if module == 3 and proj_name is None:
                     print('FATAL ERROR: -n parameter must be specified for the unclassified module')
                     sys.exit(0)
-                flf_file = input_dir + "/TEannot/" + proj_name + "_chr_allTEs_nr_noSSR_join_path.annotStatsPerTE_FullLengthFrag.txt"
 
             if ref_library_module3 != "":
                 create_output_folders(outputdir + "/unclassifiedModule")
@@ -2719,7 +2719,7 @@ if __name__ == '__main__':
                 ########################################################################################################
                 if module == 3:
                     start_time = time.time()
-                    run_extension_by_saturation_parallel(genome, ref_tes, ext_nucl, num_ite,
+                    run_extension_by_saturation_parallel(genome, module3_seqs_file, ext_nucl, num_ite,
                                                          outputdir + "/unclassifiedModule/", max_nns, cores,
                                                          min_perc_model, min_cluster, max_sequences, cluster_factor,
                                                          group_outliers, min_plurality, end_threshold, max_num_subfamilies)
@@ -2729,13 +2729,38 @@ if __name__ == '__main__':
                             end_time - start_time) + " seconds]")
 
                     start_time = time.time()
-                    module3_seqs_file, num_copies = filter_flf(module3_seqs_file, flf_file, FLF_UNCLASS, outputdir + "/unclassifiedModule/")
-                    end_time = time.time()
                     extendedSeqs = outputdir + "/unclassifiedModule/extended_cons.fa"
+
+                    ########################################################################################################
+                    # Second step: Filter elements with not enough FLF copies in the genome
+                    ########################################################################################################
+                    flf_file = count_flf_fasta(extendedSeqs, genome, cores, outputdir)
+                    module3_seqs_file, num_copies = filter_flf(extendedSeqs, flf_file, FLF_UNCLASS, outputdir + "/unclassifiedModule/")
+                    end_time = time.time()
                     if verbose:
                         print("MESSAGE: The library was reduced to " + str(
                             len(list(SeqIO.parse(module3_seqs_file, 'fasta')))) + " after FLF filtering [" + str(
                             end_time - start_time) + " seconds]")
+
+                    ############################################################################################################
+                    # Third step: SSR, BUSCO genes, tRNA and rRNA filters
+                    ############################################################################################################
+                    start_time = time.time()
+                    module3_seqs_file, deleted_seqs = filter_bad_candidates(module3_seqs_file, perc_ssr,
+                                                                      outputdir + "/unclassifiedModule/", tools_path,
+                                                                      busco_library, rnas_db, cores)
+                    end_time = time.time()
+                    if verbose:
+                        print("MESSAGE: The library was reduced to " + str(len(list(
+                            SeqIO.parse(module3_seqs_file, 'fasta')))) + " after SSR, genes and RNA filtering [" + str(
+                            end_time - start_time) + " seconds]")
+
+                    if len(list(SeqIO.parse(module3_seqs_file, 'fasta'))) == 0:
+                        print(
+                            "FATAL ERROR: After filtering false positive TEs, there is no elements in the library.")
+                        sys.exit(0)
+
+
                 else:  # do not run BEE because it was run in Classified module
                     ########################################################################################################
                     # Second step: Filter elements with not enough FLF copies in the genome
