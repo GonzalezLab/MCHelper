@@ -16,6 +16,7 @@ Novelties:
   * Minor changes in some messages in the structural checking
   * Put the default value of -r parameter as A (All modules)
   * Improved the find_TRs method
+  * Added domains REP, OTU and RPA for Helitrons
 
 """
 
@@ -317,8 +318,10 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA):
 def find_profiles(te, outputdir, ref_profiles):
     # domains:      LTR retrotransposons/DIRS/LINE
     domains_dict = {'_GAG_': 0, '_AP_': 0, '_INT_': 0, '_RT_': 0, '_RNaseH_': 0, '_ENV_': 0,
-                    # PLE       TIRs         Helitron    Maverick
-                    '_EN_': 0, '_Tase_': 0, '_HEL_': 0, '_Prp': 0, '_ATPase_': 0}
+                    # PLE       TIRs         Helitron
+                    '_EN_': 0, '_Tase_': 0, '_HEL_': 0, '_RPA_': 0, '_REP_': 0, '_OTU_': 0, '_SET_': 0,
+                    # Maverick
+                    '_Prp': 0, '_ATPase_': 0}
     seq_name = str(te.id).split("#")[0]
     write_sequences_file(te, outputdir + "/" + seq_name + "_putative_te.fa")
 
@@ -598,28 +601,40 @@ def count_domains_by_order(profiles, order):
         right_doms = len(
             [x for x in profiles.split(",") if '_RT_' in x or '_EN_' in x or '_RNaseH_' in x or '_GAG_' in x])
         other_doms = len([x for x in profiles.split(",") if '_AP_' in x or '_INT_' in x or '_ENV_' in x or '_Tase_' in x
-                          or '_HEL_' in x or '_Prp' in x or '_ATPase_' in x])
+                          or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x
+                          or '_ATPase_' in x])
     elif order == "LTR":
         right_doms = len([x for x in profiles.split(",") if
                         '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x])
-        other_doms = len([x for x in profiles.split(",") if '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_Prp' in x or '_ATPase_' in x])
+        other_doms = len([x for x in profiles.split(",") if '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x
+                          or '_REP_' in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x])
+
+    elif order == "DIRS":
+        right_doms = len([x for x in profiles.split(",") if
+                        '_GAG_' in x or '_RT_' in x or '_RNaseH_' in x])
+        other_doms = len([x for x in profiles.split(",") if '_AP_' in x or '_INT_' in x or '_ENV_' in x or '_EN_' in x
+                          or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x or '_SET_'
+                          in x or '_Prp' in x or '_ATPase_' in x])
 
     elif order == "TIR":
         right_doms = len([x for x in profiles.split(",") if '_Tase_' in x])
-        other_doms = len([x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x
-                          or '_HEL_' in x or '_Prp' in x or '_ATPase_' in x])
+        other_doms = len([x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x
+                          or '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_'
+                          in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x])
 
     elif order == "HELITRON":
-        right_doms = len([x for x in profiles.split(",") if '_HEL_' in x])
+        right_doms = len([x for x in profiles.split(",") if '_HEL_' in x or '_EN_' in x or '_RPA_' in x or '_REP_' in x
+                          or '_OTU_' in x or '_SET_' in x])
         other_doms = len([x for x in profiles.split(",") if
-                          '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x
+                          '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x
                           or '_Tase_' in x or '_Prp' in x or '_ATPase_' in x])
 
     elif order == "MAVERICK":
         right_doms = len([x for x in profiles.split(",") if '_Prp' in x or '_ATPase_' in x])
         other_doms = len([x for x in profiles.split(",") if
-                          '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x
-                          or '_Tase_' in x or '_HEL_' in x])
+                          '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x
+                          or '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x
+                          or '_SET_' in x])
 
     return right_doms, other_doms
 
@@ -632,7 +647,8 @@ def inferring_domains(input_profiles):
         profiles = input_profiles[0]
         # Class I or II ?
         class2_doms = len(
-            [x for x in profiles.split(",") if '_Tase_' in x or '_HEL_' in x or '_Prp' in x or '_ATPase_' in x])
+            [x for x in profiles.split(",") if '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_'
+             in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x])
         class1_doms = len([x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or
                           '_RNaseH_' in x or '_ENV_' in x or '_EN_' ])
 
@@ -2851,6 +2867,8 @@ if __name__ == '__main__':
     # Debugging only !!!!
     if module in [3333]:
         print("Debugging....")
+        build_class_table_parallel(user_library, cores, outputdir,
+                                   blastn_db, blastx_db, tools_path, ref_profiles, False)
         run_te_aid_parallel(tools_path + "/TE-Aid-master/", genome, user_library, outputdir + "/", cores, min_perc_model)
 
     ####################################################################################################################
