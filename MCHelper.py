@@ -17,6 +17,7 @@ Novelties:
   * Put the default value of -r parameter as A (All modules)
   * Improved the find_TRs method
   * Added domains REP, OTU and RPA for Helitrons
+  * Corrected minor bug in copy's names (BEE)
 
 """
 
@@ -1726,11 +1727,11 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
                             if reverse is False:
                                 result_file.write(
                                     ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(
-                                        end_hit) + "\n" + scaff_seq[ini_hit:end_hit].lower() + "\n")
+                                        end_hit) + "_" + str(hit) + "\n" + scaff_seq[ini_hit:end_hit].lower() + "\n")
                             else:
                                 result_file.write(
-                                    ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_reversed\n" + str(
-                                        Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
+                                    ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_" + str(hit)
+                                    + "_reversed\n" + str(Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
                         else:
                             print(
                                 'WARNING: A subject id (sseqid in blast output file) was not found in the genome, please check:')
@@ -2178,11 +2179,11 @@ def run_te_aid(te_aid_path, genome, outputdir, tes, min_perc_model):
                     if reverse is False:
                         result_file.write(
                             ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(
-                                end_hit) + "\n" + scaff_seq[ini_hit:end_hit].lower() + "\n")
+                                end_hit) + "_" + str(hit) + "\n" + scaff_seq[ini_hit:end_hit].lower() + "\n")
                     else:
                         result_file.write(
-                            ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_reversed\n" + str(
-                                Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
+                            ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_" + str(hit)
+                            + "_reversed\n" + str(Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
                 else:
                     print(
                         'WARNING: A subject id (sseqid in blast output file) was not found in the genome, please check:')
