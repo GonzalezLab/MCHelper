@@ -18,6 +18,7 @@ Novelties:
   * Improved the find_TRs method
   * Added domains REP, OTU and RPA for Helitrons
   * Corrected minor bug in copy's names (BEE)
+  * Changed DBs used in BLASTn, BLASTx and tBLASTn in manual inspection to Dfam
 
 """
 
@@ -2287,8 +2288,8 @@ if __name__ == '__main__':
     tools_path = Installation_path + "/tools/"
     library_path = Installation_path + "/db/allDatabases.clustered_rename.fa"
     ref_profiles = Installation_path + "/db/Pfam35.0.hmm"
-    blastn_db = Installation_path + "/db/repbase20.05_ntSeq_cleaned_TE.fa"
-    blastx_db = Installation_path + "/db/repbase20.05_aaSeq_cleaned_TE.fa"
+    blastn_db = Installation_path + "/db/Dfam_3.7_curatedonly.fa"
+    blastx_db = Installation_path + "/db/Dfam_3.7_curatedonly_aa.fasta"
     rnas_db = Installation_path + "/db/rRNA_Eukaryota.hmm"
     minDomLTR = 3  # minimum number of domains to automatically kept an LTR retrotransposon in classified module
     minFLNA = 2  # minimum number of full length fragments of copies to automatically kept a non-autonomous element
