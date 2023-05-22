@@ -112,7 +112,7 @@ python3 MCHelper.py --help
 
 Full list of parameters include:
 * -h, --help            show this help message and exit
-* -r MODULE, --module MODULE:  module of curation [A, C, U, T, E]. Required*
+* -r MODULE, --module MODULE:  module of curation [A, C, U, T, E, M]. Required*
 * -i INPUT_DIR, --input INPUT_DIR:  Directory with the files required to do the curation (REPET output directory). Required*
 * -g GENOME, --genome GENOME: Genome used to detect the TEs. Required*
 * -o OUTPUTDIR, --output OUTPUTDIR: Path to the output directory. Required*
@@ -136,7 +136,7 @@ Full list of parameters include:
 
 MCHelper can be run in three different modes: Fully automatic (F), semi-automatic (S) and manual (M). The way you can control this is with the parameter **-a [F,S or M]**. Notice that the fully automatic mode will make all the decision by you and, at the end, will generate different outputs curated and non-curated sequences. In contrast, the semi-automatic mode runs the structural check and allows the user to inspect the consensus sequences that do not fit the structural requirements. The manual mode does not run the structural check and sends all the consensus sequences to manual inspection. 
 
-MCHelper is a modular pipeline (see figure below), which can be run in a integrated way or module by module. You can control this with the -r or --module parameter, indicating which of the four modules you want to run. **If you want to run the whole pipeline, select -r A**. Otherwise, if you want just run one of them, select the letter corresponding to the module (classified module=C, unclassified module=U, TE-Aid in parallel=T, and extension module=E).
+MCHelper is a modular pipeline (see figure below), which can be run in a integrated way or module by module. You can control this with the -r or --module parameter, indicating which of the four modules you want to run. **If you want to run the whole pipeline, select -r A**. Otherwise, if you want just run one of them, select the letter corresponding to the module (classified module=C, unclassified module=U, TE-Aid in parallel=T, extension module=E, Manual Inpection=M).
 
 <p align="center">
   <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_Flow.png">
