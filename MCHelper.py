@@ -296,6 +296,7 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA):
     output = subprocess.run(['makeblastdb', '-in',  outputdir + "/temp/" + seq_name + ".fa", '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
     output = subprocess.run(["blastn -query " + outputdir + "/temp/" + seq_name + ".fa -db " + outputdir + "/temp/" + seq_name + ".fa -num_threads " + str(cores) + " -outfmt 6 -word_size 11 -gapopen 5 -gapextend 2 -reward 2 -penalty -3 | cut -f 1,7-10 | sed 's/#/-/g' > " + outputdir + "/temp/" + str(seq_name) + ".blast"], shell=True)
     blastresult = pd.read_table(outputdir + "/temp/" + str(seq_name) + ".blast", sep='\t', names=['qseqid', 'qstart', 'qend', 'sstart', 'send'],  dtype={'qseqid': str, 'qstart': int, 'qend': int, 'sstart': int, 'send': int} )
+    blastHits = blastresult.shape[0]
     if blastresult.shape[0] > 1:
         blastresult = blastresult[1:]
         blastresult["len"] = abs(blastresult["qend"] - blastresult["qstart"])
@@ -314,7 +315,7 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA):
         except:
             lenTIR = 0
 
-    return lenLTR, lenTIR, lenPolyA
+    return lenLTR, lenTIR, lenPolyA, blastHits
 
 
 def find_profiles(te, outputdir, ref_profiles):
@@ -560,7 +561,7 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
             order = "Unclassified"
             sFamily = "Unclassified"
 
-        lenLTR, lenTIR, lenPolyA = find_TRs2(te, outputdir, 10, 10, 10)
+        lenLTR, lenTIR, lenPolyA, blastHits = find_TRs2(te, outputdir, 10, 10, 10)
         profiles, struc_dom = find_profiles(te, outputdir, ref_profiles)
         if do_blast:
             blastx, blasttx = find_blast_hits(te, outputdir, blastx_db, blastn_db)
@@ -589,12 +590,19 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
         if blastx == "" and blasttx == "" and profiles == "":
             final_coding_string = "NA"
 
+        ### Heuristcs to purge simple repeats and chimeric elements
+        other = 'other=(NA)'
+        if blastHits > 40:  ### MAGIC NUMBER; INCLUDE AS OPTIONAL PARAMETHER
+            other = 'SimpleRepeat?'
+        if lenLTR > length * 0.35:     ### MAGIC NUMBER; INCLUDE AS OPTIONAL PARAMETHER
+            other = 'Chimeric?'            
+
         class_df = pd.concat([class_df, pd.DataFrame(
             {'Seq_name': seq_name, 'length': [length], 'strand': '+', 'confused': 'False', 'class': classTE,
              'order': order, 'Wcode': 'NA', 'sFamily': sFamily, 'CI': [0],
              'coding': 'coding=(' + final_coding_string + ')',
              'struct': 'struct=(TElength: ' + str(length) + 'bps; ' + terminals + ' ' + struc_dom + ')',
-             'other': 'other=(NA)'})], ignore_index=True)
+             'other': other})], ignore_index=True)
 
     return class_df
 
