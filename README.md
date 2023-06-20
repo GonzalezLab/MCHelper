@@ -34,6 +34,7 @@ Now, unzip all the databases needed by MCHelper:
 ```
 cd MCHelper/db
 unzip '*.zip'
+conda activate MCHelper
 makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
 ```
 
@@ -50,7 +51,7 @@ And that's it. You have now installed MCHelper.
 <a name="testing"/>
 To test MCHelper, we provide some example inputs and also the expected results (located at Test_dir/) to allow you to compare with your own outputs. To check MCHelper is running properly, you can do:
 
-First, activate the anaconda enviroment:
+First, activate the anaconda enviroment, if it isn't activated yet:
 ```
 conda activate MCHelper
 ```
