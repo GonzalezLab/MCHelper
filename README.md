@@ -86,7 +86,7 @@ unzip Test_dir/fasta_input/Dmel_genome.zip -d Test_dir/fasta_input/
 
 mkdir Test_dir/fasta_output_own
 
-python3 MCHelper.py -r A -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output_own -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.fa -a F
+python3 MCHelper.py -r A -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output_own -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.hmm -a F
 ```
 ## Usage:
 <a name="usage"/>
