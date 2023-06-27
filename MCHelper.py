@@ -20,7 +20,7 @@ Novelties:
   * Corrected minor bug in copy's names (BEE)
   * Changed DBs used in BLASTn, BLASTx and tBLASTn in manual inspection to Dfam
   * Manual Inspection is now an independent module
-  # Fixed minor bugs (some function calls and the run_blast)
+  * Fixed minor bugs (some function calls and the run_blast)
 
 """
 
