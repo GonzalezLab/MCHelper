@@ -20,6 +20,7 @@ Novelties:
   * Corrected minor bug in copy's names (BEE)
   * Changed DBs used in BLASTn, BLASTx and tBLASTn in manual inspection to Dfam
   * Manual Inspection is now an independent module
+  # Fixed minor bugs (some function calls and the run_blast)
 
 """
 
@@ -272,7 +273,7 @@ def check_repet_input_folder(repet_input_dir, proj_name):
     return valid, reason
 
 
-def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA):
+def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA, cores):
     lenLTR = 0
     lenTIR = 0
     lenPolyA = 0
@@ -444,7 +445,7 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
         create_output_folders(outputdir + "/temp")
         localresults = [pool.apply_async(build_class_table,
                                          args=[tes[ini_per_thread[x]:end_per_thread[x]], ref_profiles, outputdir, blastn_db,
-                                               blastx_db, do_blast]) for x in range(cores)]
+                                               blastx_db, do_blast, cores]) for x in range(cores)]
 
         local_dfs = [p.get() for p in localresults]
         class_df = pd.DataFrame(
@@ -468,7 +469,7 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
         print("MESSAGE: TE Feature table was already created, please verify or change the output directory")
 
 
-def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do_blast):
+def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do_blast, cores):
     class_df = pd.DataFrame(
         columns=['Seq_name', 'length', 'strand', 'confused', 'class', 'order', 'Wcode', 'sFamily', 'CI', 'coding',
                  'struct', 'other'])
@@ -560,7 +561,7 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
             order = "Unclassified"
             sFamily = "Unclassified"
 
-        lenLTR, lenTIR, lenPolyA = find_TRs2(te, outputdir, 10, 10, 10)
+        lenLTR, lenTIR, lenPolyA = find_TRs2(te, outputdir, 10, 10, 10, cores)
         profiles, struc_dom = find_profiles(te, outputdir, ref_profiles)
         if do_blast:
             blastx, blasttx = find_blast_hits(te, outputdir, blastx_db, blastn_db)
@@ -1191,7 +1192,7 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
 
         # Step2 BLASTn with ref library
         start_time = time.time()
-        keep_seqs, orders = run_blast(library_path, ref_tes_bee, cores, 80, 80)
+        keep_seqs, orders = run_blast(library_path, ref_tes_bee, cores, 80, 80, 80)
         keep_auto += len(keep_seqs)
         for seq_id in keep_seqs:
             kept_seqs_record.append([x for x in SeqIO.parse(ref_tes_bee, "fasta") if x.id.split("#")[0] == seq_id][0])
@@ -1202,7 +1203,7 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
         # Step 3 Structural Check
         totalTEs = struc_table.shape[0]
         for i in range(struc_table.shape[0]):
-            status = -1
+            status = -1  # 0 = delete, 1 = keep, -1 = Manual Inspection
             if struc_table.at[i, "Seq_name"] not in keep_seqs and struc_table.at[i, "Seq_name"] in seqID_list:
                 codings = struc_table.at[i, "coding"].replace("coding=(", " ").replace(")", "")
                 codigs = codings.split(";")
@@ -1567,7 +1568,7 @@ def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold, num_
     return fasta_table_ite
 
 
-def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, outputdir, max_nns, cores, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies):
+def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, outputdir, minBlastHits, cores, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies):
     create_output_folders(outputdir)
 
     print('MESSAGE: Starting with BEE step ...')
@@ -1616,7 +1617,8 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
         localresults = [pool.apply_async(extension_by_saturation,
                                          args=[genome, fasta_table.loc[ini_per_thread[x]:end_per_thread[x]-1, :], exe_nucl,
                                                outputdir, min_perc_model, min_cluster, max_sequences,
-                                               cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies]) for x in range(cores)]
+                                               cluster_factor, group_outliers, min_plurality, end_threshold,
+                                               max_num_subfamilies, minBlastHits]) for x in range(cores)]
 
         localChecks = [p.get() for p in localresults]
         final_seqs = pd.DataFrame(columns=["seq", "cons_size", "class", "subfamilies", "end_l", "end_r"])
@@ -1667,7 +1669,7 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
     write_sequences_file(final_results, outputdir + "/extended_cons.fa")
 
 
-def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies):
+def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies, minBlastHits):
     fasta_table_ite = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
     if fasta_table.shape[0] > 0:
         fasta_table = fasta_table.reset_index()
@@ -1972,14 +1974,14 @@ def filter_bad_candidates(new_ref_tes, perc_ssr, outputdir, tools_path, busco_li
     return outputdir + "/putative_TEs.fa", deleted_seqs
 
 
-def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, internal_library):
+def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, min_len_unc, internal_library):
     # BLASTn with already curated TEs
     start_time = time.time()
     keep_seqs_records = []
-    keep_seqs, orders = run_blast(library_path, ref_tes, cores, perc_ident, perc_cover)
+    keep_seqs, orders = run_blast(library_path, ref_tes, cores, perc_ident, perc_cover, min_len_unc)
 
     # BLASTn with internal reference TE database
-    keep_seqs_internal, orders_internal = run_blast(internal_library, ref_tes, cores, perc_ident, perc_cover)
+    keep_seqs_internal, orders_internal = run_blast(internal_library, ref_tes, cores, perc_ident, perc_cover, min_len_unc)
 
     for te_index in range(len(keep_seqs_internal)):
         if keep_seqs_internal[te_index] not in keep_seqs:
@@ -2230,7 +2232,7 @@ def run_te_aid(te_aid_path, genome, outputdir, tes, min_perc_model):
     return status
 
 
-def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov):
+def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov, min_len):
     keep_seqs = []
     orders = []
 
@@ -2249,7 +2251,7 @@ def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov):
     blastresult = open(ref_tes + ".blast", "r").readlines()
 
     for hit in blastresult:
-        if hit.split("\t")[0].split("#")[0] not in keep_seqs:
+        if hit.split("\t")[0].split("#")[0] not in keep_seqs and int(hit.split("\t")[3]) >= min_len:
             blasted_order = hit.replace("?", "").split("\t")[1].split("#")[1]
             if "/" in blasted_order:
                 order_given = blasted_order.split("/")[0].upper()
@@ -2325,6 +2327,7 @@ if __name__ == '__main__':
     FLF_UNCLASS = 2  # minimum number of full length copies to consider a TE in unclassified module
     perc_ident = 70  # Percentage of identity to a known element to keep a TE in unclassified module
     perc_cover = 70  # Percentage of the hit coverage in the TE sequence to keep it in unclassified module
+    min_len_unc = 70  # Minimum length of a hit with a TE sequence to keep it in unclassified module
     ####################################################################################################################
 
     print("\n#########################################################################")
@@ -2376,7 +2379,7 @@ if __name__ == '__main__':
     parser.add_argument('-e', required=False, dest='ext_nucl',
                         help='Number of nucleotides to extend each size of the element. Default=500')
     parser.add_argument('-x', required=False, dest='num_ite',
-                        help='Number of iterations to extend the elements. Default=1')
+                        help='Number of iterations to extend the elements. Default=16')
     parser.add_argument('--version', action='version', version='MCHelper version 1.6.6')
 
 
@@ -2482,7 +2485,7 @@ if __name__ == '__main__':
         ext_nucl = int(ext_nucl)
 
     if num_ite is None:
-        num_ite = 1
+        num_ite = 16
         print("MESSAGE: Missing -x parameter, using by default: " + str(num_ite))
     elif not num_ite.isnumeric():
         print('FATAL ERROR: -x must be numeric, but I received: '+str(num_ite))
@@ -2633,7 +2636,7 @@ if __name__ == '__main__':
             ############################################################################################################
             if not os.path.exists(outputdir + "/classifiedModule/extended_cons.fa"):
                 start_time = time.time()
-                run_extension_by_saturation_parallel(genome, ref_tes_non_redundat, ext_nucl, num_ite, outputdir+ "/classifiedModule/", max_nns, cores,
+                run_extension_by_saturation_parallel(genome, ref_tes_non_redundat, ext_nucl, num_ite, outputdir+ "/classifiedModule/", minBlastHits, cores,
                                                          min_perc_model, min_cluster, max_sequences, cluster_factor,
                                                          group_outliers, min_plurality, end_threshold, max_num_subfamilies)
                 delete_files(outputdir + "/non_redundant_lib.fa")
@@ -2752,7 +2755,7 @@ if __name__ == '__main__':
                 if module == 3:
                     start_time = time.time()
                     run_extension_by_saturation_parallel(genome, module3_seqs_file, ext_nucl, num_ite,
-                                                         outputdir + "/unclassifiedModule/", max_nns, cores,
+                                                         outputdir + "/unclassifiedModule/", minBlastHits, cores,
                                                          min_perc_model, min_cluster, max_sequences, cluster_factor,
                                                          group_outliers, min_plurality, end_threshold, max_num_subfamilies)
                     end_time = time.time()
@@ -2821,7 +2824,7 @@ if __name__ == '__main__':
                 # Fourth step: process the sequences, BLASTn againts a given curated library, inferred classifications,
                 # and create outputs
                 ########################################################################################################
-                module3(extendedSeqs, ref_library_module3, cores, outputdir, perc_ident, perc_cover, library_path)
+                module3(extendedSeqs, ref_library_module3, cores, outputdir, perc_ident, perc_cover, min_len_unc, library_path)
             else:
                 if module == 123:
                     print("WARNING: Unclassified module didn't run because classified module didn't find any TE")
@@ -2850,7 +2853,7 @@ if __name__ == '__main__':
         ########################################################################################################
         create_output_folders(outputdir + "/bee_module/")
         run_extension_by_saturation_parallel(genome, ref_tes, ext_nucl, num_ite,
-                                             outputdir + "/bee_module/", max_nns, cores,
+                                             outputdir + "/bee_module/", minBlastHits, cores,
                                              min_perc_model, min_cluster, max_sequences, cluster_factor,
                                              group_outliers, min_plurality, end_threshold, max_num_subfamilies)
 
@@ -2913,7 +2916,7 @@ if __name__ == '__main__':
             input_type = input_type.lower()
 
         ########################################################################################################
-        # Checking that input is ok
+        # Checking that input is fine
         ########################################################################################################
         use_repet = True
         if input_type == 'repet':
