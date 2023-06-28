@@ -117,23 +117,23 @@ Full list of parameters include:
 * -i INPUT_DIR, --input INPUT_DIR:  Directory with the files required to do the curation (REPET output directory). Required*
 * -g GENOME, --genome GENOME: Genome used to detect the TEs. Required*
 * -o OUTPUTDIR, --output OUTPUTDIR: Path to the output directory. Required*
-* --te_aid TE_AID:       Do you want to use TE-aid? [Y or N]. Default=Y
-* -a AUTOMATIC:          Level of automation: F: fully automated, S: semi-automated, M: fully manual?. Default=F
+* --te_aid TE_AID:       Do you want to use TE-aid? [Y or N]. Default=Y.
+* -a AUTOMATIC:          Level of automation: F: fully automated, S: semi-automated, M: fully manual?. Default=F.
 * -n PROJ_NAME:          REPET project name. Required for repet input*
-* -t CORES:              cores to execute some steps in parallel. Default=all available cores
-* -j MODULE2_SEQS_FILE  Path to the sequences to be used in the extension module
-* -k MODULE3_SEQS_FILE  Path to the sequences to be used in the unclassified module
+* -t CORES:              cores to execute some steps in parallel. Default=all available cores.
+* -j MODULE2_SEQS_FILE  Path to the sequences to be used in the extension module.
+* -k MODULE3_SEQS_FILE  Path to the sequences to be used in the unclassified module.
 * -m REF_LIBRARY_UNCLASSIFIED_MODULE: Path to the sequences to be used as references in the unclassified module.
-* -v VERBOSE            Verbose? [Y or N]. Default=N
+* -v VERBOSE            Verbose? [Y or N]. Default=N.
 * --input_type INPUT_TYPE:  Input type: fasta or REPET.
 * -l USER_LIBRARY:       User defined library to be used with input type fasta.
 * -b BUSCO_LIBRARY:      Reference/BUSCO genes to filter out TEs (HMM format required).
 * -z MINBLASTHITS       Minimum number of blast hits to process an element.
 * -c MINFULLLFRAGMENTS:   Minimum number of full-length fragments to process an element. Default=1
-* -s PERC_SSR:           Maximum length covered by single repetitions (in percentage between 0-100) allowed for a TE not to be removed. Default=60
-* -e EXT_NUCL           Number of nucleotides to extend each size of the element. Default=1000
-* -x NUM_ITE            Number of iterations to extend the elements
-* --version             show program's version number and exit
+* -s PERC_SSR:           Maximum length covered by single repetitions (in percentage between 0-100) allowed for a TE not to be removed. Default=60.
+* -e EXT_NUCL           Number of nucleotides to extend each size of the element. Default=500.
+* -x NUM_ITE            Number of iterations to extend the elements. Default=16.
+* --version             show program's version number and exit.
 
 MCHelper can be run in three different modes: Fully automatic (F), semi-automatic (S) and manual (M). The way you can control this is with the parameter **-a [F,S or M]**. Notice that the fully automatic mode will make all the decision by you and, at the end, will generate different outputs curated and non-curated sequences. In contrast, the semi-automatic mode runs the structural check and allows the user to inspect the consensus sequences that do not fit the structural requirements. The manual mode does not run the structural check and sends all the consensus sequences to manual inspection. 
 
