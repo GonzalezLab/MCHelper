@@ -21,6 +21,9 @@ Novelties:
   * Changed DBs used in BLASTn, BLASTx and tBLASTn in manual inspection to Dfam
   * Manual Inspection is now an independent module
   * Fixed minor bugs (some function calls and the run_blast)
+  * Added (micro-)Satellites and chimeric evidences to structural checks
+  * Added column "Reason" to the feature table
+  * Added an attempt to use Unknown and DNA nomenclatures from Repbase/Dfam taxonomy
 
 """
 
@@ -195,6 +198,10 @@ def check_classification_Userlibrary(user_library, outputdir):
             ids_no_contained.append(te.id)
             reasons.append(
                 "The sequence ID doesn't have the character '#' needed to separate the ID to the classification")
+        elif len(str(te.id).split("#")[1].split("/")) > 3:
+            ids_no_contained.append(te.id)
+            reasons.append(
+                "The sequence ID has more than 3 levels of classification. I can work with the following formats:\n   1) Class/Order/Superfamily\n   2) Order/Superfamily\n   Class/Order\n   3) order or superfamily")
         else:
             classification = str(te.id).split("#")[1].upper().replace("-", "")
             if len(classification.split("/")) == 3:
@@ -209,13 +216,21 @@ def check_classification_Userlibrary(user_library, outputdir):
                 # the most incomplete but still fine to work with: only the order or superfamily is provided
                 order_given = classification
                 superfamily = "NA"
-            else:
-                ids_no_contained.append(te.id)
-                reasons.append(
-                    "The sequence ID has more than 3 levels of classification. I can work with the following formats: 1) Class/Order/Superfamily 2) Order/Superfamily or Class/Order or 3) order or superfamily")
+
             if superfamily not in orders_superfamilies and order_given not in orders_superfamilies:
-                ids_no_contained.append(te.id)
-                reasons.append(
+                # Maybe is it Repbase/Dfam taxonomy?
+                if "UNKNOWN" in classification:
+                    te.id = te.id.split("#")[0] + "#Unclassified"
+                    te.description = ""
+                    fine_tes.append(te)
+                elif "DNA" in classification:
+                    classification = classification.replace("DNA", "TIR")
+                    te.id = te.id.split("#")[0] + "#" + classification
+                    te.description = ""
+                    fine_tes.append(te)
+                else:
+                    ids_no_contained.append(te.id)
+                    reasons.append(
                         "The classification wasn't find in my classification system. Remember that I use the Wicker nomenclature.")
             else:
                 fine_tes.append(te)
@@ -297,6 +312,7 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA, cores):
     output = subprocess.run(['makeblastdb', '-in',  outputdir + "/temp/" + seq_name + ".fa", '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
     output = subprocess.run(["blastn -query " + outputdir + "/temp/" + seq_name + ".fa -db " + outputdir + "/temp/" + seq_name + ".fa -num_threads " + str(cores) + " -outfmt 6 -word_size 11 -gapopen 5 -gapextend 2 -reward 2 -penalty -3 | cut -f 1,7-10 | sed 's/#/-/g' > " + outputdir + "/temp/" + str(seq_name) + ".blast"], shell=True)
     blastresult = pd.read_table(outputdir + "/temp/" + str(seq_name) + ".blast", sep='\t', names=['qseqid', 'qstart', 'qend', 'sstart', 'send'],  dtype={'qseqid': str, 'qstart': int, 'qend': int, 'sstart': int, 'send': int} )
+    blastHits = blastresult.shape[0]
     if blastresult.shape[0] > 1:
         blastresult = blastresult[1:]
         blastresult["len"] = abs(blastresult["qend"] - blastresult["qstart"])
@@ -315,7 +331,7 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA, cores):
         except:
             lenTIR = 0
 
-    return lenLTR, lenTIR, lenPolyA
+    return lenLTR, lenTIR, lenPolyA, blastHits
 
 
 def find_profiles(te, outputdir, ref_profiles):
@@ -561,7 +577,7 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
             order = "Unclassified"
             sFamily = "Unclassified"
 
-        lenLTR, lenTIR, lenPolyA = find_TRs2(te, outputdir, 10, 10, 10, cores)
+        lenLTR, lenTIR, lenPolyA, blastHits = find_TRs2(te, outputdir, 10, 10, 10, cores)
         profiles, struc_dom = find_profiles(te, outputdir, ref_profiles)
         if do_blast:
             blastx, blasttx = find_blast_hits(te, outputdir, blastx_db, blastn_db)
@@ -590,12 +606,19 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
         if blastx == "" and blasttx == "" and profiles == "":
             final_coding_string = "NA"
 
+        ### Heuristcs to purge simple repeats and chimeric elements
+        other = 'other=NA'
+        if blastHits > 40:  ### MAGIC NUMBER; INCLUDE AS OPTIONAL PARAMETHER
+            other = 'other=Satellites/Simple Repeats found'
+        elif lenLTR > length * 0.35:  ### MAGIC NUMBER; INCLUDE AS OPTIONAL PARAMETHER
+            other = 'other=Chimeric evidence found'
+
         class_df = pd.concat([class_df, pd.DataFrame(
             {'Seq_name': seq_name, 'length': [length], 'strand': '+', 'confused': 'False', 'class': classTE,
              'order': order, 'Wcode': 'NA', 'sFamily': sFamily, 'CI': [0],
              'coding': 'coding=(' + final_coding_string + ')',
              'struct': 'struct=(TElength: ' + str(length) + 'bps; ' + terminals + ' ' + struc_dom + ')',
-             'other': 'other=(NA)'})], ignore_index=True)
+             'other': other})], ignore_index=True)
 
     return class_df
 
@@ -1202,6 +1225,7 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
 
         # Step 3 Structural Check
         totalTEs = struc_table.shape[0]
+        struc_table.loc[:, "Reason"] = [""]*totalTEs
         for i in range(struc_table.shape[0]):
             status = -1  # 0 = delete, 1 = keep, -1 = Manual Inspection
             if struc_table.at[i, "Seq_name"] not in keep_seqs and struc_table.at[i, "Seq_name"] in seqID_list:
@@ -1212,15 +1236,18 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
                 if str(struc_table.at[i, "class"]).upper() in ['UNCLASSIFIED', 'NA', 'NAN'] or str(struc_table.at[i, "order"]).upper() in ['UNCLASSIFIED', 'NA', 'NAN']:
                     seqs_to_module3.append(struc_table.at[i, "Seq_name"])
                     status = -3
+                    seqs_module3 += 1
+                    reason = "Sent to unclassified module due to its order is unclassified or unknown !"
                 else:
                     profiles = [cod for cod in codigs if "profiles:" in cod]
                     status, reason = decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copies, orders, minFLNA, kept_seqs_record, ref_tes_bee, automatic)
 
                 if status == 1:
                     keep_auto += 1
-                elif status != -3:
+                elif status == -1:
                     all_class = [x.replace("–", "").upper() for x in dicc_orders.values()]
                     seqs_to_mi.append(struc_table.at[i, "Seq_name"])
+
                     if str(struc_table.at[i, "sFamily"]).upper() != "NAN":
                         class_mod2 = all_class.index(str(struc_table.at[i, "sFamily"]).upper()) + 2
                     else:
@@ -1240,17 +1267,11 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
                         print(cod)
                     print(struc_table.at[i, "struct"])
                     print(struc_table.at[i, "other"])
-                    if status == 1:
-                        print(reason)
-                        print("---------------------------------------------------------------\n")
-                    elif status == -1:
-                        print(reason)
-                        print("---------------------------------------------------------------\n")
-                    elif status == -3:
-                        print("Sent to unclassified module due to its order is unclassified or unknown !")
-                        print("---------------------------------------------------------------\n")
-                        seqs_module3 += 1
+                    print(reason)
+                    print("---------------------------------------------------------------\n")
+
             else:
+                reason = "TE Kept because it has homology with our databases !"
                 if verbose:
                     codings = struc_table.at[i, "coding"].replace("coding=(", " ").replace(")", "")
                     codigs = codings.split(";")
@@ -1266,9 +1287,10 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
                         print(cod)
                     print(struc_table.at[i, "struct"])
                     print(struc_table.at[i, "other"])
-                    print("TE Kept because it has homology with our databases !")
+                    print(reason)
                     print("---------------------------------------------------------------\n")
             ele_number += 1
+            struc_table.loc[i, "Reason"] = reason
     else:
         ref_tes_bee = ref_tes
         start_time = time.time()
@@ -1334,6 +1356,7 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
     write_sequences_file(kept_seqs_record, outputdir + "/classifiedModule/kept_seqs_classified_module_curated.fa")
     write_sequences_file(non_curated, outputdir + "/classifiedModule/kept_seqs_classified_module_non_curated.fa")
     write_sequences_file(seqs_to_module3_record, outputdir + "/classifiedModule/input_to_unclassified_module_seqs.fa")
+    struc_table.to_csv(outputdir + "/classifiedModule/denovoLibTEs_PC.classif", header=True, sep='\t', index=False)
 
     delete_files(outputdir + "/classifiedModule/extended_cons.fa")
     delete_files(outputdir + "/classifiedModule/putative_TEs.fa")
