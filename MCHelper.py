@@ -24,6 +24,7 @@ Novelties:
   * Added (micro-)Satellites and chimeric evidences to structural checks
   * Added column "Reason" to the feature table
   * Added an attempt to use Unknown and DNA nomenclatures from Repbase/Dfam taxonomy
+  * Optimized the files created by blastn
 
 """
 
@@ -161,13 +162,9 @@ def count_flf_fasta(ref_tes, genome, cores, outputdir):
 
     output = subprocess.run(
         ['blastn', '-query', ref_tes, '-db', genome, '-out', outputdir + "/TEs_vs_genome.blast", '-num_threads',
-         str(cores),
-         "-outfmt", "6", "-evalue", "10e-8"], stdout=subprocess.PIPE, text=True)
+         str(cores), "-outfmt", "6 qseqid length", "-evalue", "10e-8"], stdout=subprocess.PIPE, text=True)
 
-    blastresult = pd.read_table(outputdir + "/TEs_vs_genome.blast", sep='\t',
-                                names=['qseqid', 'sseqid', 'pident',
-                                       'length', 'mismatch', 'gapopen', 'qstart', 'qend', 'sstart', 'send', 'evalue',
-                                       'bitscore'])
+    blastresult = pd.read_table(outputdir + "/TEs_vs_genome.blast", sep='\t', names=['qseqid', 'length'])
 
     for te in SeqIO.parse(ref_tes, "fasta"):
         seq_name = str(te.id).split("#")[0]
@@ -310,7 +307,7 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA, cores):
     seq_name = str(te.id).split("#")[0]
     write_sequences_file(te, outputdir + "/temp/" + seq_name + ".fa")
     output = subprocess.run(['makeblastdb', '-in',  outputdir + "/temp/" + seq_name + ".fa", '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
-    output = subprocess.run(["blastn -query " + outputdir + "/temp/" + seq_name + ".fa -db " + outputdir + "/temp/" + seq_name + ".fa -num_threads " + str(cores) + " -outfmt 6 -word_size 11 -gapopen 5 -gapextend 2 -reward 2 -penalty -3 | cut -f 1,7-10 | sed 's/#/-/g' > " + outputdir + "/temp/" + str(seq_name) + ".blast"], shell=True)
+    output = subprocess.run(["blastn -query " + outputdir + "/temp/" + seq_name + ".fa -db " + outputdir + "/temp/" + seq_name + ".fa -num_threads " + str(cores) + " -outfmt \"6 qseqid qstart qend sstart send\" -word_size 11 -gapopen 5 -gapextend 2 -reward 2 -penalty -3 | sed 's/#/-/g' > " + outputdir + "/temp/" + str(seq_name) + ".blast"], shell=True)
     blastresult = pd.read_table(outputdir + "/temp/" + str(seq_name) + ".blast", sep='\t', names=['qseqid', 'qstart', 'qend', 'sstart', 'send'],  dtype={'qseqid': str, 'qstart': int, 'qend': int, 'sstart': int, 'send': int} )
     blastHits = blastresult.shape[0]
     if blastresult.shape[0] > 1:
@@ -1708,13 +1705,12 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
                 output = subprocess.run(
                     ['blastn', '-query', outputdir + "/" + str(seq_name) + ".consensus.fasta", '-db',
                      genome, '-out', outputdir + "/" + str(seq_name) + ".blast", '-num_threads', "1",
-                     "-outfmt", "6", "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
+                     "-outfmt", "6 sseqid sstart send length pident bitscore", "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
                 delete_files(outputdir + "/" + str(seq_name) + ".consensus.fasta")
 
                 # Second step EXTRACT and EXTEND
                 blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
-                                            names=['qseqid', 'sseqid', 'pident', 'length', 'mismatch', 'gapopen',
-                                                   'qstart', 'qend', 'sstart', 'send', 'evalue', 'bitscore'])
+                                            names=['sseqid', 'sstart', 'send', 'length', 'pident', 'bitscore'])
                 blastresult = blastresult.sort_values(by=['bitscore', 'pident', 'length'],
                                                       ascending=[False, False, False])
                 delete_files(outputdir + "/" + str(seq_name) + ".blast")
@@ -2183,13 +2179,12 @@ def run_te_aid(te_aid_path, genome, outputdir, tes, min_perc_model):
         output = subprocess.run(
             ['blastn', '-query', outputdir + "/" + str(seq_name) + ".fa", '-db',
              genome, '-out', outputdir + "/" + str(seq_name) + ".blast", '-num_threads', "1",
-             "-outfmt", "6", "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
+             "-outfmt", "6 sseqid sstart send length", "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
         delete_files(outputdir + "/" + str(seq_name) + ".consensus.fasta")
 
         # Second step EXTRACT and EXTEND
         blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
-                                    names=['qseqid', 'sseqid', 'pident', 'length', 'mismatch', 'gapopen',
-                                           'qstart', 'qend', 'sstart', 'send', 'evalue', 'bitscore'])
+                                    names=['sseqid', 'sstart', 'send', 'length'])
 
         result_file = open(outputdir + "/" + str(seq_name) + ".copies.fa", "w")
         hit = 0
@@ -2266,15 +2261,16 @@ def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov, min_len):
     if not os.path.exists(ref_tes + ".blast"):
         output = subprocess.run(
             ['blastn', '-query', ref_tes, '-db', library_path, '-out', ref_tes + ".blast", '-num_threads', str(cores),
-             "-outfmt", "6", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity), "-max_hsps", "1"],
+             "-outfmt", "6 qseqid sseqid length", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity), "-max_hsps", "1"],
             stdout=subprocess.PIPE, text=True)
     else:
         print("WARNING: Blast output already exists, skipping BLASTn....")
 
+    # BLAST tabular optimized format: qseqid sseqid length
     blastresult = open(ref_tes + ".blast", "r").readlines()
 
     for hit in blastresult:
-        if hit.split("\t")[0].split("#")[0] not in keep_seqs and int(hit.split("\t")[3]) >= min_len:
+        if hit.split("\t")[0].split("#")[0] not in keep_seqs and int(hit.split("\t")[2]) >= min_len:
             blasted_order = hit.replace("?", "").split("\t")[1].split("#")[1]
             if "/" in blasted_order:
                 order_given = blasted_order.split("/")[0].upper()
@@ -2756,7 +2752,12 @@ if __name__ == '__main__':
         elif module == 3 and not os.path.exists(busco_library):
             print("FATAL ERROR: Reference/BUSCO genes file " + busco_library + " doesn't exist.")
             sys.exit(0)
-
+        if automatic is not None:
+            if automatic.upper() not in ['F', 'S', 'M']:
+                print('FATAL ERROR: automation level (-a) must be F, S or M (see help.)')
+                sys.exit(0)
+            else:
+                automatic = automatic.upper()
         if module == 123 and (os.path.getsize(module3_seqs_file) == 0 or module3_seqs_file == ""):
             print("MESSAGE: There is no sequences to unclassified Module, skipping ...")
         else:
