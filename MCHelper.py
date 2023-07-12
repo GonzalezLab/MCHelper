@@ -1710,7 +1710,7 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
 
                 # Second step EXTRACT and EXTEND
                 blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
-                                            names=['sseqid', 'sstart', 'send', 'length', 'pident', 'bitscore'])
+                                        names=['sseqid', 'sstart', 'send', 'length', 'pident', 'bitscore'], nrows=200)
                 blastresult = blastresult.sort_values(by=['bitscore', 'pident', 'length'],
                                                       ascending=[False, False, False])
                 delete_files(outputdir + "/" + str(seq_name) + ".blast")
@@ -2184,7 +2184,7 @@ def run_te_aid(te_aid_path, genome, outputdir, tes, min_perc_model):
 
         # Second step EXTRACT and EXTEND
         blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
-                                    names=['sseqid', 'sstart', 'send', 'length'])
+                                    names=['sseqid', 'sstart', 'send', 'length'], nrows=200)
 
         result_file = open(outputdir + "/" + str(seq_name) + ".copies.fa", "w")
         hit = 0
