@@ -50,6 +50,9 @@ import time
 import numpy as np
 import math
 from sklearn.cluster import DBSCAN
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 
 dicc_orders = {2: "LTR", 3: "COPIA", 4: "GYPSY", 5: "BELPAO", 6: "TRIM", 7: "LARD", 8: "LINE", 9: "SINE", 10: "R2",
                11: "RTE", 12: "JOCKEY", 13: "L1", 14: "I",  15: "PLE", 16: "DIRS", 17: "TIR", 18: "MITE",
