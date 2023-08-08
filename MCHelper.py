@@ -50,9 +50,6 @@ import time
 import numpy as np
 import math
 from sklearn.cluster import DBSCAN
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
 
 dicc_orders = {2: "LTR", 3: "COPIA", 4: "GYPSY", 5: "BELPAO", 6: "TRIM", 7: "LARD", 8: "LINE", 9: "SINE", 10: "R2",
                11: "RTE", 12: "JOCKEY", 13: "L1", 14: "I",  15: "PLE", 16: "DIRS", 17: "TIR", 18: "MITE",
@@ -249,7 +246,7 @@ def check_classification_Userlibrary(user_library, outputdir):
 def check_repet_input_folder(repet_input_dir, proj_name):
     ref_tes = repet_input_dir + "/" + proj_name + "_refTEs.fa"
     # flf_file = repet_input_dir + "/TEannot/" + proj_name + "_chr_allTEs_nr_noSSR_join_path.annotStatsPerTE_FullLengthFrag.txt"
-    repet_table = repet_input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
+    features_table = repet_input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
     plots_dir = repet_input_dir + "/plotCoverage"
     gff_files = repet_input_dir + "/gff_reversed"
 
@@ -268,12 +265,12 @@ def check_repet_input_folder(repet_input_dir, proj_name):
     #elif os.path.getsize(flf_file) == 0:
     #    valid = False
     #    reason = "FATAL ERROR: "+flf_file+" is empty. Please check the file and re-run the software"
-    elif not os.path.exists(repet_table):
+    elif not os.path.exists(features_table):
         valid = False
-        reason = "FATAL ERROR: "+repet_table+" does not exist. Please check the path and re-run the software"
-    elif os.path.getsize(repet_table) == 0:
+        reason = "FATAL ERROR: "+features_table+" does not exist. Please check the path and re-run the software"
+    elif os.path.getsize(features_table) == 0:
         valid = False
-        reason = "FATAL ERROR: "+repet_table+" is empty. Please check the file and re-run the software"
+        reason = "FATAL ERROR: "+features_table+" is empty. Please check the file and re-run the software"
     elif not os.path.exists(plots_dir):
         valid = False
         reason = "FATAL ERROR: "+plots_dir+" does not exist. Please check the path and re-run the software"
@@ -2580,7 +2577,7 @@ if __name__ == '__main__':
 
             if input_valid:
                 ref_tes = input_dir + "/" + proj_name + "_refTEs.fa"
-                repet_table = input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
+                features_table = input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
                 plots_dir = input_dir + "/plotCoverage"
                 gff_files = input_dir + "/gff_reversed"
             else:
@@ -2603,7 +2600,7 @@ if __name__ == '__main__':
                         do_blast = True
                     else:
                         do_blast = False
-                repet_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
+                features_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
 
             else:
                 print(
@@ -2625,7 +2622,7 @@ if __name__ == '__main__':
             # If repet, we need to include the classification info into the library
             if use_repet:
                 rename_tes = []
-                struc_table = pd.read_csv(repet_table, sep='\t')
+                struc_table = pd.read_csv(features_table, sep='\t')
                 for i in range(struc_table.shape[0]):
                     is_in_lib = [x for x in SeqIO.parse(ref_tes, "fasta") if
                                  str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]]
@@ -2962,7 +2959,7 @@ if __name__ == '__main__':
 
             if input_valid:
                 ref_tes = input_dir + "/" + proj_name + "_refTEs.fa"
-                repet_table = input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
+                features_table = input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
                 plots_dir = input_dir + "/plotCoverage"
                 gff_files = input_dir + "/gff_reversed"
             else:
@@ -2985,7 +2982,7 @@ if __name__ == '__main__':
                         do_blast = True
                     else:
                         do_blast = False
-                repet_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
+                features_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
 
             else:
                 print(
