@@ -25,6 +25,8 @@ Novelties:
   * Added column "Reason" to the feature table
   * Added an attempt to use Unknown and DNA nomenclatures from Repbase/Dfam taxonomy
   * Optimized the files created by blastn
+  * Added domains INT, and AP for Mavericks
+  * Added superfamilies: ERV, R1, CR1, LOA, L2, MULE, CMC, Ngaro, Viper
 
 """
 
@@ -51,11 +53,11 @@ import numpy as np
 import math
 from sklearn.cluster import DBSCAN
 
-dicc_orders = {2: "LTR", 3: "COPIA", 4: "GYPSY", 5: "BELPAO", 6: "TRIM", 7: "LARD", 8: "LINE", 9: "SINE", 10: "R2",
-               11: "RTE", 12: "JOCKEY", 13: "L1", 14: "I",  15: "PLE", 16: "DIRS", 17: "TIR", 18: "MITE",
-               19: "TC1MARINER",  20: "HAT", 21: "MUTATOR", 22: "MERLIN", 23: "TRANSIB", 24: "P", 25: "PIGGYBAC",
-               26: "PIFHARBINGER",  27: "CACTA", 28: "HELITRON", 29: "MAVERICK", 30: "CRYPTON", 31: "UNCLASSIFIED",
-               32: "CLASSI", 33: "CLASSII"}
+dicc_orders = {2: "LTR", 3: "COPIA", 4: "GYPSY", 5: "BELPAO", 6: "ERV", 7: "TRIM", 8: "LARD", 9: "LINE", 10: "SINE",
+               11: "R2", 12: "RTE", 13: "JOCKEY", 14: "L1", 15: "I", 16: "R1", 17: "CR1", 18: "LOA", 19: "L2",  20: "PLE",
+               21: "DIRS", 22: "NGARO", 23: "VIPER", 24: "TIR", 25: "MITE", 26: "TC1MARINER",  27: "HAT", 28: "MUTATOR",
+               29: "MERLIN", 30: "TRANSIB", 31: "P", 32: "PIGGYBAC", 33: "PIFHARBINGER",  34: "CACTA", 35: "MULE",
+               36: "CMC", 37: "HELITRON", 38: "MAVERICK", 39: "CRYPTON", 40: "UNCLASSIFIED", 41: "CLASSI", 42: "CLASSII"}
 
 orders_superfamilies = [x for x in dicc_orders.values()]
 
@@ -79,8 +81,6 @@ def create_output_folders(folder_path):
     try:
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
-        """else:
-            print("WARNING: the folder " + folder_path + " already exists, I won't create it")"""
     except FileNotFoundError:
         print("FATAL ERROR: I couldn't create the folder " + folder_path + ". Path not found")
         sys.exit(0)
@@ -487,9 +487,9 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
         columns=['Seq_name', 'length', 'strand', 'confused', 'class', 'order', 'Wcode', 'sFamily', 'CI', 'coding',
                  'struct', 'other'])
     orders = ['LTR', 'TRIM', 'LARD', 'LINE', 'SINE', 'PLE', 'DIRS', 'TIR', 'MITE', 'HELITRON', 'MAVERICK', 'CRYPTON']
-    superfamilies = ["COPIA", "GYPSY", "BELPAO", "PLE", "DIRS", "R2", "RTE", "JOCKEY", "L1", "I", 'SINE', "TC1MARINER",
-                     "HAT", "MUTATOR", "MERLIN", "TRANSIB", "P", "PIGGYBAC", "PIFHARBINGER", "CACTA", "MITE",
-                     "HELITRON", "MAVERICK", "CRYPTON"]
+    superfamilies = ["COPIA", "GYPSY", "BELPAO", "ERV", "PLE", "DIRS", "NGARO", "VIPER", "R2", "RTE", "JOCKEY", "L1",
+                     "I", "R1", "CR1", "LOA", "L2", "SINE", "TC1MARINER", "HAT", "MUTATOR", "MERLIN", "TRANSIB", "P",
+                     "PIGGYBAC", "PIFHARBINGER", "CACTA", "MULE", "CMC", "MITE", "HELITRON", "MAVERICK", "CRYPTON"]
     classes = ["CLASSI", "CLASSII", "RETROTRANSPOSON", "TRANSPOSON"]
     for te in ref_tes:
         seq_name = str(te.id).split("#")[0]
@@ -530,28 +530,28 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
             sFamily = superfamily
             order = ""
             sFamily_index = superfamilies.index(superfamily)
-            if sFamily_index <= 2:
+            if sFamily_index <= 3:
                 order = "LTR"
-            elif sFamily_index == 3:
-                order = "PLE"
             elif sFamily_index == 4:
+                order = "PLE"
+            elif sFamily_index >= 5 and sFamily_index <= 7:
                 order = "DIRS"
-            elif sFamily_index >= 5 and sFamily_index <= 9:
+            elif sFamily_index >= 8 and sFamily_index <= 16:
                 order = "LINE"
-            elif sFamily_index == 10:
+            elif sFamily_index == 17:
                 order = "SINE"
-            elif sFamily_index >= 11 and sFamily_index <= 19:
+            elif sFamily_index >= 18 and sFamily_index <= 28:
                 order = "TIR"
-            elif sFamily_index == 20:
+            elif sFamily_index == 29:
                 order = "MITE"
-            elif sFamily_index == 21:
+            elif sFamily_index == 30:
                 order = "Helitron"
-            elif sFamily_index == 22:
+            elif sFamily_index == 31:
                 order = "Maverick"
-            elif sFamily_index == 23:
+            elif sFamily_index == 32:
                 order = "Crypton"
 
-            if sFamily_index <= 10:
+            if sFamily_index <= 17:
                 classTE = "CLASSI"
             else:
                 classTE = "CLASSII"
@@ -656,7 +656,7 @@ def count_domains_by_order(profiles, order):
                           or '_Tase_' in x or '_Prp' in x or '_ATPase_' in x])
 
     elif order == "MAVERICK":
-        right_doms = len([x for x in profiles.split(",") if '_Prp' in x or '_ATPase_' in x])
+        right_doms = len([x for x in profiles.split(",") if '_Prp' in x or '_ATPase_' in x or '_INT_' in x or '_AP_' in x])
         other_doms = len([x for x in profiles.split(",") if
                           '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x
                           or '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x
@@ -855,20 +855,22 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
                     reason = "It's a MITE !!! Kept for having TIRs, no domains and at least " + str(
                         minFLNA) + " full-length fragments or copies !"
                     status = 1
+                else:
+                    status = -1
+                    if automatic != 'F':
+                        reason = "Sent to manual inspection because having TIRs, no domains but less than " + str(
+                        minFLNA) + " full-length fragments or copies !"
+                    else:
+                        reason = "Marked as incomplete TE because having TIRs, no domains but less than " + str(
+                        minFLNA) + " full-length fragments or copies !"
         else:
             # no profiles and no TIRs
-            if len(profiles) == 0:
-                status = -1
-                if automatic != 'F':
-                    reason = "Sent to manual inspection for don't having TIRs neither domains !"
-                else:
-                    reason = "Marked as incomplete TE for don't having TIRs neither domains !"
+            status = -1
+            if automatic != 'F':
+                reason = "Sent to manual inspection for don't having TIRs neither domains !"
             else:
-                if automatic != 'F':
-                    reason = "Sent to manual inspection for don't having TIRs and for having domains !"
-                else:
-                    reason = "Marked as incomplete TE for don't having TIRs and for having domains !"
-                status = -1
+                reason = "Marked as incomplete TE for don't having TIRs neither domains !"
+
     elif str(struc_table.at[i, "order"]).upper() == 'CRYPTON':
         # manual inspection in classified module
         status = -1
@@ -1114,18 +1116,19 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                     else:
                         current_clas = orders_superfamilies.index("UNCLASSIFIED") + 2
                     keep = input(
-                            "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: LTR-Copia, 4: LTR-Gypsy, 5: LTR-Bel_pao,"
-                            " 6: TRIM, 7: LARD, 8: LINE, 9: SINE, 10: R2,11: RTE, 12: JOCKEY, 13: L1, 14: I,  "
-                            "15: PLE, 16: DIRS, 17: TIR, 18: MITE, 19: TC1MARINER,  20: HAT, 21: MUTATOR, 22: MERLIN,"
-                            "23: TRANSIB, 24: P, 25: PIGGYBAC, 26: PIFHARBINGER,  27: CACTA, 28: HELITRON, 29: MAVERICK,"
-                            "30: CRYPTON, 31: UNCLASSIFIED/UNKNOWN, 32: CLASSI, 33: CLASSII] ") or current_clas
+                            "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: COPIA, 4: "
+                    "GYPSY, 5: BELPAO, 6: ERV, 7: TRIM, 8: LARD, 9: LINE, 10: SINE, 11: R2, 12: RTE, 13: JOCKEY, 14: L1,"
+                    " 15: I, 16: R1, 17: CR1, 18: LOA, 19: L2, 20: PLE, 21: DIRS, 22: NGARO, 23: VIPER, 24: TIR, 25: MITE"
+                    ", 26: TC1MARINER,  27: HAT, 28: MUTATOR, 29: MERLIN, 30: TRANSIB, 31: P, 32: PIGGYBAC, 33: PIFHARBINGER,"
+                    "  34: CACTA, 35: MULE, 36: CMC, 37: HELITRON, 38: MAVERICK, 39: CRYPTON, 40: UNCLASSIFIED, 41: "
+                    "CLASSI, 42: CLASSII] ") or current_clas
                     keep = int(keep)
                 except ValueError:
                     keep = -1
 
-                while keep < 1 or keep > 34:
+                while keep < 1 or keep > 43:
                     try:
-                        print('You must indicate a number between 1 and 33.')
+                        print('You must indicate a number between 1 and 43.')
                         if str(struc_table.at[i, "sFamily"]) in orders_superfamilies:
                             current_clas = orders_superfamilies.index(str(struc_table.at[i, "sFamily"])) + 2
                         elif str(struc_table.at[i, "order"]) in orders_superfamilies:
@@ -1135,15 +1138,16 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                         else:
                             current_clas = orders_superfamilies.index("UNCLASSIFIED") + 2
                         keep = input(
-                                "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: LTR-Copia, 4: LTR-Gypsy, 5: LTR-Bel_pao,"
-                                " 6: TRIM, 7: LARD, 8: LINE, 9: SINE, 10: R2,11: RTE, 12: JOCKEY, 13: L1, 14: I,  "
-                                "15: PLE, 16: DIRS, 17: TIR, 18: MITE, 19: TC1MARINER,  20: HAT, 21: MUTATOR, 22: MERLIN,"
-                                "23: TRANSIB, 24: P, 25: PIGGYBAC, 26: PIFHARBINGER,  27: CACTA, 28: HELITRON, 29: MAVERICK,"
-                                "30: CRYPTON, 31: UNCLASSIFIED/UNKNOWN, 32: CLASSI, 33: CLASSII] ") or current_clas
+                                "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: COPIA, 4: "
+                    "GYPSY, 5: BELPAO, 6: ERV, 7: TRIM, 8: LARD, 9: LINE, 10: SINE, 11: R2, 12: RTE, 13: JOCKEY, 14: L1,"
+                    " 15: I, 16: R1, 17: CR1, 18: LOA, 19: L2, 20: PLE, 21: DIRS, 22: NGARO, 23: VIPER, 24: TIR, 25: MITE"
+                    ", 26: TC1MARINER,  27: HAT, 28: MUTATOR, 29: MERLIN, 30: TRANSIB, 31: P, 32: PIGGYBAC, 33: PIFHARBINGER,"
+                    "  34: CACTA, 35: MULE, 36: CMC, 37: HELITRON, 38: MAVERICK, 39: CRYPTON, 40: UNCLASSIFIED, 41: "
+                    "CLASSI, 42: CLASSII] ") or current_clas
                         keep = int(keep)
                     except ValueError:
                         keep = -1
-                if keep == 31:
+                if keep == 41:
                     seqs_to_module3.append(struc_table.at[i, "Seq_name"])
                 elif keep > 1:
                     keep_seqs.append(struc_table.at[i, "Seq_name"])
@@ -1306,19 +1310,21 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
     for index in range(len(kept_seqs_record)):
         # put the order having the superfamily
         classification = dicc_orders[orders[index]]
-        if orders[index] >= 3 and orders[index] <= 7:
+        if orders[index] >= 3 and orders[index] <= 8:
             classification = "LTR/" + classification
-        elif orders[index] >= 10 and orders[index] <= 14:
+        elif orders[index] >= 11 and orders[index] <= 19:
             classification = "LINE/" + classification
-        elif orders[index] >= 19 and orders[index] <= 27:
+        elif orders[index] >= 21 and orders[index] <= 23:
+            classification = "DIRS/" + classification
+        elif orders[index] >= 27 and orders[index] <= 36:
             classification = "TIR/" + classification
-        elif orders[index] == 31:
+        elif orders[index] == 40:
             classification = "UNCLASSIFIED"
 
         # put the class having the order/superfamily
-        if orders[index] >= 2 and orders[index] <= 16:
+        if orders[index] >= 2 and orders[index] <= 23:
             classification = "CLASSI/" + classification
-        elif orders[index] >= 17 and orders[index] <= 30:
+        elif orders[index] >= 24 and orders[index] <= 39:
             classification = "CLASSII/" + classification
 
         new_name = keep_seqs[index] + "#" + classification
@@ -1328,19 +1334,21 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
     for index in range(len(non_curated)):
         # put the order having the superfamily
         classification = dicc_orders[orders_incomplete[index]]
-        if orders_incomplete[index] >= 3 and orders_incomplete[index] <= 7:
+        if orders_incomplete[index] >= 3 and orders_incomplete[index] <= 8:
             classification = "LTR/" + classification
-        elif orders_incomplete[index] >= 10 and orders_incomplete[index] <= 14:
+        elif orders_incomplete[index] >= 11 and orders_incomplete[index] <= 19:
             classification = "LINE/" + classification
-        elif orders_incomplete[index] >= 19 and orders_incomplete[index] <= 27:
+        elif orders_incomplete[index] >= 21 and orders_incomplete[index] <= 23:
+            classification = "DIRS/" + classification
+        elif orders_incomplete[index] >= 27 and orders_incomplete[index] <= 36:
             classification = "TIR/" + classification
-        elif orders_incomplete[index] == 31:
+        elif orders_incomplete[index] == 40:
             classification = "UNCLASSIFIED"
 
         # put the class having the order/superfamily
-        if orders_incomplete[index] >= 2 and orders_incomplete[index] <= 16:
+        if orders_incomplete[index] >= 2 and orders_incomplete[index] <= 23:
             classification = "CLASSI/" + classification
-        elif orders_incomplete[index] >= 17 and orders_incomplete[index] <= 30:
+        elif orders_incomplete[index] >= 24 and orders_incomplete[index] <= 39:
             classification = "CLASSII/" + classification
 
         new_name = str(non_curated[index].id).split("#")[0] + "#" + classification
@@ -2053,19 +2061,21 @@ def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, min
     for index in range(len(keep_seqs_records)):
         # put the order having the superfamily
         classification = dicc_orders[orders[index]]
-        if orders[index] >= 3 and orders[index] <= 7:
+        if orders[index] >= 3 and orders[index] <= 8:
             classification = "LTR/" + classification
-        elif orders[index] >= 10 and orders[index] <= 14:
+        elif orders[index] >= 11 and orders[index] <= 19:
             classification = "LINE/" + classification
-        elif orders[index] >= 19 and orders[index] <= 27:
+        elif orders[index] >= 21 and orders[index] <= 23:
+            classification = "DIRS/" + classification
+        elif orders[index] >= 26 and orders[index] <= 36:
             classification = "TIR/" + classification
-        elif orders[index] == 31:
+        elif orders[index] == 40:
             classification = "UNCLASSIFIED"
 
         # put the class having the order/superfamily
-        if orders[index] >= 2 and orders[index] <= 16:
+        if orders[index] >= 2 and orders[index] <= 23:
             classification = "CLASSI/" + classification
-        elif orders[index] >= 17 and orders[index] <= 30:
+        elif orders[index] >= 24 and orders[index] <= 39:
             classification = "CLASSII/" + classification
 
         new_name = keep_seqs_records[index].id + "#" + classification
@@ -2433,7 +2443,7 @@ if __name__ == '__main__':
         module = 123
         print("MESSAGE: Missing module (-r) parameter, using by default: " + module_user)
     elif module_user.upper() not in ['A', 'C', 'U', 'E', 'T', 'M', '3333']:  # 3333 for debugging only
-        print('FATAL ERROR: module (-r parameter) must be A (all steps), C (classified module), U (unclassified module), E (BEE extension), T (TE_Aid in parallel) or M (Manual Inspection)')
+        print('FATAL ERROR: module (-r parameter) must be A (all steps), C (only classified TEs), U (TE classification module), E (Consensus extension module), T (TE_Aid in parallel) or M (Manual Inspection module)')
         sys.exit(0)
     else:
         if module_user.upper() == 'A':
@@ -3022,19 +3032,21 @@ if __name__ == '__main__':
         for index in range(len(kept_seqs_record)):
             # put the order having the superfamily
             classification = dicc_orders[orders[index]]
-            if orders[index] >= 3 and orders[index] <= 7:
+            if orders[index] >= 3 and orders[index] <= 8:
                 classification = "LTR/" + classification
-            elif orders[index] >= 10 and orders[index] <= 14:
+            elif orders[index] >= 11 and orders[index] <= 19:
                 classification = "LINE/" + classification
-            elif orders[index] >= 19 and orders[index] <= 27:
+            elif orders[index] >= 21 and orders[index] <= 23:
+                classification = "DIRS/" + classification
+            elif orders[index] >= 26 and orders[index] <= 36:
                 classification = "TIR/" + classification
-            elif orders[index] == 31:
+            elif orders[index] == 40:
                 classification = "UNCLASSIFIED"
 
             # put the class having the order/superfamily
-            if orders[index] >= 2 and orders[index] <= 16:
+            if orders[index] >= 2 and orders[index] <= 23:
                 classification = "CLASSI/" + classification
-            elif orders[index] >= 17 and orders[index] <= 30:
+            elif orders[index] >= 24 and orders[index] <= 39:
                 classification = "CLASSII/" + classification
 
             new_name = keep_seqs[index] + "#" + classification
@@ -3044,19 +3056,21 @@ if __name__ == '__main__':
         for index in range(len(non_curated)):
             # put the order having the superfamily
             classification = dicc_orders[orders_incomplete[index]]
-            if orders_incomplete[index] >= 3 and orders_incomplete[index] <= 7:
+            if orders_incomplete[index] >= 3 and orders_incomplete[index] <= 8:
                 classification = "LTR/" + classification
-            elif orders_incomplete[index] >= 10 and orders_incomplete[index] <= 14:
+            elif orders_incomplete[index] >= 11 and orders_incomplete[index] <= 19:
                 classification = "LINE/" + classification
-            elif orders_incomplete[index] >= 19 and orders_incomplete[index] <= 27:
+            elif orders_incomplete[index] >= 21 and orders_incomplete[index] <= 23:
+                classification = "DIRS/" + classification
+            elif orders_incomplete[index] >= 26 and orders_incomplete[index] <= 36:
                 classification = "TIR/" + classification
-            elif orders_incomplete[index] == 31:
+            elif orders_incomplete[index] == 40:
                 classification = "UNCLASSIFIED"
 
             # put the class having the order/superfamily
-            if orders_incomplete[index] >= 2 and orders_incomplete[index] <= 16:
+            if orders_incomplete[index] >= 2 and orders_incomplete[index] <= 23:
                 classification = "CLASSI/" + classification
-            elif orders_incomplete[index] >= 17 and orders_incomplete[index] <= 30:
+            elif orders_incomplete[index] >= 24 and orders_incomplete[index] <= 39:
                 classification = "CLASSII/" + classification
 
             new_name = str(non_curated[index].id).split("#")[0] + "#" + classification
