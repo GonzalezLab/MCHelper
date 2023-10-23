@@ -1,4 +1,4 @@
-# MCHelper (Beta, non-fully tested version)
+# MCHelper
 MCHelper: An automatic tool to curate transposable element libraries
 
 ## Table of Contents  
@@ -7,7 +7,8 @@ MCHelper: An automatic tool to curate transposable element libraries
 * [Testing](#testing)  
 * [Usage](#usage) 
 * [Inputs](#inputs) 
-* [Outputs](#outputs) 
+* [Outputs](#outputs)
+* [Citation](#citation)
 
 ## Introduction
 <a name="introduction"/>
@@ -192,3 +193,8 @@ The rest of the files are the following:
   *  extended_cons.fa; File containing the extended TE.
   *  kept_seqs_unclassified_module.fa: File containing the sequences that have been kept in the module. At the end, MCHelper will join this file with kept_seqs_classified_module.fa to create the curated_sequences_R.fa final file.
   *  new_user_lib.fa: Intermidiate file containing fomated sequences needed to run with MCHelper.
+
+## Citation
+<a name="citation">
+if you use this software, please cite us as following:
+Orozco-Arias, S., Sierra, P., Durbin, R., Gonzalez, J. (2023). MCHelper automatically curates transposable element libraries across species. https://doi.org/10.1101/2023.10.17.562682. bioRxiv.
