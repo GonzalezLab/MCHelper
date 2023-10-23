@@ -193,6 +193,6 @@ The rest of the files are the following:
   *  new_user_lib.fa: Intermidiate file containing fomated sequences needed to run with MCHelper.
 
 ## Citation
-<a name="citation">
+<a name="citation"/>
 if you use this software, please cite us as following:
 Orozco-Arias, S., Sierra, P., Durbin, R., Gonzalez, J. (2023). MCHelper automatically curates transposable element libraries across species. https://doi.org/10.1101/2023.10.17.562682. bioRxiv.
