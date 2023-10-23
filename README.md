@@ -8,7 +8,7 @@ MCHelper: An automatic tool to curate transposable element libraries
 * [Usage](#usage)
 * [Inputs](#inputs)
 * [Outputs](#outputs)
-* [Citation](#citation)*
+* [Citation](#citation)
 
 
 ## Introduction
@@ -144,12 +144,12 @@ MCHelper can be run in three different modes: Fully automatic (F), semi-automati
 MCHelper is a modular pipeline (see figure below), which can be run in a integrated way or module by module. You can control this with the -r or --module parameter, indicating which of the four modules you want to run. **If you want to run the whole pipeline, select -r A**. Otherwise, if you want just run one of them, select the letter corresponding to the module: consensus extension module=E (Figure A), Manual Inpection module=M (Figure B), and TE classification module=U (Figure C). You can also only run TE-Aid in parallel using the parameter -r T. 
 
 <p align="center">
-  <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_modules_Flow.png">
+  <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_modules_Flow.png"/>
 </p>
 
 ## Inputs
 <a name="inputs"/>
-The input files required by MCHelper will depend of the tool you used to create the TE library. ** If you used REPET **, then you will need the following files:
+The input files required by MCHelper will depend of the tool you used to create the TE library. **If you used REPET**, then you will need the following files:
 
 * the genome assembly 
 * the library created by the TEdenovo pipeline. This library is named as projName_refTEs.fa, where projName is the name of your own REPET project. 
