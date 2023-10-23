@@ -2,11 +2,11 @@
 MCHelper: An automatic tool to curate transposable element libraries
 
 ## Table of Contents  
-* [Introduction](#introduction)  
-* [Installation](#installation)  
-* [Testing](#testing)  
-* [Usage](#usage) 
-* [Inputs](#inputs) 
+* [Introduction](#introduction)
+* [Installation](#installation)
+* [Testing](#testing)
+* [Usage](#usage)
+* [Inputs](#inputs)
 * [Outputs](#outputs)
 * [Citation](#citation)
 
@@ -19,7 +19,7 @@ The number of species with high quality genome sequences continues to increase, 
   <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_general_flow.png">
 </p>
 
-## Installation:
+## Installation
 <a name="installation"/>
 
 It is recommended to install the dependencies in an Anaconda environment. 
@@ -50,7 +50,7 @@ mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
 
 And that's it. You have now installed MCHelper.
 
-## Testing:
+## Testing
 <a name="testing"/>
 To test MCHelper, we provide some example inputs and also the expected results (located at Test_dir/) to allow you to compare with your own outputs. To check MCHelper is running properly, you can do:
 
@@ -91,7 +91,7 @@ mkdir Test_dir/fasta_output_own
 
 python3 MCHelper.py -r A -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output_own -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.hmm -a F
 ```
-## Usage:
+## Usage
 <a name="usage"/>
 
 Be sure you have activated the anaconda environment:
