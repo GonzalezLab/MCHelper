@@ -8,7 +8,8 @@ MCHelper: An automatic tool to curate transposable element libraries
 * [Usage](#usage)
 * [Inputs](#inputs)
 * [Outputs](#outputs)
-* [Citation](#citation)
+* [Citation](#citation)*
+
 
 ## Introduction
 <a name="introduction"/>
@@ -148,7 +149,7 @@ MCHelper is a modular pipeline (see figure below), which can be run in a integra
 
 ## Inputs
 <a name="inputs"/>
-The input files required by MCHelper will depend of the tool you used to create the TE library. **If you used REPET**, then you will need the following files:
+The input files required by MCHelper will depend of the tool you used to create the TE library. ** If you used REPET **, then you will need the following files:
 
 * the genome assembly 
 * the library created by the TEdenovo pipeline. This library is named as projName_refTEs.fa, where projName is the name of your own REPET project. 
