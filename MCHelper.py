@@ -27,6 +27,8 @@ Novelties:
   * Optimized the files created by blastn
   * Added domains INT, and AP for Mavericks
   * Added superfamilies: ERV, R1, CR1, LOA, L2, MULE, CMC, Ngaro, Viper
+  * Added PhageINT for YR domains (DIRS and Crypton)
+  * Added cases for DIRS and Crypton to Desicion tree structural rules
 
 """
 
@@ -332,8 +334,8 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA, cores):
 
 
 def find_profiles(te, outputdir, ref_profiles):
-    # domains:      LTR retrotransposons/DIRS/LINE
-    domains_dict = {'_GAG_': 0, '_AP_': 0, '_INT_': 0, '_RT_': 0, '_RNaseH_': 0, '_ENV_': 0,
+    # domains:      LTR retrotransposons/LINE                                                DIRS/Crypton
+    domains_dict = {'_GAG_': 0, '_AP_': 0, '_INT_': 0, '_RT_': 0, '_RNaseH_': 0, '_ENV_': 0, '_PhageINT_': 0,
                     # PLE       TIRs         Helitron
                     '_EN_': 0, '_Tase_': 0, '_HEL_': 0, '_RPA_': 0, '_REP_': 0, '_OTU_': 0, '_SET_': 0,
                     # Maverick
@@ -628,16 +630,16 @@ def count_domains_by_order(profiles, order):
             [x for x in profiles.split(",") if '_RT_' in x or '_EN_' in x or '_RNaseH_' in x or '_GAG_' in x])
         other_doms = len([x for x in profiles.split(",") if '_AP_' in x or '_INT_' in x or '_ENV_' in x or '_Tase_' in x
                           or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x
-                          or '_ATPase_' in x])
+                          or '_ATPase_' in x or '_PhageINT_' in x])
     elif order == "LTR":
         right_doms = len([x for x in profiles.split(",") if
                         '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x])
         other_doms = len([x for x in profiles.split(",") if '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x
-                          or '_REP_' in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x])
+                          or '_REP_' in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x or '_PhageINT_' in x])
 
     elif order == "DIRS":
         right_doms = len([x for x in profiles.split(",") if
-                        '_GAG_' in x or '_RT_' in x or '_RNaseH_' in x])
+                        '_GAG_' in x or '_RT_' in x or '_RNaseH_' in x or '_PhageINT_' in x])
         other_doms = len([x for x in profiles.split(",") if '_AP_' in x or '_INT_' in x or '_ENV_' in x or '_EN_' in x
                           or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x or '_SET_'
                           in x or '_Prp' in x or '_ATPase_' in x])
@@ -646,21 +648,27 @@ def count_domains_by_order(profiles, order):
         right_doms = len([x for x in profiles.split(",") if '_Tase_' in x])
         other_doms = len([x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x
                           or '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_'
-                          in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x])
+                          in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x or '_PhageINT_' in x])
 
     elif order == "HELITRON":
         right_doms = len([x for x in profiles.split(",") if '_HEL_' in x or '_EN_' in x or '_RPA_' in x or '_REP_' in x
                           or '_OTU_' in x or '_SET_' in x])
         other_doms = len([x for x in profiles.split(",") if
                           '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x
-                          or '_Tase_' in x or '_Prp' in x or '_ATPase_' in x])
+                          or '_Tase_' in x or '_Prp' in x or '_ATPase_' in x or '_PhageINT_' in x])
 
     elif order == "MAVERICK":
         right_doms = len([x for x in profiles.split(",") if '_Prp' in x or '_ATPase_' in x or '_INT_' in x or '_AP_' in x])
         other_doms = len([x for x in profiles.split(",") if
                           '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x
                           or '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x
-                          or '_SET_' in x])
+                          or '_SET_' in x or '_PhageINT_' in x])
+
+    elif order == "CRYPTON":
+        right_doms = len([x for x in profiles.split(",") if '_PhageINT_' in x])
+        other_doms = len([x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x
+                          or '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_'
+                          in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x or '_Tase_' in x])
 
     return right_doms, other_doms
 
@@ -815,7 +823,30 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
             keep_seqs.append(struc_table.at[i, "Seq_name"])
             kept_seqs_record.append([x for x in SeqIO.parse(ref_tes, "fasta") if
                                      str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]][0])
-    elif str(struc_table.at[i, "order"]).upper() == 'PLE' or str(struc_table.at[i, "order"]).upper() == 'DIRS':
+    elif str(struc_table.at[i, "order"]).upper() == 'DIRS':
+        # manual inspection in classified module
+        if len(profiles) > 0 and len(profiles[0].split(",")) >= 1:
+            rigth_doms, other_doms = count_domains_by_order(profiles[0], "DIRS")
+            if rigth_doms > 0 and other_doms == 0:
+                keep_seqs.append(struc_table.at[i, "Seq_name"])
+                kept_seqs_record.append([x for x in SeqIO.parse(ref_tes, "fasta") if
+                                         str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]][0])
+                orders.append(orders_superfamilies.index("DIRS") + 2)
+                reason = "It's a DIRS !!! Kept for having at least one domain !"
+                status = 1
+            else:
+                status = -1
+                if automatic != 'F':
+                    reason = "Sent to manual inspection for having non-DIRS domains !"
+                else:
+                    reason = "Marked as incomplete TE for having non-DIRS domains !"
+        else:
+            status = -1
+            if automatic != 'F':
+                reason = "Sent to manual inspection for don't having domains !"
+            else:
+                reason = "Marked as incomplete TE for don't having domains !"
+    elif str(struc_table.at[i, "order"]).upper() == 'PLE':
         # manual inspection in classified module
         if automatic != 'F':
             reason = "Sent to manual inspection"
@@ -872,12 +903,27 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
                 reason = "Marked as incomplete TE for don't having TIRs neither domains !"
 
     elif str(struc_table.at[i, "order"]).upper() == 'CRYPTON':
-        # manual inspection in classified module
-        status = -1
-        if automatic != 'F':
-            reason = "Sent to manual inspection"
+        if len(profiles) > 0 and len(profiles[0].split(",")) >= 1:
+            rigth_doms, other_doms = count_domains_by_order(profiles[0], "CRYPTON")
+            if rigth_doms > 0 and other_doms == 0:
+                keep_seqs.append(struc_table.at[i, "Seq_name"])
+                kept_seqs_record.append([x for x in SeqIO.parse(ref_tes, "fasta") if
+                                         str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]][0])
+                orders.append(orders_superfamilies.index("CRYPTON") + 2)
+                reason = "It's a CRYPTON !!! Kept for having at least one domain !"
+                status = 1
+            else:
+                status = -1
+                if automatic != 'F':
+                    reason = "Sent to manual inspection for having non-CRYPTON domains !"
+                else:
+                    reason = "Marked as incomplete TE for having non-CRYPTON domains !"
         else:
-            reason = "Marked as incomplete TE"
+            status = -1
+            if automatic != 'F':
+                reason = "Sent to manual inspection for don't having domains !"
+            else:
+                reason = "Marked as incomplete TE for don't having domains !"
     elif str(struc_table.at[i, "order"]).upper() == 'HELITRON':
         if len(profiles) > 0:
             rigth_doms, other_doms = count_domains_by_order(profiles[0], "HELITRON")
@@ -3092,8 +3138,8 @@ if __name__ == '__main__':
     ####################################################################################################################
     if module in [3333]:
         print("Debugging....")
-        build_class_table_parallel(user_library, cores, outputdir,
-                                   blastn_db, blastx_db, ref_profiles, False)
+        # build_class_table_parallel(user_library, cores, outputdir, blastn_db, blastx_db, ref_profiles, False)
+        count_flf_fasta(user_library, genome, cores, outputdir)
 
 
     ####################################################################################################################
