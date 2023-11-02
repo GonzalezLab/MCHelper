@@ -28,7 +28,7 @@ Novelties:
   * Added domains INT, and AP for Mavericks
   * Added superfamilies: ERV, R1, CR1, LOA, L2, MULE, CMC, Ngaro, Viper
   * Added PhageINT for YR domains (DIRS and Crypton)
-  * Added cases for DIRS and Crypton to Desicion tree structural rules
+  * Added cases for DIRS and Crypton to Decision tree structural rules
 
 """
 
