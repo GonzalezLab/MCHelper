@@ -2932,7 +2932,7 @@ if __name__ == '__main__':
         # First step: run BEE in parallel
         ########################################################################################################
         create_output_folders(outputdir + "/bee_module/")
-        run_extension_by_saturation_parallel(genome, ref_tes, ext_nucl, num_ite,
+        run_extension_by_saturation_parallel(genome, user_library, ext_nucl, num_ite,
                                              outputdir + "/bee_module/", minBlastHits, cores,
                                              min_perc_model, min_cluster, max_sequences, cluster_factor,
                                              group_outliers, min_plurality, end_threshold, max_num_subfamilies)
@@ -3138,8 +3138,9 @@ if __name__ == '__main__':
     ####################################################################################################################
     if module in [3333]:
         print("Debugging....")
-        # build_class_table_parallel(user_library, cores, outputdir, blastn_db, blastx_db, ref_profiles, False)
-        count_flf_fasta(user_library, genome, cores, outputdir)
+        build_class_table_parallel(user_library, cores, outputdir, blastn_db, blastx_db, ref_profiles, False)
+        run_te_aid_parallel(tools_path + "/TE-Aid-master/", genome, user_library, outputdir + "/", cores,
+                            min_perc_model)
 
 
     ####################################################################################################################
