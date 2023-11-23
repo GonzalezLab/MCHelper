@@ -125,8 +125,6 @@ Full list of parameters include:
 * -a AUTOMATIC:          Level of automation: F: fully automated, S: semi-automated, M: fully manual?. Default=F.
 * -n PROJ_NAME:          REPET project name. Required for repet input*
 * -t CORES:              cores to execute some steps in parallel. Default=all available cores.
-* -j MODULE2_SEQS_FILE  Path to the sequences to be used in the extension module.
-* -k MODULE3_SEQS_FILE  Path to the sequences to be used in the unclassified module.
 * -m REF_LIBRARY_UNCLASSIFIED_MODULE: Path to the sequences to be used as references in the unclassified module.
 * -v VERBOSE            Verbose? [Y or N]. Default=N.
 * --input_type INPUT_TYPE:  Input type: fasta or REPET.
