@@ -29,6 +29,8 @@ Novelties:
   * Added superfamilies: ERV, R1, CR1, LOA, L2, MULE, CMC, Ngaro, Viper
   * Added PhageINT for YR domains (DIRS and Crypton)
   * Added cases for DIRS and Crypton to Decision tree structural rules
+  * Unified flags -k and -m into -l for simplicity
+  * Improved the classification based on protein domains
 
 """
 
@@ -682,38 +684,41 @@ def inferring_domains(input_profiles):
         # Class I or II ?
         class2_doms = len(
             [x for x in profiles.split(",") if '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_'
-             in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x])
+             in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x  or '_PhageINT_' in x])
         class1_doms = len([x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or
-                          '_RNaseH_' in x or '_ENV_' in x or '_EN_' ])
+                          '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x])
 
         if class1_doms > 0 and class2_doms == 0:
             # Retrotransposon !
             inferred = True
             new_class = orders_superfamilies.index("CLASSI") + 2
 
-            # Is it a LTR-RT?
-            ltr_count = len([x for x in profiles.split(",") if '_ENV_' in x or '_INT_' in x])
-            if ltr_count > 0:
-                new_class = orders_superfamilies.index("LTR") + 2
+            # which order?
+            count_orders = 0
+            for ord in ['LTR', 'LINE', 'DIRS']:
+                good_doms, other_doms = count_domains_by_order(profiles, ord)
+                if good_doms > 0 and other_doms == 0:
+                    new_class = orders_superfamilies.index(ord) + 2
+                    count_orders += 1
+
+            if count_orders > 1:  # It wasn't possible to distinguish between Class I's orders
+                new_class = orders_superfamilies.index("CLASSI") + 2
 
         elif class1_doms == 0 and class2_doms > 0:
             # Transposon !
             inferred = True
             new_class = orders_superfamilies.index("CLASSII") + 2
 
-            hel_count = len([x for x in profiles.split(",") if '_HEL_' in x])
-            mav_count = len([x for x in profiles.split(",") if '_Prp' in x or '_ATPase_' in x])
-            tir_count = len([x for x in profiles.split(",") if '_Tase_' in x])
+            # which order?
+            count_orders = 0
+            for ord in ['TIR', 'HELITRON', 'MAVERICK', 'CRYPTON']:
+                good_doms, other_doms = count_domains_by_order(profiles, ord)
+                if good_doms > 0 and other_doms == 0:
+                    new_class = orders_superfamilies.index(ord) + 2
+                    count_orders += 1
 
-            # Is it a Helitron?
-            if hel_count > 0 and mav_count == 0 and tir_count == 0:
-                new_class = orders_superfamilies.index("HELITRON") + 2
-            # Or a Maverick?
-            elif hel_count == 0 and mav_count > 0 and tir_count == 0:
-                new_class = orders_superfamilies.index("MAVERICK") + 2
-            # Or a TIR?
-            elif hel_count == 0 and mav_count == 0 and tir_count > 0:
-                new_class = orders_superfamilies.index("TIR") + 2
+            if count_orders > 1:  # It wasn't possible to distinguish between Class II's orders
+                new_class = orders_superfamilies.index("CLASSII") + 2
 
     return inferred, new_class
 
@@ -2431,10 +2436,6 @@ if __name__ == '__main__':
                         help='REPET project name. Required*')
     parser.add_argument('-t', required=False, dest='cores', default=-1,
                         help='cores to execute some steps in parallel')
-    parser.add_argument('-j', required=False, dest='module2_seqs_file',
-                        help='Path to the sequences to be used in the extension module')
-    parser.add_argument('-k', required=False, dest='module3_seqs_file',
-                        help='Path to the sequences to be used in the unclassified module')
     parser.add_argument('-m', required=False, dest='ref_library_module3',
                         help='Path to the sequences to be used as references in the unclassified module')
     parser.add_argument('-v', required=False, dest='verbose', default='N',
@@ -2467,8 +2468,6 @@ if __name__ == '__main__':
     te_aid = options.te_aid
     automatic = options.automatic
     cores = options.cores
-    module2_seqs_file = options.module2_seqs_file
-    module3_seqs_file = options.module3_seqs_file
     ref_library_module3 = options.ref_library_module3
     verbose = options.verbose
     input_type = options.input_type
@@ -2790,14 +2789,11 @@ if __name__ == '__main__':
     # Unclassified module
     ####################################################################################################################
     if module in [3, 123]:
-        if module == 3 and module3_seqs_file is None:
-            print('FATAL ERROR: -k parameter must be specified for the unclassified module')
+        if module == 3 and user_library is None:
+            print('FATAL ERROR: -l parameter must be specified for the Classification Module')
             sys.exit(0)
         if module == 3 and ref_library_module3 is None:
             print('FATAL ERROR: -m parameter must be specified for the unclassified module')
-            sys.exit(0)
-        if module == 3 and input_type is None:
-            print('FATAL ERROR: --input_type parameter must be specified for the unclassified module')
             sys.exit(0)
         if module == 3 and genome is None:
             print('FATAL ERROR: -g parameter must be specified for the unclassified module')
@@ -2808,26 +2804,18 @@ if __name__ == '__main__':
         elif module == 3 and not os.path.exists(busco_library):
             print("FATAL ERROR: Reference/BUSCO genes file " + busco_library + " doesn't exist.")
             sys.exit(0)
-        if automatic is not None:
-            if automatic.upper() not in ['F', 'S', 'M']:
-                print('FATAL ERROR: automation level (-a) must be F, S or M (see help.)')
-                sys.exit(0)
-            else:
-                automatic = automatic.upper()
         if module == 123 and (os.path.getsize(module3_seqs_file) == 0 or module3_seqs_file == ""):
             print("MESSAGE: There is no sequences to unclassified Module, skipping ...")
         else:
-            if module == 3 and input_type == "repet":
-                if module == 3 and input_dir is None:
-                    print('FATAL ERROR: -i parameter must be specified for the unclassified module')
-                    sys.exit(0)
-                if module == 3 and proj_name is None:
-                    print('FATAL ERROR: -n parameter must be specified for the unclassified module')
-                    sys.exit(0)
-
             if ref_library_module3 != "":
                 create_output_folders(outputdir + "/unclassifiedModule")
                 print("MESSAGE: Starting with Unclassified module...")
+
+                if check_classification_Userlibrary(user_library, outputdir) != 0:
+                    print(
+                        'WARNING: There are some sequences with problems in your library and MCHelper cannot process them. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
+
+                module3_seqs_file = outputdir + "/candidate_tes.fa"
 
                 ########################################################################################################
                 # First step: run BEE in parallel
@@ -3138,9 +3126,7 @@ if __name__ == '__main__':
     ####################################################################################################################
     if module in [3333]:
         print("Debugging....")
-        build_class_table_parallel(user_library, cores, outputdir, blastn_db, blastx_db, ref_profiles, False)
-        run_te_aid_parallel(tools_path + "/TE-Aid-master/", genome, user_library, outputdir + "/", cores,
-                            min_perc_model)
+        
 
 
     ####################################################################################################################
