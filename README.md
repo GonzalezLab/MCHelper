@@ -31,12 +31,12 @@ git clone https://github.com/gonzalezlab/mchelper.git
 
 Then, locate the MCHelper folder and find the file named "curation.yml". Then, install the environment: 
 ```
-conda env create -f MCHelper/MCHelper.yml
+conda env create -f mchelper/MCHelper.yml
 ```
 
 Now, unzip all the databases needed by MCHelper:
 ```
-cd MCHelper/db
+cd mchelper/db
 unzip '*.zip'
 conda activate MCHelper
 makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
