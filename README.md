@@ -26,7 +26,7 @@ The number of species with high quality genome sequences continues to increase, 
 It is recommended to install the dependencies in an Anaconda environment. 
 
 ```
-git clone https://github.com/gonzalezlab/mchelper.git
+git clone https://github.com/gonzalezlab/MCHelper.git
 ```
 
 Then, locate the MCHelper folder and find the file named "curation.yml". Then, install the environment: 
