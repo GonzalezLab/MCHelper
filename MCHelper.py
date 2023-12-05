@@ -2811,17 +2811,16 @@ if __name__ == '__main__':
                 create_output_folders(outputdir + "/unclassifiedModule")
                 print("MESSAGE: Starting with Unclassified module...")
 
-                if check_classification_Userlibrary(user_library, outputdir) != 0:
-                    print(
-                        'WARNING: There are some sequences with problems in your library and MCHelper cannot process them. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
-
-                module3_seqs_file = outputdir + "/candidate_tes.fa"
-
                 ########################################################################################################
                 # First step: run BEE in parallel
                 ########################################################################################################
                 if module == 3:
                     start_time = time.time()
+                    if check_classification_Userlibrary(user_library, outputdir) != 0:
+                        print(
+                            'WARNING: There are some sequences with problems in your library and MCHelper cannot process them. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
+
+                    module3_seqs_file = outputdir + "/candidate_tes.fa"
                     run_extension_by_saturation_parallel(genome, module3_seqs_file, ext_nucl, num_ite,
                                                          outputdir + "/unclassifiedModule/", minBlastHits, cores,
                                                          min_perc_model, min_cluster, max_sequences, cluster_factor,
@@ -3126,7 +3125,7 @@ if __name__ == '__main__':
     ####################################################################################################################
     if module in [3333]:
         print("Debugging....")
-        
+
 
 
     ####################################################################################################################
