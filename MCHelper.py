@@ -31,6 +31,7 @@ Novelties:
   * Added cases for DIRS and Crypton to Decision tree structural rules
   * Unified flags -k and -m into -l for simplicity
   * Improved the classification based on protein domains
+  * Solved issue in refine extensions when using very repetitive sequences (>500k copies)
 
 """
 
@@ -1878,7 +1879,7 @@ def refine_extension(tes_to_refine, genome, outputdir, id_thread):
         if len(output) > 0:
             blast = pd.read_csv(io.StringIO(output), sep='\t', header=None)
             # create matrix of zeros with dimensions based on length of blast dataframe and cons_len variable
-            coverage = np.zeros((len(blast), cons_len))
+            coverage = np.zeros((len(blast), cons_len), dtype=np.bool_)
 
             # iterate over rows of blast dataframe and set corresponding values in coverage matrix
             for i, row in blast.iterrows():
