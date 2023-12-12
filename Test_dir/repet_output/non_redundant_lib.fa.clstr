@@ -1,839 +1,1018 @@
 >Cluster 0
-0	10188nt, >Dmel-L-B53-Map1_inc... *
+0	22343nt, >Dmel-B-R1133-Map3#C... *
 >Cluster 1
-0	10023nt, >Dmel-L-B83-Map1_inc... *
+0	21826nt, >Dmel-B-R320-Map8_re... *
 >Cluster 2
-0	7469nt, >Dmel-B-G1638-Map5_r... at 1:6772:1751:8523/+/99.96%
-1	5438nt, >Dmel-L-B263-Map1_re... at 1:5438:595:6033/+/99.96%
-2	9224nt, >Dmel-B-P14.15-Map20... *
+0	19167nt, >Dmel-B-R321-Map3_in... *
 >Cluster 3
-0	9148nt, >Dmel-L-B161-Map1_re... *
+0	18923nt, >Dmel-B-G1665-Map16_... *
 >Cluster 4
-0	9120nt, >Dmel-B-G1624-Map5_r... *
+0	18914nt, >Dmel-B-R319-Map3_re... *
 >Cluster 5
-0	9098nt, >Dmel-B-R582-Map20_r... *
-1	5612nt, >Dmel-L-B309-Map1_in... at 1:4991:3277:8406/+/84.39%
-2	5637nt, >Dmel-L-B202-Map1_re... at 1:4915:3277:8374/+/85.13%
+0	17929nt, >Dmel-B-G808-Map3_in... *
 >Cluster 6
-0	9030nt, >Dmel-B-G1665-Map16_... *
+0	16379nt, >Dmel-B-G2060-Map4_s... *
 >Cluster 7
-0	8989nt, >Dmel-B-G1636-Map3_r... *
+0	14673nt, >Dmel-B-R1178-Map3#C... *
 >Cluster 8
-0	8985nt, >Dmel-L-B71-Map1_inc... *
+0	1104nt, >Dmel-B-P72#CLASSII/... at 1:1104:8482:9584/+/97.28%
+1	1104nt, >Dmel-B-P225#CLASSII... at 1:1104:8482:9584/+/97.10%
+2	1104nt, >Dmel-B-G2627-Map3#C... at 1:1104:8482:9584/+/97.10%
+3	1104nt, >Dmel-B-G575-Map3#CL... at 1104:1:8483:9585/-/97.19%
+4	1104nt, >Dmel-B-P11#CLASSII/... at 1:1104:8482:9584/+/97.10%
+5	14668nt, >Dmel-B-R32-Map4_inc... *
 >Cluster 9
-0	8841nt, >Dmel-B-G1616-Map5_r... *
+0	13714nt, >Dmel-L-B512-Map1_s_... at 22:13714:114:13630/+/97.50%
+1	14343nt, >Dmel-L-B512-Map1_s_... at 137:14343:5:14120/+/96.89%
+2	14030nt, >Dmel-L-B512-Map1_s_... at 2:14030:170:14123/+/97.18%
+3	13925nt, >Dmel-L-B512-Map1_s_... at 47:13925:5:13782/+/96.98%
+4	14022nt, >Dmel-L-B512-Map1_s_... at 1:13973:20:13923/+/97.82%
+5	14009nt, >Dmel-B-P15_s_1_s_1#... at 17:13815:8:13840/+/97.63%
+6	14660nt, >Dmel-B-P15_s_2_s_1#... *
+7	13714nt, >Dmel-B-P15_s_2_s_2#... at 22:13714:114:13630/+/97.50%
+8	13912nt, >Dmel-B-P15_s_3_s_2#... at 1:13864:23:13924/+/96.53%
+9	13066nt, >Dmel-B-G1021-Map15_... at 142:13066:468:13458/+/98.20%
+10	14333nt, >Dmel-B-G1021-Map15_... at 93:14333:5:14390/+/95.25%
+11	13969nt, >Dmel-B-R1291-Map10_... at 12:13969:5:13860/+/96.99%
+12	14030nt, >Dmel-B-R1291-Map10_... at 7:13998:13:13972/+/98.18%
+13	14098nt, >Dmel-B-R1291-Map10_... at 1:14098:13:14120/+/98.77%
+14	14589nt, >Dmel-B-R1291-Map10_... at 5:14587:13:14660/+/96.55%
 >Cluster 10
-0	8780nt, >Dmel-B-G1650-Map10_... *
+0	4220nt, >Dmel-B-P118#CLASSI/... at 1:4220:9137:13356/+/99.95%
+1	6930nt, >Dmel-B-G2363-Map3_i... at 5:6930:1:6913/+/99.61%
+2	14301nt, >Dmel-B-R834-Map6_in... *
 >Cluster 11
-0	3557nt, >Dmel-B-R1205-Map5_r... at 1:3538:1762:5281/+/88.98%
-1	8719nt, >Dmel-L-B106-Map1_re... *
+0	14034nt, >Dmel-L-B164-Map1_re... *
 >Cluster 12
-0	8655nt, >Dmel-B-G1618-Map4#L... *
+0	13719nt, >Dmel-L-B512-Map1_s_... *
+1	12551nt, >Dmel-L-B512-Map1_s_... at 1:12551:235:12864/+/98.50%
+2	13355nt, >Dmel-B-P15_s_1_s_2#... at 20:13250:1:13285/+/98.48%
+3	13424nt, >Dmel-B-P15_s_3_s_1#... at 1:13424:299:13719/+/97.96%
+4	13642nt, >Dmel-B-R1291-Map10_... at 78:13628:1:13598/+/97.89%
 >Cluster 13
-0	8570nt, >Dmel-L-B110-Map1_re... *
+0	13674nt, >Dmel-B-G1740-Map4_s... *
 >Cluster 14
-0	8412nt, >Dmel-B-R404-Map14_r... *
+0	12929nt, >Dmel-L-B512-Map1_s_... at 54:12929:438:13350/+/98.24%
+1	13568nt, >Dmel-B-G1021-Map15_... *
 >Cluster 15
-0	8361nt, >Dmel-B-G1589-Map17_... *
+0	12886nt, >Dmel-B-R1579-Map9_i... *
 >Cluster 16
-0	8176nt, >Dmel-B-R302-Map15_r... *
+0	12834nt, >Dmel-L-B53-Map1_inc... *
 >Cluster 17
-0	8142nt, >Dmel-B-R361-Map20#L... *
+0	12803nt, >Dmel-B-G655-Map4_in... *
 >Cluster 18
-0	8132nt, >Dmel-L-B115-Map1_re... *
-1	3587nt, >Dmel-B-G1028-Map20#... at 642:3587:36:2980/+/99.66%
+0	12530nt, >Dmel-B-R1324-Map3_i... *
+1	995nt, >Dmel-B-G1734-Map3#C... at 1:995:9338:10329/+/95.89%
 >Cluster 19
-0	7986nt, >Dmel-L-B121-Map1#LT... *
+0	12233nt, >Dmel-L-B46-Map1_unc... *
 >Cluster 20
-0	7974nt, >Dmel-B-R443-Map20_r... *
+0	11718nt, >Dmel-L-B316-Map1_re... *
 >Cluster 21
-0	7912nt, >Dmel-B-R16-Map20#LT... *
+0	11499nt, >Dmel-B-R315-Map9#CL... *
 >Cluster 22
-0	7911nt, >Dmel-L-B123-Map1#LT... *
+0	11465nt, >Dmel-B-G1991-Map5_s... *
 >Cluster 23
-0	4359nt, >Dmel-B-R1357-Map4_r... at 1:4359:11:4303/+/98.42%
-1	4884nt, >Dmel-L-B316-Map1_re... at 33:4884:1165:6016/+/99.18%
-2	7896nt, >Dmel-L-B155-Map1_re... *
+0	11102nt, >Dmel-B-R1315-Map6_r... *
 >Cluster 24
-0	7864nt, >Dmel-L-B127-Map1_in... *
+0	10928nt, >Dmel-B-G2517-Map3_i... *
 >Cluster 25
-0	7785nt, >Dmel-B-R78-Map20_in... *
+0	10908nt, >Dmel-B-R1901-Map4_s... *
 >Cluster 26
-0	7768nt, >Dmel-L-B131-Map1_in... *
+0	10392nt, >Dmel-B-G424-Map3#CL... *
 >Cluster 27
-0	6198nt, >Dmel-L-B236-Map1#LT... at 1:5832:1555:7349/+/97.40%
-1	7730nt, >Dmel-L-B159-Map1#LT... *
-2	4815nt, >Dmel-L-B164-Map1_re... at 1:4785:2260:7066/+/99.52%
+0	10269nt, >Dmel-B-R687-Map15_r... *
 >Cluster 28
-0	7694nt, >Dmel-B-R1024-Map16_... *
+0	10163nt, >Dmel-B-R245-Map8_in... *
 >Cluster 29
-0	3024nt, >Dmel-B-R1089-Map4_r... at 1:3024:3406:6429/+/100.00%
-1	7643nt, >Dmel-B-G1560-Map20#... *
+0	7870nt, >Dmel-B-R906-Map5#CL... at 84:7870:1:7786/+/99.78%
+1	10150nt, >Dmel-B-R1456-Map3_i... *
 >Cluster 30
-0	7610nt, >Dmel-B-G1573-Map3_r... *
-1	3386nt, >Dmel-B-R1579-Map9_i... at 1:3310:2119:5578/+/87.87%
+0	9886nt, >Dmel-B-G1650-Map10_... *
 >Cluster 31
-0	7552nt, >Dmel-L-B134-Map1_re... *
+0	9843nt, >Dmel-B-G1007-Map3_r... *
 >Cluster 32
-0	7407nt, >Dmel-L-B142-Map1_re... *
+0	9780nt, >Dmel-L-B278-Map1_re... *
 >Cluster 33
-0	7398nt, >Dmel-B-G1522-Map7#L... *
+0	9699nt, >Dmel-B-G2026-Map4_i... *
+1	9699nt, >Dmel-B-G1711-Map3_i... at 1:9699:1:9699/+/100.00%
 >Cluster 34
-0	7313nt, >Dmel-L-B148-Map1_re... *
+0	9691nt, >Dmel-B-R1135-Map3#C... *
 >Cluster 35
-0	7205nt, >Dmel-L-B204-Map1_re... *
+0	9553nt, >Dmel-B-G2670-Map4#C... *
 >Cluster 36
-0	7202nt, >Dmel-B-R115-Map20_r... *
+0	9544nt, >Dmel-B-G1647-Map3_r... *
 >Cluster 37
-0	7186nt, >Dmel-B-G1429-Map3#L... *
+0	427nt, >Dmel-B-P25_s_0#CLAS... at 1:427:5207:5633/+/100.00%
+1	9541nt, >Dmel-B-G1638-Map5_r... *
 >Cluster 38
-0	7161nt, >Dmel-L-B135-Map1#LT... *
-1	6193nt, >Dmel-B-R202-Map20_r... at 153:6016:889:6799/+/93.90%
+0	9302nt, >Dmel-B-G900-Map6_re... *
 >Cluster 39
-0	6849nt, >Dmel-L-B173-Map1#LT... at 664:6849:675:6842/+/99.71%
-1	7144nt, >Dmel-L-B174-Map1_re... *
+0	9156nt, >Dmel-B-R909-Map4_re... *
 >Cluster 40
-0	7143nt, >Dmel-B-G1479-Map20_... *
+0	9121nt, >Dmel-B-G45-Map20#CL... *
+1	4565nt, >Dmel-B-G1367-Map3_i... at 1:4565:3879:8350/+/95.35%
 >Cluster 41
-0	7141nt, >Dmel-L-B166-Map1_re... *
-1	5835nt, >Dmel-B-R440-Map10_r... at 1:5650:1304:6967/+/98.29%
+0	9037nt, >Dmel-L-B83-Map1_inc... *
 >Cluster 42
-0	7139nt, >Dmel-B-G1533-Map4_i... *
+0	8969nt, >Dmel-B-G2060-Map4_s... *
+1	8242nt, >Dmel-B-G2198-Map3#C... at 4:8242:1:8233/+/99.79%
 >Cluster 43
-0	7124nt, >Dmel-B-R315-Map9#LI... *
+0	8882nt, >Dmel-B-G1448-Map3_r... *
+1	8509nt, >Dmel-B-P67#CLASSI/L... at 1:8509:1:8508/+/99.99%
+2	8493nt, >Dmel-B-P214#CLASSI/... at 1:8493:201:8693/+/100.00%
+3	8376nt, >Dmel-B-P25_s_1#CLAS... at 1:8376:507:8881/+/99.99%
+4	8882nt, >Dmel-B-P14#CLASSI/L... at 1:8882:1:8882/+/100.00%
+5	8882nt, >Dmel-B-G1020-Map8_r... at 1:8882:1:8882/+/100.00%
+6	8678nt, >Dmel-B-R232-Map4#CL... at 1:8678:205:8882/+/100.00%
 >Cluster 44
-0	7039nt, >Dmel-B-R97-Map20_re... *
+0	8821nt, >Dmel-B-G2171-Map3_i... *
 >Cluster 45
-0	6997nt, >Dmel-B-G1647-Map3_r... *
+0	8718nt, >Dmel-L-B106-Map1_re... *
 >Cluster 46
-0	6973nt, >Dmel-B-P18.114-Map1... *
+0	8693nt, >Dmel-B-R726-Map9_re... *
+1	4567nt, >Dmel-B-R728-Map6_re... at 1:4567:4128:8691/+/99.41%
 >Cluster 47
-0	6847nt, >Dmel-B-G148-Map20_r... *
+0	8642nt, >Dmel-L-B307-Map1_in... *
 >Cluster 48
-0	6805nt, >Dmel-L-B136-Map1_re... *
+0	8384nt, >Dmel-B-P112#CLASSI/... *
 >Cluster 49
-0	6776nt, >Dmel-B-R101-Map20_r... *
+0	8381nt, >Dmel-L-B115-Map1_re... *
 >Cluster 50
-0	6742nt, >Dmel-L-B183-Map1#LT... *
+0	8331nt, >Dmel-B-P207#CLASSI/... *
 >Cluster 51
-0	6687nt, >Dmel-B-R608-Map20_r... *
+0	8245nt, >Dmel-B-R16-Map20#CL... *
 >Cluster 52
-0	6608nt, >Dmel-B-G1543-Map13#... *
+0	8242nt, >Dmel-B-G1021-Map15_... *
 >Cluster 53
-0	6602nt, >Dmel-L-B188-Map1_in... *
+0	8240nt, >Dmel-B-P25_s_2#CLAS... *
 >Cluster 54
-0	6585nt, >Dmel-L-B190-Map1_re... *
+0	7985nt, >Dmel-L-B121-Map1#CL... *
 >Cluster 55
-0	6566nt, >Dmel-L-B12-Map3_rev... *
-1	3720nt, >Dmel-B-G929-Map20_r... at 1:3720:861:4579/+/99.97%
+0	7910nt, >Dmel-L-B123-Map1#CL... *
 >Cluster 56
-0	6537nt, >Dmel-B-R31-Map20_in... *
+0	7876nt, >Dmel-B-G2318-Map3_r... *
+1	7876nt, >Dmel-B-G2318-Map3_r... at 1:7876:1:7876/+/100.00%
+2	7876nt, >Dmel-B-G2318-Map3_r... at 1:7876:1:7876/+/100.00%
+3	7876nt, >Dmel-B-G1219-Map3_s... at 1:7876:1:7876/+/100.00%
+4	7876nt, >Dmel-B-R202-Map20_r... at 1:7876:1:7876/+/100.00%
 >Cluster 57
-0	3037nt, >Dmel-B-G909-Map6_re... at 2:3037:2666:5709/+/99.54%
-1	6533nt, >Dmel-B-G43-Map20_in... *
+0	7802nt, >Dmel-B-G1708-Map5_r... *
 >Cluster 58
-0	6490nt, >Dmel-B-G1520-Map9#L... *
+0	6875nt, >Dmel-B-G2583-Map5_i... at 6875:1:905:7779/-/99.74%
+1	7782nt, >Dmel-B-G2119-Map3_r... *
+2	7782nt, >Dmel-B-G1837-Map4_s... at 7779:1:1:7779/-/99.70%
 >Cluster 59
-0	6476nt, >Dmel-L-B198-Map1_re... *
+0	7767nt, >Dmel-L-B131-Map1_in... *
 >Cluster 60
-0	6424nt, >Dmel-L-B201-Map1_re... *
+0	7613nt, >Dmel-B-G709-Map4_s_... *
+1	7607nt, >Dmel-B-G1560-Map20#... at 1:7607:1:7613/+/99.92%
+2	6782nt, >Dmel-B-G394-Map20#C... at 1:6782:830:7613/+/99.94%
 >Cluster 61
-0	6405nt, >Dmel-L-B340-Map1#LT... *
+0	7590nt, >Dmel-B-G811-Map5_re... *
+1	7590nt, >Dmel-B-G950-Map4#CL... at 7590:2:2:7590/-/100.00%
 >Cluster 62
-0	2048nt, >Dmel-B-R1623-Map3_r... at 247:2047:2883:4705/+/85.74%
-1	6382nt, >Dmel-B-R178-Map17_i... *
+0	7551nt, >Dmel-L-B134-Map1_re... *
 >Cluster 63
-0	6353nt, >Dmel-L-B285-Map1_in... *
+0	7547nt, >Dmel-L-B135-Map1_in... *
 >Cluster 64
-0	4668nt, >Dmel-B-R301-Map9_re... at 7:4665:629:5368/+/92.48%
-1	3550nt, >Dmel-B-G804-Map12#L... at 3550:1:2670:6209/-/93.31%
-2	6297nt, >Dmel-B-R335-Map4#LI... *
-3	3194nt, >Dmel-B-R312-Map4_in... at 1:3194:2882:6234/+/83.64%
+0	7543nt, >Dmel-B-G1630-Map3_r... *
+1	7541nt, >Dmel-B-G908-Map3_re... at 1:7541:1:7543/+/99.88%
 >Cluster 65
-0	6261nt, >Dmel-B-G1418-Map5_r... *
+0	7529nt, >Dmel-B-P58#CLASSI/L... *
 >Cluster 66
-0	6212nt, >Dmel-B-P226.10-Map3... *
-1	5353nt, >Dmel-L-B232-Map1_re... at 707:5353:532:5178/+/99.96%
+0	7521nt, >Dmel-L-B136-Map1_re... *
 >Cluster 67
-0	6198nt, >Dmel-B-G1446-Map20#... *
-1	2194nt, >Dmel-B-R1308-Map3#L... at 2186:355:2525:4403/-/81.21%
+0	7511nt, >Dmel-B-G1573-Map3_r... *
+1	6532nt, >Dmel-B-G528-Map8#CL... at 1:6532:1:6533/+/99.95%
+2	6532nt, >Dmel-B-G392-Map20_r... at 1:6532:1:6533/+/99.95%
 >Cluster 68
-0	6190nt, >Dmel-B-R262-Map20#L... *
+0	7504nt, >Dmel-L-B161-Map1_re... *
 >Cluster 69
-0	6185nt, >Dmel-B-R177-Map6_re... *
+0	7198nt, >Dmel-B-G1589-Map17_... at 1:7198:267:7464/+/99.97%
+1	7464nt, >Dmel-B-R848-Map13_r... *
+2	7198nt, >Dmel-B-R437-Map3_re... at 1:7198:267:7464/+/99.97%
 >Cluster 70
-0	6170nt, >Dmel-B-R1014-Map15#... *
+0	7436nt, >Dmel-B-G292-Map20_i... *
+1	7436nt, >Dmel-B-R629-Map18_r... at 1:7436:1:7436/+/100.00%
 >Cluster 71
-0	6141nt, >Dmel-L-B330-Map1_re... *
+0	7409nt, >Dmel-B-G1430-Map20#... *
+1	7409nt, >Dmel-B-G1199-Map20#... at 1:7409:1:7409/+/100.00%
 >Cluster 72
-0	6115nt, >Dmel-B-R224-Map20#L... *
+0	7409nt, >Dmel-B-G1624-Map5_r... *
 >Cluster 73
-0	6104nt, >Dmel-B-R1136-Map3_i... *
+0	7406nt, >Dmel-L-B142-Map1_re... *
 >Cluster 74
-0	6092nt, >Dmel-B-R1144-Map6_i... *
+0	7401nt, >Dmel-B-R152-Map20#C... *
 >Cluster 75
-0	6046nt, >Dmel-B-G1393-Map6_r... *
-1	3473nt, >Dmel-B-G1009-Map20_... at 1:3422:2647:6045/+/99.09%
+0	7389nt, >Dmel-B-R582-Map20_r... *
 >Cluster 76
-0	6034nt, >Dmel-B-R9-Map20#LIN... *
+0	7382nt, >Dmel-B-G1493-Map4_r... at 5:7382:1:7385/+/99.85%
+1	7385nt, >Dmel-B-G544-Map20#C... *
+2	7191nt, >Dmel-L-B159-Map1#CL... at 1:7190:1:7385/+/96.40%
+3	7383nt, >Dmel-L-B176-Map1#CL... at 5:7382:1:7385/+/99.85%
 >Cluster 77
-0	6014nt, >Dmel-B-R264-Map20#L... *
+0	7382nt, >Dmel-B-G872-Map3_re... *
+1	6976nt, >Dmel-B-G1219-Map3_s... at 1:6976:417:7330/+/99.08%
+2	7352nt, >Dmel-B-G488-Map3_re... at 1:7352:36:7327/+/99.05%
+3	7352nt, >Dmel-B-G940-Map5_re... at 1:7352:36:7327/+/99.05%
 >Cluster 78
-0	5956nt, >Dmel-B-G1461-Map20#... *
+0	3084nt, >Dmel-B-R135-Map12_r... at 1:3084:2:3085/+/99.71%
+1	7374nt, >Dmel-L-B144-Map1_re... *
 >Cluster 79
-0	5939nt, >Dmel-B-G1421-Map20_... *
-1	5133nt, >Dmel-B-R163-Map5_re... at 1:5133:170:5302/+/100.00%
-2	3777nt, >Dmel-B-R321-Map3#LT... at 1:3550:1846:5394/+/99.97%
+0	7308nt, >Dmel-B-R78-Map20_in... *
 >Cluster 80
-0	5925nt, >Dmel-B-G1432-Map13_... *
+0	5475nt, >Dmel-B-R82-Map20#CL... at 1:5475:1816:7285/+/97.38%
+1	7285nt, >Dmel-B-G2324-Map3_s... *
+2	7285nt, >Dmel-B-G1861-Map3_r... at 1:7285:1:7285/+/100.00%
+3	7285nt, >Dmel-B-G1686-Map13#... at 1:7285:1:7285/+/100.00%
 >Cluster 81
-0	5850nt, >Dmel-B-G1485-Map14#... *
+0	3910nt, >Dmel-B-G2553-Map10_... at 1:3834:3277:7259/+/96.09%
+1	7259nt, >Dmel-B-R361-Map20#C... *
 >Cluster 82
-0	5846nt, >Dmel-B-R906-Map5#LT... *
+0	7243nt, >Dmel-B-R1687-Map4_i... *
 >Cluster 83
-0	5832nt, >Dmel-B-R82-Map20#LT... *
+0	7231nt, >Dmel-B-G43-Map20#CL... *
 >Cluster 84
-0	5831nt, >Dmel-B-R320-Map8_re... *
+0	7226nt, >Dmel-B-G1597-Map16_... *
+1	7172nt, >Dmel-B-G2318-Map3_r... at 1:7126:3:7226/+/96.06%
+2	7172nt, >Dmel-B-G2318-Map3_r... at 1:7126:3:7226/+/96.06%
+3	7172nt, >Dmel-B-G2318-Map3_r... at 1:7126:3:7226/+/96.06%
+4	7172nt, >Dmel-B-G2318-Map3_r... at 1:7126:3:7226/+/96.06%
+5	7130nt, >Dmel-B-G1219-Map3_s... at 1:7130:80:7198/+/99.31%
+6	7130nt, >Dmel-B-G1219-Map3_s... at 1:7130:80:7198/+/99.31%
+7	6309nt, >Dmel-L-B222-Map1_re... at 1:6309:910:7219/+/99.78%
 >Cluster 85
-0	5830nt, >Dmel-B-R927-Map6_re... *
+0	7219nt, >Dmel-B-R109-Map3_in... *
 >Cluster 86
-0	5807nt, >Dmel-B-P74.90-Map8#... *
+0	7213nt, >Dmel-B-R101-Map20_r... *
 >Cluster 87
-0	5780nt, >Dmel-L-B241-Map1_in... *
+0	7209nt, >Dmel-L-B155-Map1_re... *
 >Cluster 88
-0	5765nt, >Dmel-B-R544-Map10#L... *
+0	7199nt, >Dmel-B-R1122-Map13_... *
+1	7199nt, >Dmel-B-R1901-Map4_s... at 1:7199:1:7199/+/100.00%
 >Cluster 89
-0	5727nt, >Dmel-B-P118.74-Map6... *
+0	7197nt, >Dmel-B-R327-Map4_s_... *
 >Cluster 90
-0	5727nt, >Dmel-L-B244-Map1_in... *
+0	7182nt, >Dmel-L-B160-Map1_re... *
 >Cluster 91
-0	5683nt, >Dmel-B-G1501-Map3_r... *
+0	7115nt, >Dmel-B-G1618-Map4#C... *
 >Cluster 92
-0	5678nt, >Dmel-L-B251-Map1_re... *
+0	7062nt, >Dmel-B-G594-Map14#C... *
+1	6511nt, >Dmel-B-P18#CLASSI/L... at 1:6511:552:7062/+/100.00%
 >Cluster 93
-0	5306nt, >Dmel-B-G1313-Map11#... at 19:4999:706:5664/+/96.74%
-1	5664nt, >Dmel-B-R245-Map8#LT... *
+0	6937nt, >Dmel-L-B173-Map1#CL... *
 >Cluster 94
-0	5610nt, >Dmel-B-G1424-Map4#L... *
+0	6932nt, >Dmel-B-G1565-Map5#C... *
 >Cluster 95
-0	5606nt, >Dmel-B-R726-Map9_re... *
+0	6925nt, >Dmel-L-B174-Map1_re... *
 >Cluster 96
-0	5604nt, >Dmel-L-B256-Map1#LT... *
+0	6900nt, >Dmel-B-R97-Map20_re... *
 >Cluster 97
-0	5558nt, >Dmel-B-R909-Map4_re... *
+0	6892nt, >Dmel-L-B193-Map1_re... *
 >Cluster 98
-0	5543nt, >Dmel-B-R1358-Map4#R... *
+0	6859nt, >Dmel-B-R440-Map10_r... *
 >Cluster 99
-0	5522nt, >Dmel-B-G1614-Map3#L... *
+0	6800nt, >Dmel-B-G1616-Map5_r... *
 >Cluster 100
-0	5500nt, >Dmel-L-B186-Map1_re... *
+0	6798nt, >Dmel-L-B166-Map1_re... *
 >Cluster 101
-0	5483nt, >Dmel-L-B267-Map1_in... *
+0	6749nt, >Dmel-L-B182-Map1_in... *
 >Cluster 102
-0	5468nt, >Dmel-L-B269-Map1#LT... *
+0	6744nt, >Dmel-L-B148-Map1_re... *
 >Cluster 103
-0	5467nt, >Dmel-L-B271-Map1#LT... *
+0	6741nt, >Dmel-L-B183-Map1#CL... *
 >Cluster 104
-0	5446nt, >Dmel-B-R34-Map20_re... *
+0	6729nt, >Dmel-B-R178-Map17_i... *
 >Cluster 105
-0	5386nt, >Dmel-L-B160-Map1_re... *
+0	6714nt, >Dmel-B-R116-Map14_i... *
+1	6714nt, >Dmel-B-G358-Map6_in... at 1:6714:1:6714/+/100.00%
 >Cluster 106
-0	5364nt, >Dmel-B-R132-Map20#L... *
+0	6656nt, >Dmel-L-B185-Map1#CL... *
 >Cluster 107
-0	5325nt, >Dmel-L-B282-Map1#LT... *
+0	6652nt, >Dmel-L-B186-Map1_re... *
 >Cluster 108
-0	5303nt, >Dmel-B-G45-Map20_in... *
+0	6601nt, >Dmel-L-B188-Map1_in... *
 >Cluster 109
-0	5258nt, >Dmel-B-R109-Map3_in... *
+0	6600nt, >Dmel-L-B256-Map1#CL... *
 >Cluster 110
-0	4660nt, >Dmel-B-R1250-Map3#R... at 706:4660:1:3957/+/99.95%
-1	5186nt, >Dmel-B-R1251-Map3#R... *
+0	6584nt, >Dmel-L-B190-Map1_re... *
 >Cluster 111
-0	5179nt, >Dmel-L-B294-Map1#LT... *
+0	6517nt, >Dmel-L-B195-Map1_re... *
 >Cluster 112
-0	5171nt, >Dmel-B-R552-Map11_r... *
+0	6475nt, >Dmel-L-B198-Map1_re... *
 >Cluster 113
-0	4349nt, >Dmel-B-R1485-Map11_... at 344:4349:31:3632/+/86.08%
-1	5165nt, >Dmel-B-R298-Map20#L... *
+0	6456nt, >Dmel-B-R577-Map7_in... *
 >Cluster 114
-0	3369nt, >Dmel-L-B512-Map1#LA... at 3368:2:304:3693/-/98.12%
-1	5154nt, >Dmel-B-R316-Map20#L... *
+0	6452nt, >Dmel-L-B30-Map2_rev... *
 >Cluster 115
-0	5154nt, >Dmel-B-R687-Map15_r... *
+0	6423nt, >Dmel-L-B201-Map1_re... *
 >Cluster 116
-0	5101nt, >Dmel-B-R728-Map6_re... *
+0	6414nt, >Dmel-B-R856-Map5#CL... *
+1	6414nt, >Dmel-B-R262-Map20#C... at 1:6414:1:6414/+/100.00%
 >Cluster 117
-0	5094nt, >Dmel-B-R240-Map4#LT... *
+0	6377nt, >Dmel-B-G881-Map20_r... *
 >Cluster 118
-0	5090nt, >Dmel-L-B299-Map1_in... *
+0	6372nt, >Dmel-B-G2510-Map4_i... *
+1	6372nt, >Dmel-B-G2476-Map3_s... at 1:6372:1:6372/+/100.00%
 >Cluster 119
-0	5001nt, >Dmel-B-R717-Map6_re... *
+0	6367nt, >Dmel-L-B204-Map1_re... *
 >Cluster 120
-0	4990nt, >Dmel-L-B307-Map1_in... *
+0	6362nt, >Dmel-B-R608-Map20_r... *
 >Cluster 121
-0	4969nt, >Dmel-B-R223-Map20_r... *
+0	6359nt, >Dmel-B-G804-Map12#C... *
+1	4832nt, >Dmel-B-R672-Map3_s_... at 4832:1:1:4832/-/99.94%
+2	6359nt, >Dmel-B-G1384-Map3_r... at 6359:1:1:6359/-/99.65%
+3	6359nt, >Dmel-B-R672-Map3_s_... at 6359:1:1:6359/-/99.65%
+4	6359nt, >Dmel-B-R672-Map3_s_... at 6359:1:1:6359/-/99.65%
+5	6359nt, >Dmel-B-R327-Map4_s_... at 6359:1:1:6359/-/99.65%
 >Cluster 122
-0	4961nt, >Dmel-B-G1226-Map3_r... *
+0	6266nt, >Dmel-B-G148-Map20_r... *
 >Cluster 123
-0	4952nt, >Dmel-B-R614-Map6_re... *
+0	6261nt, >Dmel-B-G706-Map3_in... *
 >Cluster 124
-0	4943nt, >Dmel-L-B305-Map1_re... *
+0	4823nt, >Dmel-B-G2536-Map4_i... at 4823:1:1:4824/-/99.88%
+1	6175nt, >Dmel-B-G595-Map4_re... *
 >Cluster 125
-0	4902nt, >Dmel-B-G680-Map4_un... *
+0	6119nt, >Dmel-B-G1522-Map7#C... *
 >Cluster 126
-0	4849nt, >Dmel-L-B313-Map1_re... *
+0	6111nt, >Dmel-B-G1479-Map20_... *
 >Cluster 127
-0	4555nt, >Dmel-B-R1252-Map3#R... at 590:4555:1:3966/+/100.00%
-1	4836nt, >Dmel-B-R1253-Map3#R... *
+0	6033nt, >Dmel-B-G570-Map5_s_... *
 >Cluster 128
-0	4762nt, >Dmel-B-R233-Map14_r... *
+0	6020nt, >Dmel-B-R1024-Map16_... *
 >Cluster 129
-0	4712nt, >Dmel-B-R718-Map10_i... *
+0	6016nt, >Dmel-B-G1991-Map5_s... *
 >Cluster 130
-0	4707nt, >Dmel-B-R1500-Map5_r... *
+0	5886nt, >Dmel-B-R301-Map9_re... *
 >Cluster 131
-0	4699nt, >Dmel-B-G1186-Map14_... *
+0	5857nt, >Dmel-L-B236-Map1#CL... *
 >Cluster 132
-0	4676nt, >Dmel-L-B324-Map1#LT... *
+0	5779nt, >Dmel-L-B241-Map1_in... *
 >Cluster 133
-0	4634nt, >Dmel-B-G1296-Map4_i... *
+0	5760nt, >Dmel-B-R672-Map3_s_... *
+1	5760nt, >Dmel-B-R672-Map3_s_... at 1:5760:1:5760/+/100.00%
+2	5760nt, >Dmel-B-R672-Map3_s_... at 1:5760:1:5760/+/100.00%
+3	5760nt, >Dmel-B-R672-Map3_s_... at 1:5760:1:5760/+/100.00%
+4	5760nt, >Dmel-B-R672-Map3_s_... at 1:5760:1:5760/+/100.00%
+5	5760nt, >Dmel-B-R327-Map4_s_... at 1:5760:1:5760/+/100.00%
+6	5760nt, >Dmel-B-R327-Map4_s_... at 1:5760:1:5760/+/100.00%
 >Cluster 134
-0	4627nt, >Dmel-B-R516-Map6#LA... *
+0	5759nt, >Dmel-B-G1533-Map4_i... *
 >Cluster 135
-0	4589nt, >Dmel-B-R576-Map9_in... *
+0	5726nt, >Dmel-L-B244-Map1_in... *
 >Cluster 136
-0	4551nt, >Dmel-B-R812-Map3_re... *
+0	5693nt, >Dmel-B-G570-Map5_s_... *
 >Cluster 137
-0	4546nt, >Dmel-B-G944-Map5_in... *
+0	5675nt, >Dmel-B-R1250-Map3#C... *
+1	4299nt, >Dmel-B-R1251-Map3#C... at 1:4299:1376:5674/+/100.00%
 >Cluster 138
-0	4533nt, >Dmel-B-G1007-Map3_r... *
+0	5653nt, >Dmel-B-R1205-Map5_r... *
 >Cluster 139
-0	4513nt, >Dmel-B-R1061-Map3#L... *
-1	4310nt, >Dmel-B-G519-Map5#LT... at 782:4310:403:3932/+/99.75%
+0	5557nt, >Dmel-L-B263-Map1_re... *
 >Cluster 140
-0	4506nt, >Dmel-B-G1222-Map3#L... *
-1	3106nt, >Dmel-L-B505-Map1_re... at 271:3106:321:3169/+/99.16%
+0	5519nt, >Dmel-B-P93#CLASSI/L... *
+1	5519nt, >Dmel-B-G901-Map20#C... at 1:5519:1:5519/+/100.00%
+2	5519nt, >Dmel-B-G1186-Map14_... at 1:5519:1:5519/+/100.00%
 >Cluster 141
-0	4470nt, >Dmel-L-B338-Map1_in... *
+0	1405nt, >Dmel-B-G635-Map20_r... at 1:1405:4104:5508/+/100.00%
+1	5508nt, >Dmel-B-R1136-Map3_i... *
 >Cluster 142
-0	4443nt, >Dmel-B-R1059-Map3_i... *
+0	5482nt, >Dmel-L-B267-Map1_in... *
 >Cluster 143
-0	4425nt, >Dmel-B-R1637-Map4#L... *
+0	5467nt, >Dmel-L-B269-Map1#CL... *
 >Cluster 144
-0	4422nt, >Dmel-B-R1122-Map13_... *
-1	2226nt, >Dmel-B-R1901-Map4_i... at 284:2189:1:1921/+/99.12%
+0	5466nt, >Dmel-L-B271-Map1#CL... *
 >Cluster 145
-0	2273nt, >Dmel-B-G2536-Map4#T... at 2:2180:1653:3838/+/98.68%
-1	4399nt, >Dmel-B-R839-Map12_i... *
+0	5445nt, >Dmel-B-G560-Map9#CL... *
 >Cluster 146
-0	4396nt, >Dmel-B-R1271-Map10_... *
-1	4217nt, >Dmel-B-G1987-Map4#L... at 3527:4:2:3549/-/98.51%
+0	5445nt, >Dmel-B-R1348-Map3_s... *
+1	5445nt, >Dmel-B-G1708-Map5_r... at 1:5445:1:5445/+/100.00%
+2	5445nt, >Dmel-B-R1633-Map3_i... at 5445:2:2:5445/-/100.00%
 >Cluster 147
-0	4386nt, >Dmel-B-R1058-Map4_i... *
+0	5418nt, >Dmel-B-G1226-Map3_r... *
+1	5418nt, >Dmel-B-R469-Map7_in... at 1:5418:1:5418/+/100.00%
 >Cluster 148
-0	4360nt, >Dmel-L-B344-Map1_re... *
+0	5395nt, >Dmel-B-R482-Map18_r... *
 >Cluster 149
-0	4347nt, >Dmel-L-B346-Map1_in... *
+0	5375nt, >Dmel-B-R264-Map20#C... *
 >Cluster 150
-0	2691nt, >Dmel-B-G2119-Map3_r... at 2192:1:1:2184/-/96.96%
-1	4341nt, >Dmel-B-G1837-Map4#L... *
+0	5374nt, >Dmel-B-R4-Map3_inc#... *
 >Cluster 151
-0	4339nt, >Dmel-B-R721-Map4_re... *
+0	5369nt, >Dmel-B-G1520-Map9#C... at 5369:2:2:5370/-/99.98%
+1	5370nt, >Dmel-B-R87-Map6#CLA... *
 >Cluster 152
-0	4322nt, >Dmel-L-B477-Map1_in... *
+0	5335nt, >Dmel-B-G1147-Map4_r... *
 >Cluster 153
-0	4316nt, >Dmel-B-R884-Map3_in... *
+0	5326nt, >Dmel-B-G1469-Map9_r... *
+1	5326nt, >Dmel-B-G119-Map20_r... at 1:5326:1:5326/+/100.00%
 >Cluster 154
-0	4310nt, >Dmel-B-G1258-Map5_r... *
+0	5324nt, >Dmel-L-B282-Map1#CL... *
 >Cluster 155
-0	4288nt, >Dmel-B-R1461-Map5_i... *
+0	5320nt, >Dmel-B-R1253-Map3#C... *
 >Cluster 156
-0	4251nt, >Dmel-L-B356-Map1#LT... *
+0	5291nt, >Dmel-L-B285-Map1#CL... *
 >Cluster 157
-0	4239nt, >Dmel-B-G1131-Map3_r... *
+0	5288nt, >Dmel-B-G971-Map3#CL... *
 >Cluster 158
-0	4238nt, >Dmel-B-G1147-Map4_r... *
+0	5285nt, >Dmel-L-B38-Map2_rev... *
 >Cluster 159
-0	4232nt, >Dmel-L-B357-Map1_re... *
+0	5284nt, >Dmel-B-R727-Map5#CL... *
+1	5284nt, >Dmel-B-R607-Map4#CL... at 1:5284:1:5284/+/100.00%
 >Cluster 160
-0	4208nt, >Dmel-B-G1026-Map4_u... *
+0	5256nt, >Dmel-B-G1446-Map20#... *
 >Cluster 161
-0	4198nt, >Dmel-L-B489-Map1_in... *
+0	5255nt, >Dmel-B-G1543-Map13#... *
 >Cluster 162
-0	4192nt, >Dmel-L-B343-Map1#LT... *
-1	3947nt, >Dmel-B-R1687-Map4#L... at 1:3228:965:4192/+/100.00%
+0	5252nt, >Dmel-B-G2433-Map5_i... *
 >Cluster 163
-0	4152nt, >Dmel-B-R1295-Map5_i... *
+0	5178nt, >Dmel-L-B294-Map1#CL... *
 >Cluster 164
-0	4136nt, >Dmel-L-B423-Map1_re... *
+0	5158nt, >Dmel-B-R428-Map3_re... *
 >Cluster 165
-0	4134nt, >Dmel-L-B364-Map1_in... *
+0	5157nt, >Dmel-B-R1058-Map4_i... *
 >Cluster 166
-0	4123nt, >Dmel-B-G971-Map3#LI... *
+0	5152nt, >Dmel-B-P74#CLASSI/L... *
 >Cluster 167
-0	4093nt, >Dmel-B-R1434-Map3_r... *
+0	5145nt, >Dmel-B-G1131-Map3_r... *
+1	5145nt, >Dmel-B-G1073-Map20#... at 1:5145:1:5145/+/100.00%
 >Cluster 168
-0	4089nt, >Dmel-B-R640-Map8_in... *
+0	5143nt, >Dmel-B-R614-Map6_re... *
 >Cluster 169
-0	4089nt, >Dmel-B-G1991-Map5#R... *
+0	5127nt, >Dmel-B-R1308-Map3#C... *
+1	4122nt, >Dmel-B-P156_inc#CLA... at 1:4122:365:4486/+/99.42%
 >Cluster 170
-0	4076nt, >Dmel-L-B366-Map1_in... *
+0	5115nt, >Dmel-B-R31-Map20#CL... *
 >Cluster 171
-0	4058nt, >Dmel-B-R1188-Map3_i... *
+0	5112nt, >Dmel-B-R570-Map3_re... *
 >Cluster 172
-0	4032nt, >Dmel-B-R1306-Map6_r... *
+0	5111nt, >Dmel-B-P226#CLASSI/... *
 >Cluster 173
-0	4004nt, >Dmel-B-G987-Map15_r... *
+0	5109nt, >Dmel-B-R1189-Map3#C... *
 >Cluster 174
-0	3994nt, >Dmel-B-R1279-Map3_i... *
+0	5089nt, >Dmel-L-B299-Map1_in... *
 >Cluster 175
-0	3987nt, >Dmel-L-B373-Map1#LT... *
+0	5055nt, >Dmel-B-R718-Map10_i... *
 >Cluster 176
-0	3987nt, >Dmel-B-P58.97-Map4#... *
+0	5039nt, >Dmel-B-G1421-Map20_... *
 >Cluster 177
-0	3981nt, >Dmel-B-R1039-Map9#L... *
+0	5035nt, >Dmel-B-R223-Map20_r... *
 >Cluster 178
-0	3972nt, >Dmel-B-R1004-Map3_r... *
-1	2440nt, >Dmel-B-R1005-Map3_i... at 1998:1:1:1998/-/100.00%
+0	5030nt, >Dmel-B-R224-Map20#C... *
 >Cluster 179
-0	3956nt, >Dmel-B-G1073-Map20#... *
+0	5020nt, >Dmel-L-B305-Map1_re... *
 >Cluster 180
-0	3953nt, >Dmel-B-R1075-Map3_r... *
+0	5017nt, >Dmel-B-G2575-Map4_r... *
+1	3336nt, >Dmel-B-G987-Map15_r... at 1:3336:1686:5017/+/99.58%
 >Cluster 181
-0	3950nt, >Dmel-B-P167.6-Map5_... *
+0	5012nt, >Dmel-B-G1485-Map14#... *
 >Cluster 182
-0	3948nt, >Dmel-B-R112-Map20_i... *
+0	4979nt, >Dmel-B-G1296-Map4_i... *
 >Cluster 183
-0	3900nt, >Dmel-B-G811-Map5_re... *
-1	3300nt, >Dmel-B-G950-Map4_in... at 3291:514:1085:3900/-/90.11%
+0	4881nt, >Dmel-B-G637-Map20#C... *
 >Cluster 184
-0	3899nt, >Dmel-B-G2402-Map6_u... *
+0	4854nt, >Dmel-B-R459-Map3_re... *
+1	1742nt, >Dmel-B-R460-Map3_re... at 6:1742:1:1702/+/96.50%
 >Cluster 185
-0	3892nt, >Dmel-B-R1298-Map5#L... *
+0	4848nt, >Dmel-L-B313-Map1_re... *
 >Cluster 186
-0	3889nt, >Dmel-B-R590-Map6_re... *
+0	4837nt, >Dmel-L-B315-Map1#CL... *
 >Cluster 187
-0	3875nt, >Dmel-L-B379-Map1_in... *
+0	4830nt, >Dmel-L-B317-Map1#CL... *
 >Cluster 188
-0	3866nt, >Dmel-B-R331-Map15#L... *
+0	4763nt, >Dmel-B-G2039-Map3#C... at 4760:1:1:4760/-/99.89%
+1	4764nt, >Dmel-B-R1004-Map3_r... *
 >Cluster 189
-0	3858nt, >Dmel-B-G940-Map5_re... *
+0	4758nt, >Dmel-B-P191#CLASSI/... *
 >Cluster 190
-0	3827nt, >Dmel-L-B383-Map1_in... *
+0	4718nt, >Dmel-B-G1461-Map20#... *
 >Cluster 191
-0	3795nt, >Dmel-B-G921-Map3_re... *
+0	4699nt, >Dmel-L-B322-Map1_re... *
 >Cluster 192
-0	3211nt, >Dmel-B-G672-Map9#LT... at 2773:1:1:2561/-/92.00%
-1	3789nt, >Dmel-B-G900-Map6_re... *
+0	4699nt, >Dmel-B-G1429-Map3_i... *
 >Cluster 193
-0	3759nt, >Dmel-B-R53-Map6_rev... *
+0	4259nt, >Dmel-B-G752-Map3_in... at 1:4259:428:4686/+/100.00%
+1	4686nt, >Dmel-B-R1553-Map3#C... *
 >Cluster 194
-0	3742nt, >Dmel-L-B388-Map1#LT... *
+0	4684nt, >Dmel-B-R9-Map20#CLA... *
 >Cluster 195
-0	3710nt, >Dmel-B-R1324-Map3_i... *
+0	4682nt, >Dmel-L-B323-Map1#CL... *
 >Cluster 196
-0	3681nt, >Dmel-L-B392-Map1_in... *
+0	4675nt, >Dmel-L-B324-Map1#CL... *
 >Cluster 197
-0	3652nt, >Dmel-B-G1021-Map15_... *
+0	4674nt, >Dmel-B-R106-Map20#C... *
 >Cluster 198
-0	3649nt, >Dmel-B-G901-Map20#L... *
+0	4647nt, >Dmel-B-R237-Map20_r... *
 >Cluster 199
-0	3646nt, >Dmel-B-G560-Map9#LI... *
+0	4633nt, >Dmel-B-R544-Map10#C... *
 >Cluster 200
-0	3634nt, >Dmel-B-G549-Map5_in... *
+0	4613nt, >Dmel-B-R10-Map3_inc... *
 >Cluster 201
-0	2510nt, >Dmel-B-G2329-Map9_i... at 2510:432:1550:3627/-/99.76%
-1	3627nt, >Dmel-L-B422-Map1_in... *
+0	4597nt, >Dmel-B-R75-Map20_in... *
 >Cluster 202
-0	3620nt, >Dmel-B-G881-Map20_r... *
+0	4584nt, >Dmel-B-R407-Map12#C... *
 >Cluster 203
-0	3608nt, >Dmel-L-B401-Map1_in... *
+0	4576nt, >Dmel-B-G364-Map3_in... *
 >Cluster 204
-0	3599nt, >Dmel-B-R1315-Map6_r... *
+0	4572nt, >Dmel-B-R717-Map6_re... *
 >Cluster 205
-0	3581nt, >Dmel-L-B502-Map1_in... *
+0	4548nt, >Dmel-B-G1392-Map14#... *
 >Cluster 206
-0	3580nt, >Dmel-B-R1234-Map4_i... *
+0	4548nt, >Dmel-B-R721-Map4_re... *
 >Cluster 207
-0	3569nt, >Dmel-L-B404-Map1_in... *
+0	4526nt, >Dmel-B-R1514-Map7_r... *
 >Cluster 208
-0	3565nt, >Dmel-B-G1181-Map3#L... *
-1	3462nt, >Dmel-B-G970-Map3#LT... at 38:2827:227:3258/+/80.80%
-2	2938nt, >Dmel-L-B481-Map1#LT... at 112:2595:658:3175/+/92.01%
+0	4524nt, >Dmel-B-G1432-Map13_... *
 >Cluster 209
-0	3565nt, >Dmel-L-B443-Map1_re... *
+0	4482nt, >Dmel-B-R177-Map6_re... *
 >Cluster 210
-0	3551nt, >Dmel-B-R254-Map3_in... *
+0	4469nt, >Dmel-L-B338-Map1_in... *
 >Cluster 211
-0	3531nt, >Dmel-L-B407-Map1_in... *
+0	4467nt, >Dmel-B-R34-Map20_re... *
 >Cluster 212
-0	3528nt, >Dmel-B-R987-Map3_in... *
+0	4462nt, >Dmel-B-G1424-Map4#C... *
 >Cluster 213
-0	3517nt, >Dmel-L-B417-Map1_in... *
+0	4452nt, >Dmel-L-B502-Map1_in... *
 >Cluster 214
-0	3504nt, >Dmel-B-R1119-Map4#L... *
+0	4442nt, >Dmel-B-G1418-Map5_r... *
 >Cluster 215
-0	3503nt, >Dmel-B-G1237-Map20_... *
+0	4441nt, >Dmel-B-R298-Map20#C... *
 >Cluster 216
-0	3491nt, >Dmel-B-R1091-Map3_r... *
+0	4383nt, >Dmel-B-R300-Map7_re... *
 >Cluster 217
-0	3484nt, >Dmel-B-R1094-Map3_r... *
+0	4346nt, >Dmel-L-B346-Map1_in... *
 >Cluster 218
-0	3484nt, >Dmel-B-G1734-Map3#L... *
+0	4289nt, >Dmel-B-G1837-Map4_s... *
 >Cluster 219
-0	3481nt, >Dmel-L-B410-Map1#LT... *
+0	4281nt, >Dmel-B-R927-Map6_re... *
 >Cluster 220
-0	3468nt, >Dmel-B-G887-Map5_in... *
+0	4261nt, >Dmel-B-R1061-Map3#C... *
 >Cluster 221
-0	3422nt, >Dmel-B-R407-Map12#L... *
+0	4250nt, >Dmel-L-B356-Map1#CL... *
 >Cluster 222
-0	3422nt, >Dmel-B-R1590-Map4_i... *
+0	4238nt, >Dmel-B-R1500-Map5_r... *
 >Cluster 223
-0	3416nt, >Dmel-B-R428-Map3_re... *
+0	4233nt, >Dmel-B-R590-Map6_re... *
 >Cluster 224
-0	2757nt, >Dmel-B-R1142-Map4#L... at 47:2753:36:2626/+/82.48%
-1	3411nt, >Dmel-B-R571-Map5_re... *
+0	4231nt, >Dmel-L-B357-Map1_re... *
 >Cluster 225
-0	3394nt, >Dmel-B-R369-Map4#LA... *
+0	4134nt, >Dmel-B-G672-Map9#CL... *
 >Cluster 226
-0	3364nt, >Dmel-B-R357-Map3_un... at 3316:355:96:3139/-/83.51%
-1	3391nt, >Dmel-B-R358-Map3_un... *
+0	4133nt, >Dmel-L-B364-Map1_in... *
 >Cluster 227
-0	3389nt, >Dmel-B-G745-Map4#LI... *
+0	4114nt, >Dmel-B-G1851-Map13#... *
 >Cluster 228
-0	3348nt, >Dmel-B-R746-Map3_in... *
+0	4099nt, >Dmel-B-G290-Map20_i... *
 >Cluster 229
-0	3339nt, >Dmel-B-R62-Map3_inc... *
+0	4075nt, >Dmel-L-B366-Map1_in... *
 >Cluster 230
-0	3300nt, >Dmel-L-B421-Map1_in... *
+0	3986nt, >Dmel-L-B373-Map1#CL... *
 >Cluster 231
-0	3286nt, >Dmel-B-R738-Map3_in... *
+0	1749nt, >Dmel-B-G761-Map3_re... at 1749:1:2228:3976/-/100.00%
+1	3976nt, >Dmel-B-G255-Map3_in... *
 >Cluster 232
-0	3262nt, >Dmel-B-R768-Map4_in... *
+0	3960nt, >Dmel-B-R185-Map3_re... *
 >Cluster 233
-0	3262nt, >Dmel-B-R1170-Map3_r... *
+0	3943nt, >Dmel-B-R1306-Map6_r... *
 >Cluster 234
-0	3258nt, >Dmel-B-G808-Map3#LI... *
+0	3913nt, >Dmel-B-G200-Map20_i... *
 >Cluster 235
-0	3245nt, >Dmel-B-R1202-Map4_i... *
+0	3899nt, >Dmel-B-G1222-Map3_i... *
 >Cluster 236
-0	3232nt, >Dmel-B-R696-Map3_in... *
+0	3874nt, >Dmel-L-B379-Map1_in... *
 >Cluster 237
-0	3224nt, >Dmel-B-R895-Map6_in... *
+0	3775nt, >Dmel-B-R1252-Map3#C... *
 >Cluster 238
-0	3214nt, >Dmel-B-R1536-Map3_i... *
+0	3760nt, >Dmel-L-B386-Map1#CL... *
 >Cluster 239
-0	3209nt, >Dmel-L-B427-Map1_in... *
+0	3741nt, >Dmel-L-B388-Map1#CL... *
 >Cluster 240
-0	3205nt, >Dmel-B-R460-Map3_re... *
+0	3721nt, >Dmel-B-R1234-Map4_i... *
 >Cluster 241
-0	2942nt, >Dmel-B-R1354-Map3_r... at 4:2913:1:3008/+/81.06%
-1	3188nt, >Dmel-B-R762-Map3_re... *
+0	3716nt, >Dmel-B-G570-Map5_s_... *
+1	3716nt, >Dmel-B-G1975-Map15_... at 1:3716:1:3716/+/100.00%
 >Cluster 242
-0	3175nt, >Dmel-B-R578-Map6_in... *
+0	3700nt, >Dmel-B-G1258-Map5_r... *
 >Cluster 243
-0	3171nt, >Dmel-L-B430-Map1#LT... *
+0	3683nt, >Dmel-B-R235-Map4_re... *
 >Cluster 244
-0	3171nt, >Dmel-B-R684-Map4_in... *
+0	3680nt, >Dmel-L-B392-Map1_in... *
 >Cluster 245
-0	3168nt, >Dmel-L-B431-Map1_in... *
+0	3674nt, >Dmel-B-G1274-Map10_... *
 >Cluster 246
-0	3168nt, >Dmel-B-R663-Map3_re... *
+0	3478nt, >Dmel-B-R356-Map6_s_... at 1:3477:128:3606/+/99.94%
+1	3624nt, >Dmel-B-R356-Map6_s_... *
 >Cluster 247
-0	3147nt, >Dmel-B-R662-Map11_r... *
+0	3607nt, >Dmel-L-B401-Map1_in... *
 >Cluster 248
-0	3107nt, >Dmel-L-B434-Map1_in... *
+0	3605nt, >Dmel-B-R163-Map5_re... *
 >Cluster 249
-0	3091nt, >Dmel-B-R1524-Map3_i... *
+0	3597nt, >Dmel-L-B383-Map1_in... *
 >Cluster 250
-0	3090nt, >Dmel-B-R1200-Map3_r... *
+0	3568nt, >Dmel-L-B404-Map1#CL... *
 >Cluster 251
-0	3082nt, >Dmel-B-R1473-Map4_i... *
+0	3530nt, >Dmel-L-B407-Map1_in... *
 >Cluster 252
-0	3082nt, >Dmel-B-R157-Map6_in... *
+0	3522nt, >Dmel-B-R673-Map3_s_... *
 >Cluster 253
-0	3078nt, >Dmel-B-G595-Map4_re... *
+0	3502nt, >Dmel-B-G1237-Map20_... *
 >Cluster 254
-0	3069nt, >Dmel-B-G453-Map6_in... *
+0	3501nt, >Dmel-B-R1087-Map3_i... *
 >Cluster 255
-0	3066nt, >Dmel-B-R183-Map7_in... *
+0	3480nt, >Dmel-L-B410-Map1#CL... *
 >Cluster 256
-0	3059nt, >Dmel-B-G330-Map20_r... *
+0	3467nt, >Dmel-B-R316-Map20#C... *
 >Cluster 257
-0	3027nt, >Dmel-B-G364-Map3_in... *
+0	3461nt, >Dmel-B-R696-Map3_in... *
 >Cluster 258
-0	3013nt, >Dmel-B-R577-Map7_in... *
+0	3448nt, >Dmel-B-R1357-Map4_r... *
 >Cluster 259
-0	3006nt, >Dmel-B-R919-Map4_re... *
+0	3447nt, >Dmel-B-G2404-Map6_i... *
 >Cluster 260
-0	2999nt, >Dmel-B-R755-Map4_re... *
+0	3440nt, >Dmel-B-R1059-Map3_i... *
 >Cluster 261
-0	2996nt, >Dmel-B-R32-Map4#LIN... *
+0	3408nt, >Dmel-B-R839-Map12#C... *
 >Cluster 262
-0	2981nt, >Dmel-B-G903-Map4_re... *
+0	3402nt, >Dmel-B-R1202-Map4_i... *
 >Cluster 263
-0	2981nt, >Dmel-B-R543-Map3#LI... *
+0	3396nt, >Dmel-B-R240-Map4#CL... *
 >Cluster 264
-0	2980nt, >Dmel-B-R1812-Map4#L... *
+0	3359nt, >Dmel-B-G2285-Map3_r... *
 >Cluster 265
-0	2969nt, >Dmel-B-R1292-Map4_i... *
+0	3344nt, >Dmel-B-R1473-Map4_i... *
 >Cluster 266
-0	2964nt, >Dmel-L-B444-Map1_in... *
+0	3341nt, >Dmel-L-B417-Map1#CL... *
 >Cluster 267
-0	2963nt, >Dmel-B-P70.91-Map20... *
+0	3327nt, >Dmel-B-R398-Map4_un... *
 >Cluster 268
-0	2952nt, >Dmel-B-G752-Map3_in... *
+0	3317nt, >Dmel-B-G970-Map3#CL... *
 >Cluster 269
-0	2931nt, >Dmel-B-R184-Map18#L... *
+0	3300nt, >Dmel-B-R1298-Map5#C... *
 >Cluster 270
-0	2931nt, >Dmel-B-R319-Map3_re... *
+0	3299nt, >Dmel-L-B421-Map1_in... *
 >Cluster 271
-0	2926nt, >Dmel-L-B446-Map1_re... *
+0	3283nt, >Dmel-L-B422-Map1#CL... *
 >Cluster 272
-0	2925nt, >Dmel-B-R211-Map10_r... *
+0	3281nt, >Dmel-L-B423-Map1_re... *
 >Cluster 273
-0	2923nt, >Dmel-L-B447-Map1#LT... *
+0	3246nt, >Dmel-B-G852-Map4_in... *
 >Cluster 274
-0	2923nt, >Dmel-B-G501-Map3_in... *
+0	3244nt, >Dmel-B-G2631-Map3_r... *
+1	2802nt, >Dmel-B-P117_inc#CLA... at 1:2802:443:3244/+/99.96%
+2	2805nt, >Dmel-B-R317-Map20_i... at 1:2805:2:2806/+/100.00%
 >Cluster 275
-0	2906nt, >Dmel-B-G319-Map3_in... *
+0	3211nt, >Dmel-B-G489-Map3#CL... *
 >Cluster 276
-0	2897nt, >Dmel-B-G638-Map20_r... *
+0	3208nt, >Dmel-L-B427-Map1_in... *
 >Cluster 277
-0	2891nt, >Dmel-B-R185-Map3_re... *
+0	3207nt, >Dmel-B-R74-Map18#CL... *
+1	3207nt, >Dmel-B-G524-Map3_re... at 1:3207:1:3207/+/100.00%
 >Cluster 278
-0	2879nt, >Dmel-B-R1345-Map3#L... *
+0	3193nt, >Dmel-B-R560-Map5_in... *
 >Cluster 279
-0	2863nt, >Dmel-L-B38-Map2_rev... *
+0	3188nt, >Dmel-B-G1119-Map3_r... *
 >Cluster 280
-0	2862nt, >Dmel-L-B452-Map1#LT... *
+0	3167nt, >Dmel-L-B431-Map1_in... *
 >Cluster 281
-0	2859nt, >Dmel-B-P156.52-Map4... *
+0	3111nt, >Dmel-B-R1200-Map3_r... *
 >Cluster 282
-0	2840nt, >Dmel-B-R1456-Map3_i... *
+0	3111nt, >Dmel-B-G2324-Map3_s... *
 >Cluster 283
-0	2837nt, >Dmel-B-G255-Map3_in... *
+0	3106nt, >Dmel-L-B434-Map1_in... *
 >Cluster 284
-0	2832nt, >Dmel-B-R1344-Map3_r... *
+0	3093nt, >Dmel-B-R356-Map6_s_... *
 >Cluster 285
-0	2827nt, >Dmel-B-G693-Map4#LT... *
+0	3080nt, >Dmel-B-R516-Map6_in... *
 >Cluster 286
-0	2817nt, >Dmel-B-R1502-Map4_r... *
+0	3068nt, >Dmel-B-R1173-Map3_r... *
 >Cluster 287
-0	2816nt, >Dmel-B-G358-Map6_in... *
+0	3043nt, >Dmel-B-R673-Map3_s_... *
 >Cluster 288
-0	2807nt, >Dmel-B-G2510-Map4_i... *
+0	3002nt, >Dmel-B-R1502-Map4_r... *
 >Cluster 289
-0	2796nt, >Dmel-B-R1423-Map3_i... *
+0	2994nt, >Dmel-B-G501-Map3_in... *
 >Cluster 290
-0	2792nt, >Dmel-B-R1199-Map3_i... *
+0	2969nt, >Dmel-B-G745-Map4#CL... *
 >Cluster 291
-0	2790nt, >Dmel-B-R313-Map3_in... *
+0	2964nt, >Dmel-L-B443-Map1_re... *
 >Cluster 292
-0	2784nt, >Dmel-B-R1117-Map3#L... *
+0	2963nt, >Dmel-L-B444-Map1_in... *
 >Cluster 293
-0	2780nt, >Dmel-B-R482-Map18_r... *
+0	2954nt, >Dmel-B-R356-Map6_s_... *
 >Cluster 294
-0	2778nt, >Dmel-B-G852-Map4_in... *
+0	2945nt, >Dmel-B-R1623-Map3_r... *
 >Cluster 295
-0	2776nt, >Dmel-B-R250-Map3_in... *
+0	2934nt, >Dmel-B-G1708-Map5_r... *
 >Cluster 296
-0	2773nt, >Dmel-B-R158-Map3_in... *
+0	2925nt, >Dmel-L-B446-Map1_re... *
 >Cluster 297
-0	2762nt, >Dmel-B-R765-Map7_in... *
+0	2922nt, >Dmel-L-B447-Map1#CL... *
 >Cluster 298
-0	2757nt, >Dmel-B-R1045-Map3_i... *
+0	2907nt, >Dmel-L-B448-Map1_re... *
 >Cluster 299
-0	2756nt, >Dmel-B-R534-Map4_re... *
+0	2886nt, >Dmel-B-R812-Map3_re... *
 >Cluster 300
-0	2745nt, >Dmel-B-G632-Map7_in... *
+0	2865nt, >Dmel-L-B451-Map1_re... *
 >Cluster 301
-0	2740nt, >Dmel-B-R1396-Map5_r... *
+0	2861nt, >Dmel-L-B452-Map1#CL... *
 >Cluster 302
-0	2737nt, >Dmel-L-B457-Map1_in... *
+0	2849nt, >Dmel-B-R884-Map3_in... *
 >Cluster 303
-0	2725nt, >Dmel-B-G2171-Map3_i... *
+0	2827nt, >Dmel-B-G1061-Map5_i... *
 >Cluster 304
-0	2713nt, >Dmel-B-R756-Map3#LI... *
+0	2825nt, >Dmel-B-G2624-Map4#C... *
 >Cluster 305
-0	2701nt, >Dmel-B-G788-Map12_i... *
+0	2825nt, >Dmel-B-R356-Map6_s_... *
 >Cluster 306
-0	2696nt, >Dmel-B-G2624-Map4#L... *
+0	2814nt, >Dmel-B-R1850-Map4_r... *
 >Cluster 307
-0	2692nt, >Dmel-B-R1044-Map3_r... *
+0	2805nt, >Dmel-L-B490-Map1_in... *
 >Cluster 308
-0	2692nt, >Dmel-B-R235-Map4_re... *
+0	2801nt, >Dmel-B-R581-Map8#CL... *
 >Cluster 309
-0	2691nt, >Dmel-B-R172-Map4_re... *
+0	2785nt, >Dmel-B-R1349-Map5_i... *
 >Cluster 310
-0	2689nt, >Dmel-B-G655-Map4_in... *
+0	2761nt, >Dmel-B-R765-Map7_in... *
 >Cluster 311
-0	2686nt, >Dmel-B-R680-Map5_in... *
+0	2758nt, >Dmel-B-G1009-Map20_... *
 >Cluster 312
-0	2684nt, >Dmel-B-R688-Map4_in... *
+0	2736nt, >Dmel-L-B457-Map1_in... *
 >Cluster 313
-0	2669nt, >Dmel-B-R941-Map3#LI... *
+0	2622nt, >Dmel-B-R113-Map20#C... at 1:2622:108:2729/+/100.00%
+1	2729nt, >Dmel-B-R1564-Map5_r... *
 >Cluster 314
-0	2663nt, >Dmel-B-G872-Map3_re... *
+0	2701nt, >Dmel-B-R1188-Map3_i... *
 >Cluster 315
-0	2660nt, >Dmel-B-R581-Map8_in... *
+0	2678nt, >Dmel-B-R1089-Map4_r... *
 >Cluster 316
-0	2644nt, >Dmel-B-R673-Map3_in... *
+0	2655nt, >Dmel-B-R184-Map18#C... *
 >Cluster 317
-0	2637nt, >Dmel-B-G635-Map20_r... *
+0	2625nt, >Dmel-B-R1480-Map3_i... *
 >Cluster 318
-0	2632nt, >Dmel-B-G2497-Map3_i... *
+0	2563nt, >Dmel-B-G944-Map5_in... *
 >Cluster 319
-0	2419nt, >Dmel-B-R1115-Map3#R... at 440:2413:4:1975/+/96.61%
-1	2627nt, >Dmel-B-R1116-Map3#R... *
+0	2556nt, >Dmel-L-B465-Map1_in... *
 >Cluster 320
-0	2611nt, >Dmel-B-G594-Map14_i... *
+0	2546nt, >Dmel-B-G887-Map5_in... *
 >Cluster 321
-0	2610nt, >Dmel-B-G400-Map4_re... *
+0	2484nt, >Dmel-L-B467-Map1#CL... *
 >Cluster 322
-0	2603nt, >Dmel-B-R1402-Map3_i... *
+0	2422nt, >Dmel-L-B471-Map1_in... *
 >Cluster 323
-0	2601nt, >Dmel-B-R10-Map3_inc... *
+0	2419nt, >Dmel-L-B472-Map1_in... *
 >Cluster 324
-0	2599nt, >Dmel-B-G273-Map20_r... *
+0	2353nt, >Dmel-L-B480-Map1_in... *
 >Cluster 325
-0	2588nt, >Dmel-B-R887-Map3#LI... *
+0	2343nt, >Dmel-B-R64-Map5_rev... *
 >Cluster 326
-0	2587nt, >Dmel-B-G2285-Map3_r... *
+0	2332nt, >Dmel-L-B481-Map1#CL... *
 >Cluster 327
-0	2557nt, >Dmel-L-B465-Map1_in... *
+0	2330nt, >Dmel-B-G2193-Map3_i... *
 >Cluster 328
-0	2556nt, >Dmel-B-R144-Map14_r... *
+0	2313nt, >Dmel-B-R1438-Map6_r... *
 >Cluster 329
-0	2556nt, >Dmel-B-G2517-Map3_i... *
+0	2311nt, >Dmel-B-R1295-Map5_i... *
 >Cluster 330
-0	2544nt, >Dmel-B-G642-Map16_i... *
+0	2295nt, >Dmel-B-R895-Map6_in... *
 >Cluster 331
-0	2541nt, >Dmel-B-R150-Map3_in... *
+0	2291nt, >Dmel-B-R663-Map3_re... *
 >Cluster 332
-0	2537nt, >Dmel-B-R195-Map3_in... *
+0	2291nt, >Dmel-B-G1026-Map4#C... *
 >Cluster 333
-0	2520nt, >Dmel-B-G1993-Map5#L... *
+0	2289nt, >Dmel-B-G1787-Map3_i... *
 >Cluster 334
-0	2509nt, >Dmel-B-R193-Map3_in... *
+0	2267nt, >Dmel-B-R571-Map5_re... *
 >Cluster 335
-0	2505nt, >Dmel-B-R1653-Map3#L... *
+0	2225nt, >Dmel-B-R157-Map6#CL... *
 >Cluster 336
-0	2501nt, >Dmel-B-G2503-Map3_i... *
+0	2198nt, >Dmel-L-B489-Map1_in... *
 >Cluster 337
-0	2498nt, >Dmel-B-G2238-Map3_r... *
+0	2197nt, >Dmel-B-G642-Map16_i... *
 >Cluster 338
-0	2480nt, >Dmel-B-G2650-Map4_i... *
+0	2195nt, >Dmel-B-R1279-Map3_i... *
 >Cluster 339
-0	2478nt, >Dmel-B-R969-Map3_in... *
+0	2177nt, >Dmel-B-R1091-Map3_r... *
 >Cluster 340
-0	2472nt, >Dmel-B-G424-Map3_in... *
+0	2144nt, >Dmel-B-R1354-Map3_r... *
 >Cluster 341
-0	2453nt, >Dmel-B-R1050-Map3_r... *
+0	2132nt, >Dmel-B-P63_inc#CLAS... *
 >Cluster 342
-0	2442nt, >Dmel-B-R885-Map3#LI... *
+0	2116nt, >Dmel-B-G1708-Map5_r... *
 >Cluster 343
-0	2440nt, >Dmel-B-G1846-Map5_i... *
+0	2068nt, >Dmel-B-P167#CLASSII... *
 >Cluster 344
-0	2436nt, >Dmel-B-G1995-Map4_i... *
+0	2055nt, >Dmel-B-G1005-Map6#C... *
 >Cluster 345
-0	2433nt, >Dmel-B-G2604-Map8_i... *
+0	2042nt, >Dmel-B-G549-Map5_in... *
 >Cluster 346
-0	2423nt, >Dmel-L-B471-Map1_in... *
+0	2027nt, >Dmel-L-B493-Map1_re... *
 >Cluster 347
-0	2420nt, >Dmel-L-B472-Map1_in... *
+0	2005nt, >Dmel-B-R62-Map3_inc... *
 >Cluster 348
-0	2420nt, >Dmel-B-R378-Map3_re... *
+0	1984nt, >Dmel-B-R1075-Map3_r... *
 >Cluster 349
-0	2416nt, >Dmel-B-R459-Map3_re... *
+0	1978nt, >Dmel-B-R1851-Map3_i... *
 >Cluster 350
-0	2413nt, >Dmel-B-R64-Map5_rev... *
+0	1974nt, >Dmel-B-R1322-Map3_i... *
 >Cluster 351
-0	2400nt, >Dmel-B-R1236-Map3_r... *
+0	1950nt, >Dmel-L-B499-Map1_in... *
 >Cluster 352
-0	2387nt, >Dmel-B-R1322-Map3_i... *
+0	1942nt, >Dmel-L-B500-Map1_in... *
 >Cluster 353
-0	2383nt, >Dmel-B-G1787-Map3_i... *
+0	1933nt, >Dmel-B-G921-Map3_re... *
 >Cluster 354
-0	2374nt, >Dmel-B-G1754-Map3_i... *
+0	1915nt, >Dmel-L-B501-Map1_re... *
 >Cluster 355
-0	2367nt, >Dmel-B-G1861-Map3_r... *
+0	1906nt, >Dmel-B-R771-Map4_in... *
 >Cluster 356
-0	2364nt, >Dmel-B-G2230-Map4#L... *
+0	1903nt, >Dmel-B-G415-Map4#CL... *
 >Cluster 357
-0	2360nt, >Dmel-B-R1480-Map3_i... *
+0	1894nt, >Dmel-L-B504-Map1_re... *
 >Cluster 358
-0	2297nt, >Dmel-B-G2575-Map4_r... at 2266:208:33:2007/-/83.86%
-1	2357nt, >Dmel-B-R932-Map3_in... *
+0	1890nt, >Dmel-B-R1086-Map4_i... *
 >Cluster 359
-0	2354nt, >Dmel-L-B480-Map1_in... *
+0	1855nt, >Dmel-B-G2033-Map6_r... *
 >Cluster 360
-0	2349nt, >Dmel-B-G2433-Map5_i... *
+0	1847nt, >Dmel-L-B505-Map1_re... *
 >Cluster 361
-0	2319nt, >Dmel-B-G398-Map15_i... *
+0	1818nt, >Dmel-B-R17-Map6_inc... *
 >Cluster 362
-0	2307nt, >Dmel-B-G2026-Map4_i... *
+0	1813nt, >Dmel-B-R1344-Map3_r... *
 >Cluster 363
-0	2293nt, >Dmel-B-G2583-Map5#L... *
+0	1811nt, >Dmel-B-R1119-Map4#C... *
 >Cluster 364
-0	2287nt, >Dmel-B-R1514-Map7_r... *
+0	1778nt, >Dmel-B-R1844-Map4_i... *
 >Cluster 365
-0	2276nt, >Dmel-B-R1173-Map3_r... *
+0	1738nt, >Dmel-B-P70#CLASSII/... *
+1	1737nt, >Dmel-B-G522-Map3#CL... at 1:1737:1:1737/+/100.00%
 >Cluster 366
-0	2273nt, >Dmel-B-P93.83-Map8_... *
+0	1737nt, >Dmel-B-R188-Map12_r... *
 >Cluster 367
-0	2263nt, >Dmel-B-R436-Map3_in... *
+0	1727nt, >Dmel-B-R1345-Map3#C... *
 >Cluster 368
-0	2259nt, >Dmel-B-G2605-Map3_i... *
+0	1712nt, >Dmel-B-R746-Map3_in... *
 >Cluster 369
-0	2240nt, >Dmel-B-G1728-Map3_i... *
+0	1708nt, >Dmel-B-R1236-Map3_r... *
 >Cluster 370
-0	2222nt, >Dmel-B-G2363-Map3_i... *
+0	1698nt, >Dmel-B-R768-Map4#CL... *
 >Cluster 371
-0	2219nt, >Dmel-B-R669-Map3#LI... *
+0	1694nt, >Dmel-B-G330-Map20_r... *
 >Cluster 372
-0	2203nt, >Dmel-B-R135-Map12_r... *
+0	1681nt, >Dmel-L-B516-Map1_in... *
 >Cluster 373
-0	2203nt, >Dmel-B-P63.94-Map20... *
+0	1681nt, >Dmel-B-R357-Map3_un... *
 >Cluster 374
-0	2203nt, >Dmel-B-G1731-Map4_i... *
+0	1675nt, >Dmel-B-G453-Map6_in... *
 >Cluster 375
-0	2195nt, >Dmel-B-R4-Map3_inc#... *
+0	1666nt, >Dmel-B-R369-Map4#CL... *
 >Cluster 376
-0	2176nt, >Dmel-B-G1990-Map6_r... *
+0	1664nt, >Dmel-B-G638-Map20_r... *
 >Cluster 377
-0	2155nt, >Dmel-B-G1711-Map3#L... *
+0	1644nt, >Dmel-B-G709-Map4_s_... *
 >Cluster 378
-0	2135nt, >Dmel-B-R434-Map4#LT... *
+0	1643nt, >Dmel-B-R250-Map3_in... *
 >Cluster 379
-0	2125nt, >Dmel-B-R1742-Map5_i... *
+0	1637nt, >Dmel-B-R144-Map14_r... *
 >Cluster 380
-0	2109nt, >Dmel-B-R834-Map6_in... *
+0	1622nt, >Dmel-B-G2497-Map3#C... *
 >Cluster 381
-0	2067nt, >Dmel-B-G1742-Map3#R... *
+0	1609nt, >Dmel-B-R313-Map3_in... *
 >Cluster 382
-0	2045nt, >Dmel-B-R570-Map3_re... *
+0	1606nt, >Dmel-B-G2152-Map6#C... *
+1	1606nt, >Dmel-B-G2238-Map3_r... at 1:1606:1:1606/+/100.00%
 >Cluster 383
-0	2030nt, >Dmel-B-R1851-Map3_i... *
+0	1602nt, >Dmel-B-R172-Map4_re... *
 >Cluster 384
-0	2028nt, >Dmel-L-B493-Map1_re... *
+0	1596nt, >Dmel-B-G2524-Map4_i... *
 >Cluster 385
-0	1951nt, >Dmel-L-B499-Map1_in... *
+0	1587nt, >Dmel-B-R356-Map6_s_... *
 >Cluster 386
-0	1943nt, >Dmel-L-B500-Map1_in... *
+0	1553nt, >Dmel-B-G400-Map4_re... *
 >Cluster 387
-0	1939nt, >Dmel-B-G2039-Map3_i... *
+0	1537nt, >Dmel-B-R370-Map4_re... *
 >Cluster 388
-0	1916nt, >Dmel-L-B501-Map1_re... *
+0	1536nt, >Dmel-B-R183-Map7#CL... *
 >Cluster 389
-0	1819nt, >Dmel-B-R17-Map6_inc... *
+0	1532nt, >Dmel-B-R254-Map3#CL... *
 >Cluster 390
-0	1682nt, >Dmel-L-B516-Map1_in... *
+0	1506nt, >Dmel-B-R1653-Map3#C... *
 >Cluster 391
-0	1557nt, >Dmel-B-R1198-Map3#L... *
+0	1496nt, >Dmel-B-R578-Map6_in... *
 >Cluster 392
-0	1479nt, >Dmel-B-R66-Map4_rev... *
+0	1495nt, >Dmel-B-R1536-Map3_i... *
 >Cluster 393
-0	1389nt, >Dmel-L-B526-Map1_in... *
+0	1494nt, >Dmel-B-R919-Map4_re... *
 >Cluster 394
-0	885nt, >Dmel-B-R1463-Map3_i... *
+0	1490nt, >Dmel-B-R1590-Map4_i... *
+>Cluster 395
+0	1488nt, >Dmel-B-R312-Map4_in... *
+>Cluster 396
+0	1478nt, >Dmel-B-R66-Map4_rev... *
+>Cluster 397
+0	1467nt, >Dmel-B-P24_inc#CLAS... *
+>Cluster 398
+0	1464nt, >Dmel-B-G693-Map4#CL... *
+>Cluster 399
+0	1461nt, >Dmel-B-R1170-Map3_r... *
+>Cluster 400
+0	1432nt, >Dmel-B-G788-Map12#C... *
+>Cluster 401
+0	1428nt, >Dmel-B-R543-Map3#CL... *
+>Cluster 402
+0	1407nt, >Dmel-B-R738-Map3_in... *
+>Cluster 403
+0	1392nt, >Dmel-B-R1423-Map3_i... *
+>Cluster 404
+0	1379nt, >Dmel-B-G2230-Map4#C... *
+>Cluster 405
+0	1379nt, >Dmel-B-R534-Map4_re... *
+>Cluster 406
+0	1379nt, >Dmel-B-G1691-Map8_i... *
+>Cluster 407
+0	1370nt, >Dmel-B-G1975-Map15_... *
+>Cluster 408
+0	1370nt, >Dmel-B-G273-Map20_r... *
+>Cluster 409
+0	1359nt, >Dmel-B-G2329-Map9_i... *
+>Cluster 410
+0	1335nt, >Dmel-B-R1044-Map3_r... *
+>Cluster 411
+0	1330nt, >Dmel-B-R756-Map3#CL... *
+>Cluster 412
+0	1329nt, >Dmel-B-R1463-Map3_i... *
+>Cluster 413
+0	1326nt, >Dmel-B-G1993-Map5_s... *
+>Cluster 414
+0	1320nt, >Dmel-B-R195-Map3_in... *
+>Cluster 415
+0	1294nt, >Dmel-B-G1771-Map12_... *
+>Cluster 416
+0	1292nt, >Dmel-B-G764-Map8_in... *
+>Cluster 417
+0	1278nt, >Dmel-B-R382-Map20#C... *
+>Cluster 418
+0	1216nt, >Dmel-B-R1524-Map3_i... *
+>Cluster 419
+0	1204nt, >Dmel-B-G503-Map3#CL... *
+>Cluster 420
+0	1197nt, >Dmel-L-B526-Map1_in... *
+>Cluster 421
+0	1196nt, >Dmel-B-R885-Map3#CL... *
+>Cluster 422
+0	1194nt, >Dmel-B-R1396-Map5_r... *
+>Cluster 423
+0	1182nt, >Dmel-B-G2604-Map8_i... *
+>Cluster 424
+0	1181nt, >Dmel-B-G398-Map15#C... *
+1	1181nt, >Dmel-B-R3-Map20#CLA... at 1:1181:1:1181/+/100.00%
+>Cluster 425
+0	1177nt, >Dmel-B-R1217-Map4_i... *
+>Cluster 426
+0	1168nt, >Dmel-B-G2605-Map3_i... *
+>Cluster 427
+0	1074nt, >Dmel-B-R1292-Map4_i... *
+>Cluster 428
+0	1064nt, >Dmel-B-R1005-Map3_i... *
+>Cluster 429
+0	1027nt, >Dmel-B-R378-Map3_re... *
+>Cluster 430
+0	1017nt, >Dmel-B-R150-Map3#CL... *
+>Cluster 431
+0	1017nt, >Dmel-B-R1142-Map4_i... *
+>Cluster 432
+0	1015nt, >Dmel-B-G1776-Map3#C... *
+>Cluster 433
+0	1013nt, >Dmel-B-G1754-Map3_i... *
+>Cluster 434
+0	997nt, >Dmel-B-P29#CLASSI/L... *
+>Cluster 435
+0	953nt, >Dmel-B-G1728-Map3_i... *
+>Cluster 436
+0	926nt, >Dmel-B-G2292-Map4_i... *
+>Cluster 437
+0	826nt, >Dmel-B-R1199-Map3_i... *
+>Cluster 438
+0	785nt, >Dmel-B-G2381-Map5_i... *
+>Cluster 439
+0	771nt, >Dmel-B-R1901-Map4_s... *
+>Cluster 440
+0	767nt, >Dmel-B-G1731-Map4#C... *
+>Cluster 441
+0	734nt, >Dmel-B-R1705-Map5_i... *
+>Cluster 442
+0	683nt, >Dmel-B-R1402-Map3_i... *
+>Cluster 443
+0	681nt, >Dmel-B-R688-Map4#CL... *
+>Cluster 444
+0	624nt, >Dmel-B-R436-Map3_in... *
+>Cluster 445
+0	622nt, >Dmel-B-R932-Map3#CL... *
+>Cluster 446
+0	527nt, >Dmel-B-R1827-Map3#C... *
+>Cluster 447
+0	438nt, >Dmel-B-G1708-Map5_r... *
+>Cluster 448
+0	433nt, >Dmel-B-G1990-Map6_r... *
+>Cluster 449
+0	379nt, >Dmel-B-R1587-Map3_i... *
+>Cluster 450
+0	302nt, >Dmel-B-R1742-Map5_i... *

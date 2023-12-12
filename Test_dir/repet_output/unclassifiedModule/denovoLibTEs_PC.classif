@@ -1,38 +1,36 @@
 Seq_name	length	strand	confused	class	order	Wcode	sFamily	CI	coding	struct	other
-Dmel-B-R1358-Map4	5543	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_GAG_412_mdg1_NA_GAG_NA: 3.7e-08, GyDB_RT_17_6_NA_RT_NA: 2.0999999999999999e-75)	struct=(TElength: 5543bps;  GAG RT )	other=(NA)
-Dmel-B-R1427-Map3	2396	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 2396bps;  )	other=(NA)
-Dmel-B-R1061-Map3	4513	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF13976.9_gag_pre-integrs_NA_GAG_28.4: 2.6e-08, GyDB_INT_1731_NA_INT_NA: 1.2e-06, GyDB_RT_1731_NA_RT_NA: 6.4e-18)	struct=(TElength: 4513bps;  GAG INT RT )	other=(NA)
-Dmel-B-P58.97-Map4	3987	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF07253.14_Gypsy_NA_ENV_27.5: 1.2e-73)	struct=(TElength: 3987bps;  ENV )	other=(NA)
-Dmel-B-G680-Map4	4902	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 4902bps; TermRepeats: termLTR: 1846; )	other=(NA)
-Dmel-B-G2333-Map3	2503	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 2503bps;  )	other=(NA)
-Dmel-B-R745-Map3	4544	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 4544bps;  )	other=(NA)
-Dmel-B-G1742-Map3	2067	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_RT_micropia_mdg3_NA_RT_NA: 2.4e-07)	struct=(TElength: 2067bps;  RT )	other=(NA)
-Dmel-B-G1837-Map4	4341	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_INT_osvaldo_NA_INT_NA: 8.9e-05, GyDB_RT_caulimovirus_NA_RT_NA: 0.0019)	struct=(TElength: 4341bps;  INT RT )	other=(NA)
-Dmel-B-G1885-Map4	3229	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3229bps;  )	other=(NA)
-Dmel-B-G519-Map5	4310	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF13976.9_gag_pre-integrs_NA_GAG_28.4: 2.6e-08, GyDB_INT_1731_NA_INT_NA: 1.2e-06)	struct=(TElength: 4310bps;  GAG INT )	other=(NA)
-Dmel-B-R1115-Map3	2419	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF00078.30_RT_1_NA_RT_29.6: 1e-17)	struct=(TElength: 2419bps;  RT )	other=(NA)
-Dmel-B-R1116-Map3	2627	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF00078.30_RT_1_NA_RT_29.6: 9.2e-18)	struct=(TElength: 2627bps;  RT )	other=(NA)
-Dmel-B-R1133-Map3	10353	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 10353bps;  )	other=(NA)
-Dmel-B-R1135-Map3	4494	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 4494bps;  )	other=(NA)
-Dmel-B-R1189-Map3	3218	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3218bps;  )	other=(NA)
-Dmel-B-R1250-Map3	4660	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 4660bps; TermRepeats: termLTR: 1285; AP )	other=(NA)
-Dmel-B-R1251-Map3	5186	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 5186bps; TermRepeats: termLTR: 1808; AP )	other=(NA)
-Dmel-B-R1252-Map3	4555	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 4555bps; TermRepeats: termLTR: 1176; AP )	other=(NA)
-Dmel-B-R1253-Map3	4836	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 4836bps; TermRepeats: termLTR: 1462; AP )	other=(NA)
-Dmel-B-G2402-Map6	3899	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3899bps; TermRepeats: termLTR: 1735; )	other=(NA)
-Dmel-B-G2415-Map3	4537	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 4537bps;  )	other=(NA)
-Dmel-B-G1734-Map3	3484	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF13975.9_gag-asp_proteas_NA_GAG_28.2: 0.022, PF05585.15_DUF1758_NA_AP_20.9: 4.9e-07, GyDB_INT_bel_NA_INT_NA: 1.8e-41)	struct=(TElength: 3484bps;  GAG AP INT )	other=(NA)
-Dmel-B-G1026-Map4	4208	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 4208bps; TermRepeats: termLTR: 1206; )	other=(NA)
-Dmel-B-R471-Map3	2380	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 2380bps;  )	other=(NA)
-Dmel-B-R513-Map3	1692	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 1692bps;  )	other=(NA)
-Dmel-B-R514-Map3	4344	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 4344bps;  )	other=(NA)
-Dmel-B-R546-Map3	2502	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 2502bps;  )	other=(NA)
-Dmel-B-G1987-Map4	4217	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 4217bps; TermRepeats: termLTR: 1641; )	other=(NA)
-Dmel-B-G1991-Map5	4089	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_RT_412_mdg1_NA_RT_NA: 5.3e-12)	struct=(TElength: 4089bps;  RT )	other=(NA)
-Dmel-B-R1598-Map6	3248	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3248bps;  )	other=(NA)
-Dmel-B-R1637-Map4	4425	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF03732.20_Retrotrans_gag_NA_GAG_23.2: 1.5e-05, GyDB_INT_micropia_mdg3_NA_INT_NA: 3.4e-37)	struct=(TElength: 4425bps;  GAG INT )	other=(NA)
-Dmel-B-R1812-Map4	2980	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_INT_bel_NA_INT_NA: 3.7e-13)	struct=(TElength: 2980bps;  INT )	other=(NA)
-Dmel-B-R357-Map3	3364	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3364bps; TermRepeats: termLTR: 367; )	other=(NA)
-Dmel-B-R358-Map3	3391	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3391bps; TermRepeats: termLTR: 369; )	other=(NA)
-Dmel-B-R376-Map4	3011	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3011bps;  )	other=(NA)
-Dmel-B-R434-Map4	2135	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF04513.15_Baculo_PEP_C_NA_ENV_21.3: 0.11)	struct=(TElength: 2135bps;  ENV )	other=(NA)
+Dmel-B-R1427-Map3	558	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 558bps;  )	other=NA
+Dmel-B-R1061-Map3	4261	+	False	CLASSI	NA	NA	NA	0	coding=(profiles: PF13976.9_gag_pre-integrs_NA_GAG_28.4: 2.6e-08, GyDB_INT_1731_NA_INT_NA: 1.2e-06, GyDB_RT_1731_NA_RT_NA: 6.4e-18)	struct=(TElength: 4261bps;  GAG INT RT )	other=NA
+Dmel-B-P58	7529	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_GAG_17_6_NA_GAG_NA: 1.8e-25, GyDB_AP_17_6_NA_AP_NA: 2.7e-34, GyDB_RT_17_6_NA_RT_NA: 1.5e-131, PF07253.14_Gypsy_NA_ENV_27.5: 4.2e-50)	struct=(TElength: 7529bps;  GAG AP RT ENV )	other=NA
+Dmel-B-G2198-Map3	8242	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_INT_gypsy_NA_INT_NA: 3.4999999999999995e-55, PF00078.30_RT_1_NA_RT_29.6: 1.3e-08, GyDB_RNaseH_lentiviridae_NA_RH_NA: 3.7e-06, PF07253.14_Gypsy_NA_ENV_27.5: 1.9999999999999998e-42)	struct=(TElength: 8242bps; TermRepeats: termLTR: 276; INT RT RNaseH ENV )	other=NA
+Dmel-B-G1740-Map4_s_2	13674	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_micropia_mdg3_NA_AP_NA: 1.4e-14, GyDB_INT_17_6_NA_INT_NA: 6.3e-94, GyDB_RT_17_6_NA_RT_NA: 1.9000000000000003e-130, PF17919.4_RT_RNaseH_2_NA_RT_29.8: 1.3e-08, GyDB_ENV_errantiviridae_NA_ENV_NA: 1.8e-71)	struct=(TElength: 13674bps;  AP INT RT RNaseH ENV )	other=NA
+Dmel-B-G1742-Map3	1612	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 1612bps;  )	other=NA
+Dmel-B-G1837-Map4_s_1	7782	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_INT_osvaldo_NA_INT_NA: 9.2e-05, GyDB_RT_caulimovirus_NA_RT_NA: 0.0017)	struct=(TElength: 7782bps; TermRepeats: termLTR: 2391; INT RT )	other=NA
+Dmel-B-G1837-Map4_s_2	4289	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_ENV_errantiviridae_NA_ENV_NA: 5.1e-34)	struct=(TElength: 4289bps;  ENV )	other=NA
+Dmel-B-G1851-Map13	4114	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_RNaseH_lentiviridae_NA_RH_NA: 0.0081, GyDB_ENV_errantiviridae_NA_ENV_NA: 0.0016)	struct=(TElength: 4114bps; TermRepeats: termLTR: 604; RNaseH ENV )	other=NA
+Dmel-B-R1133-Map3	22343	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_GAG_17_6_NA_GAG_NA: 3e-68, GyDB_AP_17_6_NA_AP_NA: 1.8000000000000002e-28, GyDB_RT_412_mdg1_NA_RT_NA: 0.65)	struct=(TElength: 22343bps;  GAG AP RT )	other=NA
+Dmel-B-R1135-Map3	9691	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_retropepsins_NA_AP_NA: 0.015)	struct=(TElength: 9691bps;  AP )	other=NA
+Dmel-B-R1189-Map3	5109	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_INT_osvaldo_NA_INT_NA: 0.00012, GyDB_RT_caulimovirus_NA_RT_NA: 0.0019)	struct=(TElength: 5109bps; TermRepeats: termLTR: 14; INT RT )	other=NA
+Dmel-B-R1250-Map3	5675	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 5675bps; TermRepeats: termLTR: 2299; AP )	other=Chimeric evidence found
+Dmel-B-R1251-Map3	4299	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 4299bps; TermRepeats: termLTR: 923; AP )	other=NA
+Dmel-B-R1252-Map3	3775	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 3775bps; TermRepeats: termLTR: 399; AP )	other=NA
+Dmel-B-R1253-Map3	5320	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_AP_TF_NA_AP_NA: 0.58)	struct=(TElength: 5320bps; TermRepeats: termLTR: 1944; AP )	other=Chimeric evidence found
+Dmel-B-R1283-Map6	3446	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3446bps;  )	other=NA
+Dmel-B-R1291-Map10_s_1	13969	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 13969bps; TermRepeats: termLTR: 13616; )	other=Satellites/Simple Repeats found
+Dmel-B-R1291-Map10_s_2	14030	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 14030bps; TermRepeats: termLTR: 13186; )	other=Satellites/Simple Repeats found
+Dmel-B-R1291-Map10_s_3	14098	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 14098bps; TermRepeats: termLTR: 13304; )	other=Satellites/Simple Repeats found
+Dmel-B-R1291-Map10_s_4	13642	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 13642bps; TermRepeats: termLTR: 13306; )	other=Satellites/Simple Repeats found
+Dmel-B-R1291-Map10_s_0	14589	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 14589bps; TermRepeats: termLTR: 14102; )	other=Satellites/Simple Repeats found
+Dmel-B-G1734-Map3	995	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 995bps; TermRepeats: termTIR: 11; )	other=NA
+Dmel-B-G1026-Map4	2291	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 2291bps; TermRepeats: termLTR: 1631; )	other=Chimeric evidence found
+Dmel-L-B46-Map1	12233	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 12233bps; TermRepeats: termLTR: 10139; )	other=Chimeric evidence found
+Dmel-B-R513-Map3	2160	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 2160bps;  )	other=NA
+Dmel-B-R514-Map3	2060	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 2060bps;  )	other=NA
+Dmel-B-G1975-Map15_s_2	3716	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3716bps;  )	other=NA
+Dmel-B-G1991-Map5_s_1	6016	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_RT_412_mdg1_NA_RT_NA: 5.3e-12)	struct=(TElength: 6016bps; TermRepeats: termLTR: 534; RT )	other=NA
+Dmel-B-G1991-Map5_s_2	11465	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: GyDB_RT_1731_NA_RT_NA: 2.3e-68)	struct=(TElength: 11465bps; TermRepeats: termLTR: 3751; RT )	other=NA
+Dmel-B-R1553-Map3	4686	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(profiles: PF00078.30_RT_1_NA_RT_29.6: 1.6e-05)	struct=(TElength: 4686bps;  RT )	other=Satellites/Simple Repeats found
+Dmel-B-R1812-Map4	1347	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 1347bps;  )	other=NA
+Dmel-B-R357-Map3	1681	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 1681bps; TermRepeats: termLTR: 312; )	other=NA
+Dmel-B-R358-Map3	1369	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 1369bps;  )	other=NA
+Dmel-B-R398-Map4	3327	+	False	Unclassified	Unclassified	NA	Unclassified	0	coding=(NA)	struct=(TElength: 3327bps; TermRepeats: termLTR: 1186; )	other=Satellites/Simple Repeats found
