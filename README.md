@@ -29,7 +29,7 @@ It is recommended to install the dependencies in an Anaconda environment.
 git clone https://github.com/gonzalezlab/MCHelper.git
 ```
 
-Then, locate the MCHelper folder and find the file named "curation.yml". Then, install the environment: 
+Then, locate the MCHelper folder and find the file named "MCHelper.yml". Then, install the environment: 
 ```
 conda env create -f MCHelper/MCHelper.yml
 ```
