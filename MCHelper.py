@@ -157,37 +157,41 @@ def processing_gff(seqname, gff_files, pre):
 
 
 def count_flf_fasta(ref_tes, genome, cores, outputdir):
-    create_output_folders(outputdir)
 
-    flf_df = pd.DataFrame(columns=['TE', 'length', 'covg', 'frags', 'fullLgthFrags', 'copies', 'fullLgthCopies'])
+    if not os.path.exists(outputdir + "/fullLengthFrag.txt"):
+        create_output_folders(outputdir)
 
-    if not os.path.exists(genome + ".nhr"):
+        flf_df = pd.DataFrame(columns=['TE', 'length', 'covg', 'frags', 'fullLgthFrags', 'copies', 'fullLgthCopies'])
+
+        if not os.path.exists(genome + ".nhr"):
+            output = subprocess.run(
+                ['makeblastdb', '-in', genome, '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
+
         output = subprocess.run(
-            ['makeblastdb', '-in', genome, '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
+            ['blastn', '-query', ref_tes, '-db', genome, '-out', outputdir + "/TEs_vs_genome.blast", '-num_threads',
+             str(cores), "-outfmt", "6 qseqid length", "-evalue", "10e-8"], stdout=subprocess.PIPE, text=True)
 
-    output = subprocess.run(
-        ['blastn', '-query', ref_tes, '-db', genome, '-out', outputdir + "/TEs_vs_genome.blast", '-num_threads',
-         str(cores), "-outfmt", "6 qseqid length", "-evalue", "10e-8"], stdout=subprocess.PIPE, text=True)
+        blastresult = pd.read_table(outputdir + "/TEs_vs_genome.blast", sep='\t', names=['qseqid', 'length'])
 
-    blastresult = pd.read_table(outputdir + "/TEs_vs_genome.blast", sep='\t', names=['qseqid', 'length'])
+        for te in SeqIO.parse(ref_tes, "fasta"):
+            seq_name = str(te.id).split("#")[0]
+            te_hits = blastresult[blastresult.qseqid == str(te.id)].reset_index()
+            count_frag = 0
+            count_flf = 0
+            te_len = len(str(te.seq))
+            for i in range(te_hits.shape[0]):
+                len_hit = te_hits.loc[i, 'length']
+                if len_hit >= (te_len * 0.94):  # it's a full-length fragment
+                    count_flf += 1
+                else:
+                    count_frag += 1
+            flf_df = pd.concat([flf_df, pd.DataFrame({'TE': seq_name, 'length': [te_len], 'covg': [0], 'frags': [count_frag], 'fullLgthFrags': [count_flf],
+                 'copies': [count_frag], 'fullLgthCopies': [count_flf]})], ignore_index=True)
 
-    for te in SeqIO.parse(ref_tes, "fasta"):
-        seq_name = str(te.id).split("#")[0]
-        te_hits = blastresult[blastresult.qseqid == str(te.id)].reset_index()
-        count_frag = 0
-        count_flf = 0
-        te_len = len(str(te.seq))
-        for i in range(te_hits.shape[0]):
-            len_hit = te_hits.loc[i, 'length']
-            if len_hit >= (te_len * 0.94):  # it's a full-length fragment
-                count_flf += 1
-            else:
-                count_frag += 1
-        flf_df = pd.concat([flf_df, pd.DataFrame({'TE': seq_name, 'length': [te_len], 'covg': [0], 'frags': [count_frag], 'fullLgthFrags': [count_flf],
-             'copies': [count_frag], 'fullLgthCopies': [count_flf]})], ignore_index=True)
-
-    flf_df.to_csv(outputdir + "/fullLengthFrag.txt", header=True, sep='\t', index=False)
-    delete_files(outputdir + "/TEs_vs_genome.blast")
+        flf_df.to_csv(outputdir + "/fullLengthFrag.txt", header=True, sep='\t', index=False)
+        delete_files(outputdir + "/TEs_vs_genome.blast")
+    else:
+        print("MESSAGE: Full-length file was already created, please verify or change the output directory")
     return outputdir + "/fullLengthFrag.txt"
 
 
@@ -2323,7 +2327,7 @@ def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov, min_len):
     if not os.path.exists(ref_tes + ".blast"):
         output = subprocess.run(
             ['blastn', '-query', ref_tes, '-db', library_path, '-out', ref_tes + ".blast", '-num_threads', str(cores),
-             "-outfmt", "6 qseqid sseqid length", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity), "-max_hsps", "1"],
+             "-outfmt", "6 qseqid sseqid length", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity), " ", "1"],
             stdout=subprocess.PIPE, text=True)
     else:
         print("WARNING: Blast output already exists, skipping BLASTn....")
