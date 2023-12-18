@@ -3038,7 +3038,7 @@ if __name__ == '__main__':
 
             gff_files = ""
             plots_dir = ""
-            ref_tes = outputdir + "/candidate_tes.fa"
+            user_library = outputdir + "/candidate_tes.fa"
             end_time = time.time()
             if verbose:
                 print("MESSAGE: Fasta pre-processing done: [" + str(end_time - start_time) + " seconds]")
