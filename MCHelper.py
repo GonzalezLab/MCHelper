@@ -2327,7 +2327,7 @@ def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov, min_len):
     if not os.path.exists(ref_tes + ".blast"):
         output = subprocess.run(
             ['blastn', '-query', ref_tes, '-db', library_path, '-out', ref_tes + ".blast", '-num_threads', str(cores),
-             "-outfmt", "6 qseqid sseqid length", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity), " ", "1"],
+             "-outfmt", "6 qseqid sseqid length", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity), "-max_hsps", "1"],
             stdout=subprocess.PIPE, text=True)
     else:
         print("WARNING: Blast output already exists, skipping BLASTn....")
