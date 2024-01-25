@@ -32,6 +32,7 @@ Novelties:
   * Unified flags -k and -m into -l for simplicity
   * Improved the classification based on protein domains
   * Solved issue in refine extensions when using very repetitive sequences (>500k copies)
+  * Added unique sequence IDs check in the TE library
 
 """
 
@@ -241,6 +242,16 @@ def check_classification_Userlibrary(user_library, outputdir):
             else:
                 fine_tes.append(te)
 
+    # Checking that there is no duplicated sequences
+    if len(fine_tes) != len(list(set([x.id for x in fine_tes]))):
+        freq = {}
+        duplicates = False
+        for TE in fine_tes:
+            freq[TE.id] = freq.get(TE.id, 0) + 1
+            if freq[TE.id] > 1:
+                ids_no_contained.append(TE.id)
+                reasons.append("Duplicated sequence ID")
+                duplicates = True
     write_sequences_file(fine_tes, outputdir + "/candidate_tes.fa")
     if len(ids_no_contained) == 0:  # Congrats!! everything looks great!
         return 0
@@ -249,6 +260,8 @@ def check_classification_Userlibrary(user_library, outputdir):
         output_file.write("Sequence ID\tProblem\n")
         for i in range(len(ids_no_contained)):
             output_file.write(ids_no_contained[i] + "\t" + reasons[i] + "\n")
+        if duplicates:
+            return -2
         return -1
 
 
@@ -2653,7 +2666,8 @@ if __name__ == '__main__':
                 sys.exit(0)
 
             start_time = time.time()
-            if check_classification_Userlibrary(user_library, outputdir) == 0:
+            check = check_classification_Userlibrary(user_library, outputdir)
+            if check == 0:
                 if not os.path.exists(outputdir + "/classifiedModule/denovoLibTEs_PC.classif") and not os.path.exists(
                         outputdir + "/classifiedModule/new_user_lib.fa"):
                     if automatic == 'M':
@@ -2661,7 +2675,9 @@ if __name__ == '__main__':
                     else:
                         do_blast = False
                 features_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
-
+            elif check == -2:
+                print('FATAL ERROR: There are sequences with duplicated IDs. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
+                sys.exit(0)
             else:
                 print(
                     'WARNING: There are some sequences with problems in your library and MCHelper cannot process them. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
@@ -2821,7 +2837,12 @@ if __name__ == '__main__':
                 ########################################################################################################
                 if module == 3:
                     start_time = time.time()
-                    if check_classification_Userlibrary(user_library, outputdir) != 0:
+                    check = check_classification_Userlibrary(user_library, outputdir)
+                    if check == -2:
+                        print(
+                            'FATAL ERROR: There are sequences with duplicated IDs. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
+                        sys.exit(0)
+                    elif check != 0:
                         print(
                             'WARNING: There are some sequences with problems in your library and MCHelper cannot process them. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
 
@@ -3130,7 +3151,9 @@ if __name__ == '__main__':
     ####################################################################################################################
     if module in [3333]:
         print("Debugging....")
-
+        build_class_table_parallel(user_library, cores, outputdir,
+                                   blastn_db, blastx_db, ref_profiles, False)
+        run_te_aid_parallel(tools_path + "/TE-Aid-master/", genome, user_library, outputdir + "/", cores, min_perc_model)
 
 
     ####################################################################################################################
