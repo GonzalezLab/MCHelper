@@ -243,9 +243,9 @@ def check_classification_Userlibrary(user_library, outputdir):
                 fine_tes.append(te)
 
     # Checking that there is no duplicated sequences
+    duplicates = False
     if len(fine_tes) != len(list(set([x.id for x in fine_tes]))):
         freq = {}
-        duplicates = False
         for TE in fine_tes:
             freq[TE.id] = freq.get(TE.id, 0) + 1
             if freq[TE.id] > 1:
@@ -1127,17 +1127,17 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                             pos_te_aid = 3
 
                         try:
-                            pages = convert_from_path(
-                                outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.pdf')
+                            """pages = convert_from_path(
+                                outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.pdf.jpeg')
 
                             # Saving pages in jpeg format
                             for page in pages:
                                 page.save(
                                     outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.jpeg',
-                                    'JPEG')
+                                    'JPEG')"""
 
                             Image2 = cv2.imread(
-                                outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.jpeg')
+                                outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.pdf.jpeg')
 
                             # Adds a subplot at the 2nd position
 
@@ -2215,7 +2215,10 @@ def run_te_aid_parallel(te_aid_path, genome, ref_tes, outputdir, cores, min_perc
                 for file in files:
                     # extract file name form file path
                     file_name = os.path.basename(file)
-                    shutil.move(file, outputdir + "/te_aid/" + file_name)
+                    pages = convert_from_path(file)
+                    # Saving pages in jpeg format
+                    for page in pages:
+                        page.save(outputdir + "/te_aid/" + file_name + '.jpeg', 'JPEG', quality=85)
 
                 pattern = "*.copies.cialign_output.png"
                 files = glob.glob(outputdir + "/te_aid_" + str(i) + "/" + pattern)
