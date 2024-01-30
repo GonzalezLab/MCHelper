@@ -17,7 +17,7 @@ MCHelper: An automatic tool to curate transposable element libraries
 The number of species with high quality genome sequences continues to increase, in part due to scaling up of multiple large scale biodiversity sequencing projects. While the need to annotate genic sequences in these genomes is widely acknowledged, the parallel need to annotate transposable element sequences that have been shown to alter genome architecture, rewire gene regulatory networks, and contribute to the evolution of host traits is becoming ever more evident. However, accurate genome-wide annotation of transposable element sequences is still technically challenging. Several de novo transposable element identification tools are now available, but manual curation of the libraries produced by these tools is needed to generate high quality genome annotations. Manual curation is time-consuming, and thus impractical for largescale genomic studies, and lacks reproducibility. In this work, we present the Manual Curator Helper tool, MCHelper, which automates the TE library curation process. By leveraging MCHelper's fully automated mode with the outputs from two de novo transposable element identification tools, RepeatModeler2 and REPET, in fruit fly, rice, and zebrafish, we show a substantial improvement in the quality of the transposable element libraries and genome annotations. MCHelper libraries are less redundant, with up to 54% reduction in the number of consensus sequences, have up to 11.4% fewer false positive sequences, and also have up to ~45% fewer “unclassified/unknown” transposable element consensus sequences. Genome-wide transposable element annotations were also improved, including larger unfragmented insertions.
 
 <p align="center">
-  <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_Flow.jpg">
+  <img src="https://github.com/GonzalezLab/MCHelper/blob/main/MCHelper_Flow.jpg" alt="MCHelper Flowchart" />
 </p>
 
 ## Installation
@@ -30,11 +30,13 @@ git clone https://github.com/gonzalezlab/MCHelper.git
 ```
 
 Then, locate the MCHelper folder and find the file named "MCHelper.yml". Then, install the environment: 
+
 ```
 conda env create -f MCHelper/MCHelper.yml
 ```
 
 Now, unzip all the databases needed by MCHelper:
+
 ```
 cd MCHelper/db
 unzip '*.zip'
@@ -45,6 +47,7 @@ makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
 Then, download the pfam database released by REPET group and renamed it:
 ```
 wget https://urgi.versailles.inrae.fr/download/repet/profiles/ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
+
 tar xvf ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
 mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
 ```
@@ -56,11 +59,13 @@ And that's it. You have now installed MCHelper.
 To test MCHelper, we provide some example inputs and also the expected results (located at Test_dir/) to allow you to compare with your own outputs. To check MCHelper is running properly, you can do:
 
 First, activate the anaconda enviroment, if it isn't activated yet:
+
 ```
 conda activate MCHelper
 ```
 
 Then, be sure you are in the main folder (this one where MCHelper.py is located) and unzip the D. melanogaster genome:
+
 ```
 unzip Test_dir/repet_input/Dmel_genome.zip -d Test_dir/repet_input/
 ```
@@ -77,6 +82,7 @@ cd -
 ```
 
 Now, run the MCHelper script:
+
 ```
 mkdir Test_dir/repet_output_own
 
@@ -85,6 +91,7 @@ python3 MCHelper.py -r A -t 8 -i Test_dir/repet_input/ -o Test_dir/repet_output_
 
 This test will take the REPET's output and will do the curation automatically, using most of the parameters by default.
 If you want to run the test for the fasta input, you can execute:
+
 ```
 unzip Test_dir/fasta_input/Dmel_genome.zip -d Test_dir/fasta_input/
 
@@ -92,25 +99,30 @@ mkdir Test_dir/fasta_output_own
 
 python3 MCHelper.py -r A -t 8 -l Test_dir/fasta_input/Dmel-families.fa -o Test_dir/fasta_output_own -g Test_dir/fasta_input/Dmel_genome.fna --input_type fasta -b Test_dir/repet_input/diptera_odb10.hmm -a F
 ```
+
 ## Usage
 <a name="usage"/>
 
 Be sure you have activated the anaconda environment:
+
 ```
 conda activate MCHelper
 ```
 
 Then, execute MCHelper with default parameters. For REPET input (see [Testing](#testing) for a practical example):
+
 ```
 python3 MCHelper.py -i path/to/repet_output -o path/to/MCHelper_output -g path/to/genome -n repet_name_project --input_type repet -b path/to/reference_genes.hmm -a F
 ```
 
 For fasta input:
+
 ```
 python3 MCHelper.py -l path/to/TE_library_in_fasta -o path/to/MCHelper_output -g path/to/genome --input_type fasta -b path/to/reference_genes.hmm -a F
 ```
 
 To see the full help documentation run:
+
 ```
 python3 MCHelper.py --help
 ```
