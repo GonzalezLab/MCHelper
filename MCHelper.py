@@ -2765,7 +2765,7 @@ if __name__ == '__main__':
             ############################################################################################################
             # Fourth step: SSR, BUSCO genes, tRNA and rRNA filters
             ############################################################################################################
-            if not os.path.exists(outputdir + "/putative_TEs.fa"):
+            if not os.path.exists(outputdir + "/classifiedModule/putative_TEs.fa"):
                 start_time = time.time()
                 new_ref_tes, deleted_seqs = filter_bad_candidates(new_ref_tes, perc_ssr, outputdir+"/classifiedModule/", tools_path, busco_library, rnas_db, cores)
                 end_time = time.time()
