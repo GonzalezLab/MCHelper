@@ -1037,49 +1037,53 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                     columns = 3
 
                     # reading images
-                    Image1 = cv2.imread(plots_dir + '/' + pre + '_' + struc_table.at[i, "Seq_name"] + '.png')
+                    try:
+                        Image1 = cv2.imread(plots_dir + '/' + pre + '_' + struc_table.at[i, "Seq_name"] + '.png')
 
-                    # Adds a subplot at the 1st position
-                    fig.add_subplot(rows, columns, 1)
+                        # Adds a subplot at the 1st position
+                        fig.add_subplot(rows, columns, 1)
 
-                    # showing image
-                    plt.imshow(Image1)
-                    plt.axis('off')
-                    plt.title("REPET")
-
-                    # obtaining the positions of Blastn, tBlastn y blastx from GFF:
-                    posBltn, postBlasx, posBlastx, posTR = processing_gff(struc_table.at[i, "Seq_name"], gff_files, pre)
-
-                    # ploting gff files
-                    ax = fig.add_subplot(rows, columns, 2)
-                    ax.broken_barh([(0, int(struc_table.at[i, "length"]))], (0, 2), facecolors='black')
-                    ax.broken_barh(posBltn, (3, 2), facecolors='blue', alpha=0.2)
-                    ax.broken_barh(postBlasx, (6, 2), facecolors='orange', alpha=0.2)
-                    ax.broken_barh(posBlastx, (9, 2), facecolors='red', alpha=0.2)
-                    ax.broken_barh(posTR, (12, 2), facecolors='green', alpha=0.2)
-                    ax.set_ylim(0, 14)
-                    ax.set_xlim(0, int(struc_table.at[i, "length"]))
-                    ax.set_yticks([1, 4, 7, 10, 13])
-                    ax.set_yticklabels(['TE seq', 'BLASTn', 'tBLASTx', 'BLASTx', 'TRs'])
-                    ax.set_xlabel('TE consensus')
-                    ax.set_title('REPET GFF files')
-
-                    if os.path.exists(outputdir + '/MSA_plots/' + struc_table.at[i, "Seq_name"] + '.copies.cialign_output.png'):
-                        Image2 = cv2.imread(outputdir + '/MSA_plots/' + struc_table.at[i, "Seq_name"] + '.copies.cialign_output.png')
-                        fig.add_subplot(rows, columns, 3)
                         # showing image
-                        plt.imshow(Image2)
+                        plt.imshow(Image1)
                         plt.axis('off')
-                        plt.title("MSA")
-                    else:
-                        ax = fig.add_subplot(rows, columns, 3)
-                        ax.set_title('MSA')
-                        ax.axis([0, 10, 0, 10])
-                        ax.text(4, 5, 'Not enough TE copies', style='italic', fontsize=14, fontweight='bold')
+                        plt.title("REPET")
 
-                    plt.tight_layout()
-                    plt.draw()
-                    plt.pause(1)
+                        # obtaining the positions of Blastn, tBlastn y blastx from GFF:
+                        posBltn, postBlasx, posBlastx, posTR = processing_gff(struc_table.at[i, "Seq_name"], gff_files, pre)
+
+                        # ploting gff files
+                        ax = fig.add_subplot(rows, columns, 2)
+                        ax.broken_barh([(0, int(struc_table.at[i, "length"]))], (0, 2), facecolors='black')
+                        ax.broken_barh(posBltn, (3, 2), facecolors='blue', alpha=0.2)
+                        ax.broken_barh(postBlasx, (6, 2), facecolors='orange', alpha=0.2)
+                        ax.broken_barh(posBlastx, (9, 2), facecolors='red', alpha=0.2)
+                        ax.broken_barh(posTR, (12, 2), facecolors='green', alpha=0.2)
+                        ax.set_ylim(0, 14)
+                        ax.set_xlim(0, int(struc_table.at[i, "length"]))
+                        ax.set_yticks([1, 4, 7, 10, 13])
+                        ax.set_yticklabels(['TE seq', 'BLASTn', 'tBLASTx', 'BLASTx', 'TRs'])
+                        ax.set_xlabel('TE consensus')
+                        ax.set_title('REPET GFF files')
+
+                        if os.path.exists(outputdir + '/MSA_plots/' + struc_table.at[i, "Seq_name"] + '.copies.cialign_output.png'):
+                            Image2 = cv2.imread(outputdir + '/MSA_plots/' + struc_table.at[i, "Seq_name"] + '.copies.cialign_output.png')
+                            fig.add_subplot(rows, columns, 3)
+                            # showing image
+                            plt.imshow(Image2)
+                            plt.axis('off')
+                            plt.title("MSA")
+                        else:
+                            ax = fig.add_subplot(rows, columns, 3)
+                            ax.set_title('MSA')
+                            ax.axis([0, 10, 0, 10])
+                            ax.text(4, 5, 'Not enough TE copies', style='italic', fontsize=14, fontweight='bold')
+
+                        plt.tight_layout()
+                        plt.draw()
+                        plt.pause(1)
+                    except Exception as ex:
+                        print("WARNING: The plot from " + struc_table.at[i, "Seq_name"] + " has a problem:")
+                        print(ex)
 
                 else:
                     # create figure
@@ -1167,9 +1171,9 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                             plt.tight_layout()
                             plt.draw()
                             plt.pause(1)
-                        except PDFPageCountError:
-                            print("FATAL ERROR: the " + outputdir + "/te_aid/" + struc_table.at[
-                                i, "Seq_name"] + ".fa.c2g.pdf is empty. Please check the file.")
+                        except Exception as ex:
+                            print("WARNING: The plot from " + struc_table.at[i, "Seq_name"] + " has a problem:")
+                            print(ex)
 
                         delete_files(outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.jpeg')
                     except FileNotFoundError:
@@ -2212,14 +2216,16 @@ def run_te_aid_parallel(te_aid_path, genome, ref_tes, outputdir, cores, min_perc
                 pattern = "*.pdf"
                 files = glob.glob(outputdir + "/te_aid_" + str(i) + "/" + pattern)
 
-                for file in files:
-                    # extract file name form file path
-                    file_name = os.path.basename(file)
-                    pages = convert_from_path(file)
-                    # Saving pages in jpeg format
-                    for page in pages:
-                        page.save(outputdir + "/te_aid/" + file_name + '.jpeg', 'JPEG', quality=85)
-
+                try:
+                    for file in files:
+                        # extract file name form file path
+                        file_name = os.path.basename(file)
+                        pages = convert_from_path(file)
+                        # Saving pages in jpeg format
+                        for page in pages:
+                            page.save(outputdir + "/te_aid/" + file_name + '.jpeg', 'JPEG', quality=85)
+                except:
+                    print("WARNING: The file "+file+" did not have any pages. Skipping TE+Aid plot ...")
                 pattern = "*.copies.cialign_output.png"
                 files = glob.glob(outputdir + "/te_aid_" + str(i) + "/" + pattern)
                 for file in files:
@@ -3154,8 +3160,8 @@ if __name__ == '__main__':
     ####################################################################################################################
     if module in [3333]:
         print("Debugging....")
-        build_class_table_parallel(user_library, cores, outputdir,
-                                   blastn_db, blastx_db, ref_profiles, False)
+        """build_class_table_parallel(user_library, cores, outputdir,
+                                   blastn_db, blastx_db, ref_profiles, False)"""
         run_te_aid_parallel(tools_path + "/TE-Aid-master/", genome, user_library, outputdir + "/", cores, min_perc_model)
 
 
