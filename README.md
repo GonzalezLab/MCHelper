@@ -19,6 +19,7 @@ The number of species with high quality genome sequences continues to increase, 
 </p>
 
 ## Installation
+# Linux
 It is recommended to install the dependencies in an Anaconda environment. 
 
 ```
@@ -29,6 +30,59 @@ Then, locate the MCHelper folder and find the file named "MCHelper.yml". Then, i
 
 ```
 conda env create -f MCHelper/MCHelper.yml
+```
+
+Now, unzip all the databases needed by MCHelper:
+
+```
+cd MCHelper/db
+unzip '*.zip'
+conda activate MCHelper
+makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
+```
+
+Then, download the pfam database released by REPET group and renamed it:
+
+```
+wget https://urgi.versailles.inrae.fr/download/repet/profiles/ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
+
+tar xvf ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
+mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
+```
+
+And that's it. You have now installed MCHelper.
+# MacOS (M1/M2 architectures Apple Silicon, arch: arm64)
+Set up Rosetta. 
+* Download and install the iTerm (or duplicate it if you have already installed renaming for example: iTerm_X86_64).
+* Right click on the icon iTerm (or iTerm_X86_64 if you renamed it), and select the option Get Info, and check box: Open using Rosetta
+* Open the new terminal iTerm (or iTerm_X86_64)
+* Verify the architecture: uname -m. It should appear: x86_64
+
+Install Mambaforge
+Using the same iTerm (or iTerm_X86_64) we setted up before, download the Mambaforge script and install it:
+```
+wget https://github.com/conda-forge/miniforge/releases/download/23.11.0-0/Mambaforge-23.11.0-0-MacOSX-x86_64.sh 
+chmod +x Mambaforge-23.11.0-0-MacOSX-x86_64.sh 
+./Mambaforge-23.11.0-0-MacOSX-x86_64.sh
+```
+Follow the prompts, install, and initialize conda.
+
+Install MCHelper conda environment using the special YML file for Mac (MCHelper_Mac.yml), using the Rosetta iTerm (or iTerm_X86_64):
+```
+git clone https://github.com/gonzalezlab/MCHelper.git
+```
+```
+conda env create -f MCHelper/MCHelper_Mac.yml
+```
+
+Download and rename the TRF binary for macs:
+```
+cd tools
+wget https://github.com/Benson-Genomics-Lab/TRF/releases/download/v4.09.1/trf409.macosx
+rm -f trf409.linux64
+mv trf409.macosx trf409.linux64
+chmod +x tools/trf409.linux64
+cd -
 ```
 
 Now, unzip all the databases needed by MCHelper:
