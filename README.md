@@ -81,6 +81,9 @@ git clone https://github.com/gonzalezlab/MCHelper.git
 ```
 conda env create -f MCHelper/MCHelper_Mac.yml
 ```
+```
+conda activate MCHelper_Mac
+```
 
 Download and rename the TRF binary for MacOS:
 ```
@@ -99,7 +102,6 @@ Now, unzip all the databases needed by MCHelper:
 ```
 cd MCHelper/db
 unzip '*.zip'
-conda activate MCHelper
 makeblastdb -in allDatabases.clustered_rename.fa -dbtype nucl
 ```
 
