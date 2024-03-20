@@ -55,7 +55,7 @@ mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
 And that's it. You have now installed MCHelper.
 
 ### MacOS 
-These installation have been tested in MacOS with M1/M2 architectures (Apple Silicon, arch: arm64)
+These installation instructions have been tested on MacOS with M1/M2 architectures (Apple Silicon, arch: arm64). Therefore, these instructions are not compatible with MacOS on Intel Core processors).
 
 Set up Rosetta. 
 * Download and install the iTerm (or duplicate it if you have already installed, then rename it to, for example, iTerm_X86_64).
