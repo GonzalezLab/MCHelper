@@ -21,7 +21,9 @@ The number of species with high quality genome sequences continues to increase, 
 </p>
 
 ## Installation
-### Linux/Windows (WSL)
+### Linux/Windows
+For Windows is necessarity to have a functional installation of Windows Subsystem for Linux (WSL).
+
 It is recommended to install the dependencies in an Anaconda environment. 
 
 ```
