@@ -82,7 +82,7 @@ git clone https://github.com/gonzalezlab/MCHelper.git
 conda env create -f MCHelper/MCHelper_Mac.yml
 ```
 
-Download and rename the TRF binary for macs:
+Download and rename the TRF binary for MacOS:
 ```
 cd MCHelper/tools
 wget https://github.com/Benson-Genomics-Lab/TRF/releases/download/v4.09.1/trf409.macosx
