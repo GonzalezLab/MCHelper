@@ -4,7 +4,7 @@ MCHelper: An automatic tool to curate transposable element libraries
 ## Table of Contents  
 * [Introduction](#introduction)
 * [Installation](#installation)
-  * [Linux](#Linux)
+  * [Linux/Windows (WSL)](#Linux)
   * [MacOS](#MacOS)
 * [Testing](#testing)
 * [Usage](#usage)
@@ -21,7 +21,7 @@ The number of species with high quality genome sequences continues to increase, 
 </p>
 
 ## Installation
-### Linux
+### Linux/Windows (Windows Subsystem for Linux - WSL)
 It is recommended to install the dependencies in an Anaconda environment. 
 
 ```
