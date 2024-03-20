@@ -4,7 +4,7 @@ MCHelper: An automatic tool to curate transposable element libraries
 ## Table of Contents  
 * [Introduction](#introduction)
 * [Installation](#installation)
-  * [Linux/Windows (WSL)](#Linux/Windows (WSL))
+  * [Linux/Windows (WSL)](#Linux/Windows)
   * [MacOS](#MacOS)
 * [Testing](#testing)
 * [Usage](#usage)
