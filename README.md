@@ -90,7 +90,7 @@ wget https://github.com/Benson-Genomics-Lab/TRF/releases/download/v4.09.1/trf409
 ```
 rm -f trf409.linux64
 mv trf409.macosx trf409.linux64
-chmod +x tools/trf409.linux64
+chmod +x trf409.linux64
 cd -
 ```
 
