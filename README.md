@@ -4,6 +4,8 @@ MCHelper: An automatic tool to curate transposable element libraries
 ## Table of Contents  
 * [Introduction](#introduction)
 * [Installation](#installation)
+  * [Linux](#Linux)
+  * [MacOS](#MacOS)
 * [Testing](#testing)
 * [Usage](#usage)
 * [Inputs](#inputs)
@@ -19,7 +21,7 @@ The number of species with high quality genome sequences continues to increase, 
 </p>
 
 ## Installation
-# Linux
+### Linux
 It is recommended to install the dependencies in an Anaconda environment. 
 
 ```
@@ -51,18 +53,23 @@ mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
 ```
 
 And that's it. You have now installed MCHelper.
-# MacOS (M1/M2 architectures Apple Silicon, arch: arm64)
+
+### MacOS 
+These installation have been tested in MacOS with M1/M2 architectures (Apple Silicon, arch: arm64)
+
 Set up Rosetta. 
-* Download and install the iTerm (or duplicate it if you have already installed renaming for example: iTerm_X86_64).
+* Download and install the iTerm (or duplicate it if you have already installed, then rename it to, for example, iTerm_X86_64).
 * Right click on the icon iTerm (or iTerm_X86_64 if you renamed it), and select the option Get Info, and check box: Open using Rosetta
 * Open the new terminal iTerm (or iTerm_X86_64)
 * Verify the architecture: uname -m. It should appear: x86_64
 
 Install Mambaforge
-Using the same iTerm (or iTerm_X86_64) we setted up before, download the Mambaforge script and install it:
+Using the same iTerm (or iTerm_X86_64) we configured earlier, download the Mambaforge script and install it:
 ```
 wget https://github.com/conda-forge/miniforge/releases/download/23.11.0-0/Mambaforge-23.11.0-0-MacOSX-x86_64.sh 
-chmod +x Mambaforge-23.11.0-0-MacOSX-x86_64.sh 
+chmod +x Mambaforge-23.11.0-0-MacOSX-x86_64.sh
+```
+```
 ./Mambaforge-23.11.0-0-MacOSX-x86_64.sh
 ```
 Follow the prompts, install, and initialize conda.
@@ -77,8 +84,10 @@ conda env create -f MCHelper/MCHelper_Mac.yml
 
 Download and rename the TRF binary for macs:
 ```
-cd tools
+cd MCHelper/tools
 wget https://github.com/Benson-Genomics-Lab/TRF/releases/download/v4.09.1/trf409.macosx
+```
+```
 rm -f trf409.linux64
 mv trf409.macosx trf409.linux64
 chmod +x tools/trf409.linux64
