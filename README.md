@@ -22,7 +22,7 @@ The number of species with high quality genome sequences continues to increase, 
 
 ## Installation
 ### Linux/Windows
-For Windows is necessarity to have a functional installation of Windows Subsystem for Linux (WSL).
+For Windows Systems is necessarity to have a functional installation of Windows Subsystem for Linux (WSL), and the Poppler package installed as well (it can be installed as following: sudo apt-get install poppler-utils).
 
 It is recommended to install the dependencies in an Anaconda environment. 
 
