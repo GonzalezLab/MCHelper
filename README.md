@@ -4,7 +4,7 @@ MCHelper: An automatic tool to curate transposable element libraries
 ## Table of Contents  
 * [Introduction](#introduction)
 * [Installation](#installation)
-  * [Linux and Windows](#Linux&Windows)
+  * [Linux/Windows](#linuxwindows)
   * [MacOS](#MacOS)
 * [Testing](#testing)
 * [Usage](#usage)
@@ -21,7 +21,7 @@ The number of species with high quality genome sequences continues to increase, 
 </p>
 
 ## Installation
-### Linux&Windows
+### Linux/Windows
 For Windows Systems is necessarity to have a functional installation of Windows Subsystem for Linux (WSL), and the Poppler package installed as well (it can be installed as following: sudo apt-get install poppler-utils).
 
 It is recommended to install the dependencies in an Anaconda environment. 
