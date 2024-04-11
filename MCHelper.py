@@ -1,38 +1,14 @@
 """
 
-Manual Curation Helper Version 1.6.6
+Manual Curation Helper Version 1.7.0
 Novelties:
-  * Parallel strategy changed
-  * if output folder doesn't exist, MCH will create it.
-  * Changed the way to check TE classification, now MCH will use those that it can
-  * refine_extension now receives a list of TEs to fit better in the new parallel strategy
-  * reduction of redundancy before extension using REPET's parameters
-  * Heuristic implemented to stop combinational bursts in subfamily division
-  * corrected bug in contiguity confidence
-  * Added restarting point if extension was already done.
-  * Added parameter minBlastHits to control the min number of hits needed to process a TE
-  * Bug corrected when trying to index the Pfam database
-  * Bug corrected in checking REPET's input
-  * Minor changes in some messages in the structural checking
-  * Put the default value of -r parameter as A (All modules)
-  * Improved the find_TRs method
-  * Added domains REP, OTU and RPA for Helitrons
-  * Corrected minor bug in copy's names (BEE)
-  * Changed DBs used in BLASTn, BLASTx and tBLASTn in manual inspection to Dfam
-  * Manual Inspection is now an independent module
-  * Fixed minor bugs (some function calls and the run_blast)
-  * Added (micro-)Satellites and chimeric evidences to structural checks
-  * Added column "Reason" to the feature table
-  * Added an attempt to use Unknown and DNA nomenclatures from Repbase/Dfam taxonomy
-  * Optimized the files created by blastn
-  * Added domains INT, and AP for Mavericks
-  * Added superfamilies: ERV, R1, CR1, LOA, L2, MULE, CMC, Ngaro, Viper
-  * Added PhageINT for YR domains (DIRS and Crypton)
-  * Added cases for DIRS and Crypton to Decision tree structural rules
-  * Unified flags -k and -m into -l for simplicity
-  * Improved the classification based on protein domains
-  * Solved issue in refine extensions when using very repetitive sequences (>500k copies)
-  * Added unique sequence IDs check in the TE library
+  * Added MeShClust as an alternative clustering algorithm (-k parameter)
+  * Changed cd-hit output to keep the entire sequence IDs
+  * Removed the Pandas' Future Warnings
+  * Check sequence IDs in the genome to not containing only numbers
+  * Removed TE sequences with lengths < 100 pb
+  * Added WebAgg GUI backend to work with WSL version 1 (Experimental)
+  * TE+Aid plots are now kept in PDF due to CentOS incompatibilities
 
 """
 
@@ -44,13 +20,14 @@ import argparse
 import pandas as pd
 import multiprocessing
 from pdf2image import convert_from_path
-from pdf2image.exceptions import PDFPageCountError
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import subprocess
 import cv2
 from matplotlib import pyplot as plt
+#import matplotlib
+#matplotlib.use('WebAgg')
 import psutil
 import glob
 import shutil
@@ -58,6 +35,8 @@ import time
 import numpy as np
 import math
 from sklearn.cluster import DBSCAN
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 dicc_orders = {2: "LTR", 3: "COPIA", 4: "GYPSY", 5: "BELPAO", 6: "ERV", 7: "TRIM", 8: "LARD", 9: "LINE", 10: "SINE",
                11: "R2", 12: "RTE", 13: "JOCKEY", 14: "L1", 15: "I", 16: "R1", 17: "CR1", 18: "LOA", 19: "L2",  20: "PLE",
@@ -194,6 +173,14 @@ def count_flf_fasta(ref_tes, genome, cores, outputdir):
     else:
         print("MESSAGE: Full-length file was already created, please verify or change the output directory")
     return outputdir + "/fullLengthFrag.txt"
+
+
+def checkChrNames(genome_file):
+    Ids = [x.id.isdigit() for x in SeqIO.parse(genome_file, "fasta")]
+    if True in Ids:
+        return False
+    else:
+        return True
 
 
 def check_classification_Userlibrary(user_library, outputdir):
@@ -1131,26 +1118,25 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                             pos_te_aid = 3
 
                         try:
-                            """pages = convert_from_path(
-                                outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.pdf.jpeg')
+                            pages = convert_from_path(
+                                outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.pdf')
 
                             # Saving pages in jpeg format
                             for page in pages:
-                                page.save(
-                                    outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.jpeg',
-                                    'JPEG')"""
+                                page.save(outputdir + '/te_aid/' + struc_table.at[
+                                        i, "Seq_name"] + '.fa.c2g.jpeg', 'JPEG')
 
-                            Image2 = cv2.imread(
-                                outputdir + '/te_aid/' + struc_table.at[i, "Seq_name"] + '.fa.c2g.pdf.jpeg')
+                            Image2 = cv2.imread(outputdir + '/te_aid/' + struc_table.at[
+                                    i, "Seq_name"] + '.fa.c2g.jpeg')
 
                             # Adds a subplot at the 2nd position
-
                             fig.add_subplot(rows, columns, pos_te_aid)
 
                             # showing image
                             plt.imshow(Image2)
                             plt.axis('off')
                             plt.title("TE-aid")
+
                             # if automatic != 'M':
                             if os.path.exists(outputdir + '/MSA_plots/' + struc_table.at[
                                 i, "Seq_name"] + '.copies.cialign_output.png'):
@@ -1301,8 +1287,33 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
         totalTEs = struc_table.shape[0]
         struc_table.loc[:, "Reason"] = [""]*totalTEs
         for i in range(struc_table.shape[0]):
-            status = -1  # 0 = delete, 1 = keep, -1 = Manual Inspection
-            if struc_table.at[i, "Seq_name"] not in keep_seqs and struc_table.at[i, "Seq_name"] in seqID_list:
+            status = -1  # 0 = delete, 1 = keep, -1 = Manual Inspection, -2 = Removed
+            if int(struc_table.at[i, "length"]) < 100:
+                codings = struc_table.at[i, "coding"].replace("coding=(", " ").replace(")", "")
+                codigs = codings.split(";")
+                reason = "Removed because it is shorter than 100 bp !"
+                if struc_table.at[i, "Seq_name"] in keep_seqs:  # removing the element that was kept by homology
+                    index_to_rem = keep_seqs.index(struc_table.at[i, "Seq_name"])
+                    keep_seqs.remove(struc_table.at[i, "Seq_name"])
+                    orders.pop(index_to_rem)
+                    kept_seqs_record = [teLong for teLong in kept_seqs_record if teLong.id.split("#")[0] != struc_table.at[i, "Seq_name"]]
+                status = -2
+                if verbose:
+                    print("[" + str(ele_number + 1) + "/" + str(totalTEs) + "] Seq Name: " + str(
+                        struc_table.at[i, "Seq_name"]))
+                    print("Length: " + str(struc_table.at[i, "length"]))
+                    print("Class: " + str(struc_table.at[i, "class"]) + " / " + str(
+                        struc_table.at[i, "order"]) + " / " + str(struc_table.at[i, "sFamily"]))
+                    print("Copies: FLF = " + str(num_copies[struc_table.at[i, "Seq_name"]][0]) + " / FLC = " + str(
+                        num_copies[struc_table.at[i, "Seq_name"]][1]))
+                    print("Coding: ")
+                    for cod in codigs:
+                        print(cod)
+                    print(struc_table.at[i, "struct"])
+                    print(struc_table.at[i, "other"])
+                    print(reason)
+                    print("---------------------------------------------------------------\n")
+            elif struc_table.at[i, "Seq_name"] not in keep_seqs and struc_table.at[i, "Seq_name"] in seqID_list:
                 codings = struc_table.at[i, "coding"].replace("coding=(", " ").replace(")", "")
                 codigs = codings.split(";")
 
@@ -1343,7 +1354,6 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
                     print(struc_table.at[i, "other"])
                     print(reason)
                     print("---------------------------------------------------------------\n")
-
             else:
                 reason = "TE Kept because it has homology with our databases !"
                 if verbose:
@@ -2218,12 +2228,16 @@ def run_te_aid_parallel(te_aid_path, genome, ref_tes, outputdir, cores, min_perc
 
                 try:
                     for file in files:
-                        # extract file name form file path
+                        # this is getting errors in CentOS
+                        """# extract file name form file path
                         file_name = os.path.basename(file)
                         pages = convert_from_path(file)
                         # Saving pages in jpeg format
                         for page in pages:
-                            page.save(outputdir + "/te_aid/" + file_name + '.jpeg', 'JPEG', quality=85)
+                            page.save(outputdir + "/te_aid/" + file_name + '.jpeg', 'JPEG', quality=85)"""
+                        # extract file name form file path
+                        file_name = os.path.basename(file)
+                        shutil.move(file, outputdir + "/te_aid/" + file_name)
                 except:
                     print("WARNING: The file "+file+" did not have any pages. Skipping TE+Aid plot ...")
                 pattern = "*.copies.cialign_output.png"
@@ -2389,10 +2403,34 @@ def run_cdhit(ref_tes, outputdir, cores, identity, coverage):
 
     if not os.path.exists(outputdir + "/non_redundant_lib.fa"):
         output = subprocess.run(
-            ['cd-hit-est', '-i', ref_tes, '-o', outputdir + '/non_redundant_lib.fa', '-c', str(identity), '-aS', str(coverage), '-G', '0', '-g' , '1', '-b', '500', '-T', str(cores), '-M', '0'],
+            ['cd-hit-est', '-i', ref_tes, '-o', outputdir + '/non_redundant_lib.fa', '-c', str(identity), '-aS', str(coverage), '-G', '0', '-g' , '1', '-b', '500', '-T', str(cores), '-M', '0', '-d', '0'],
             stdout=subprocess.PIPE, text=True)
     else:
         print("WARNING: cd-hit-est output already exists, skipping cd-hit-est....")
+
+    return outputdir + "/non_redundant_lib.fa"
+
+
+def run_meshclust(ref_tes, outputdir, cores, identity, coverage):
+    create_output_folders(outputdir)
+
+    if not os.path.exists(outputdir + "/non_redundant_lib.fa"):
+        output = subprocess.run(
+            ['meshclust', '-d', ref_tes, '-o', outputdir + '/non_redundant_lib.fa.clust', '-t', str(identity), '-c', str(cores), '-a', 'no'],
+            stdout=subprocess.DEVNULL, text=True)
+    else:
+        print("WARNING: meshclust output already exists, skipping cd-hit-est....")
+
+    fileopen = open(outputdir + '/non_redundant_lib.fa.clust', "r").readlines()
+    members = []
+    for line in fileopen:
+        if line != "\n":  # it's a member of the cluster
+            if line.replace("\n", "").split("\t")[3] == "C":
+                member_name = line.split("\t")[1].split(" ")[0].replace(">", "")
+                members.append(member_name)
+
+    sequences = [te for te in SeqIO.parse(ref_tes, "fasta") if te.id in members]
+    write_sequences_file(sequences, outputdir + '/non_redundant_lib.fa')
 
     return outputdir + "/non_redundant_lib.fa"
 
@@ -2483,7 +2521,9 @@ if __name__ == '__main__':
                         help='Number of nucleotides to extend each size of the element. Default=500')
     parser.add_argument('-x', required=False, dest='num_ite',
                         help='Number of iterations to extend the elements. Default=16')
-    parser.add_argument('--version', action='version', version='MCHelper version 1.6.6')
+    parser.add_argument('-k', required=False, dest='clustering_alg',
+                        help='Clustering algorithm: cd-hit or meshclust. Default=cd-hit')
+    parser.add_argument('--version', action='version', version='MCHelper version 1.7.0')
 
 
     options = parser.parse_args()
@@ -2504,6 +2544,7 @@ if __name__ == '__main__':
     minBlastHits = int(options.minBlastHits)
     perc_ssr = options.perc_ssr
     ext_nucl = options.ext_nucl
+    clustering_alg = options.clustering_alg
     num_ite = options.num_ite
 
     ####################################################################################################################
@@ -2596,12 +2637,33 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         num_ite = int(num_ite)
+
     if genome is None:
         print('FATAL ERROR: -g parameter must be specified')
         sys.exit(0)
     if not os.path.exists(genome):
         print("FATAL ERROR: Genome file " + genome + " doesn't exist.")
         sys.exit(0)
+
+    if clustering_alg is None:
+        clustering_alg = "cd-hit"
+    elif clustering_alg.lower() not in ['cd-hit', 'meshclust']:
+        print('FATAL ERROR: unknown clustering algorithm defined in -k parameter. Options are cd-hit or meshclust')
+        sys.exit(0)
+    elif clustering_alg.lower() == 'meshclust':
+        path = shutil.which("meshclust")
+        if path is None:
+            print('FATAL ERROR: meshclust was not find in your environment. Please add the meshclust path to your PATH variable.')
+            sys.exit(0)
+        else:
+            print("MESSAGE: Using " + str(clustering_alg) + " as clustering algorithm")
+    elif clustering_alg.lower() == 'cd-hit':
+        path = shutil.which("cd-hit")
+        if path is None:
+            print('FATAL ERROR: cd-hit was not find in your environment. Please install cd-hit in your conda environment.')
+            sys.exit(0)
+        else:
+            print("MESSAGE: Using " + str(clustering_alg) + " as clustering algorithm")
 
     ####################################################################################################################
     # Classified module
@@ -2662,6 +2724,10 @@ if __name__ == '__main__':
                 features_table = input_dir + "/" + proj_name + "_denovoLibTEs_PC.classif"
                 plots_dir = input_dir + "/plotCoverage"
                 gff_files = input_dir + "/gff_reversed"
+
+                if checkChrNames(genome) is False:
+                    print("FATAL ERROR: The provided genome ("+genome+") has sequences IDs containing only numbers. Please renamed them to contain letters and numbers (e.g. >Chr1 instead of >1).")
+                    sys.exit(0)
             else:
                 print(reason_valid)
                 sys.exit(0)
@@ -2684,6 +2750,10 @@ if __name__ == '__main__':
                     else:
                         do_blast = False
                 features_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
+
+                if checkChrNames(genome) is False:
+                    print("FATAL ERROR: The provided genome ("+genome+") has sequences IDs containing only numbers. Please renamed them to contain letters and numbers (e.g. >Chr1 instead of >1).")
+                    sys.exit(0)
             elif check == -2:
                 print('FATAL ERROR: There are sequences with duplicated IDs. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
                 sys.exit(0)
@@ -2732,7 +2802,10 @@ if __name__ == '__main__':
                 write_sequences_file(rename_tes, ref_tes + "_tmp")
                 delete_files(ref_tes)
                 shutil.move(ref_tes + "_tmp", ref_tes)
-            ref_tes_non_redundat = run_cdhit(ref_tes, outputdir, cores, 0.95, 0.98)
+            if clustering_alg == "cd-hit":
+                ref_tes_non_redundat = run_cdhit(ref_tes, outputdir, cores, 0.95, 0.98)
+            else:
+                ref_tes_non_redundat = run_meshclust(ref_tes, outputdir, cores, 0.95, 0.98)
             delete_files(outputdir + "/non_redundant_lib.fa.clstr")
 
             ############################################################################################################
@@ -3191,5 +3264,9 @@ if __name__ == '__main__':
     # Reduce the final redundancy
     if len(final_seqs) > 0:
         write_sequences_file(final_seqs, outputdir + "/curated_sequences_R.fa")
-        non_redundat = run_cdhit(outputdir + "/curated_sequences_R.fa", outputdir, cores, 0.95, 0.98)
+        if clustering_alg == "cd-hit":
+            non_redundat = run_cdhit(outputdir + "/curated_sequences_R.fa", outputdir, cores, 0.95, 0.98)
+        else:
+            non_redundat = run_meshclust(outputdir + "/curated_sequences_R.fa", outputdir, cores, 0.95, 0.98)
+
         shutil.move(non_redundat, outputdir + "/curated_sequences_NR.fa")
