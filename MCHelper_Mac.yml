@@ -1,9 +1,9 @@
 name: MCHelper_Mac
 channels:
+  - defaults
+  - bioconda
   - anaconda
   - conda-forge
-  - bioconda
-  - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
   - _r-mutex=1.0.1=anacondar_1
@@ -26,18 +26,29 @@ dependencies:
   - brotli=1.1.0=h0dc2134_1
   - brotli-bin=1.1.0=h0dc2134_1
   - brotli-python=1.1.0=py312heafc425_1
+  - bwidget=1.9.14=h694c41f_1
   - bzip2=1.0.8=h10d778d_5
   - c-ares=1.23.0=h10d778d_0
-  - ca-certificates=2023.11.17=h8857fd0_0
+  - ca-certificates=2024.2.2=h8857fd0_0
   - cached-property=1.5.2=hd8ed1ab_1
   - cached_property=1.5.2=pyha770c72_1
   - cairo=1.18.0=h99e66fa_0
+  - cctools_osx-64=986=h031c385_0
   - cd-hit=4.8.1=h0100bc9_9
-  - certifi=2023.11.17=pyhd8ed1ab_0
+  - certifi=2024.2.2=pyhd8ed1ab_0
   - cffi=1.16.0=py312h38bf5a0_0
   - charset-normalizer=3.3.2=pyhd8ed1ab_0
   - cialign=1.1.0=pyhca03a8a_0
+  - clang=17.0.6=default_h7151d67_4
+  - clang-17=17.0.6=default_h7151d67_4
+  - clang_impl_osx-64=17.0.6=h1af8efd_11
+  - clang_osx-64=17.0.6=hb91bd55_11
+  - clangxx=17.0.6=default_h7151d67_4
+  - clangxx_impl_osx-64=17.0.6=hc3430b7_11
+  - clangxx_osx-64=17.0.6=hb91bd55_11
   - comm=0.2.1=pyhd8ed1ab_0
+  - compiler-rt=17.0.6=ha38d28d_1
+  - compiler-rt_osx-64=17.0.6=ha38d28d_1
   - configargparse=1.7=pyhd8ed1ab_0
   - contourpy=1.2.0=py312hbf0bb39_0
   - curl=8.5.0=h726d00d_0
@@ -66,6 +77,8 @@ dependencies:
   - fribidi=1.0.10=hbcb3906_0
   - gawk=5.3.0=h2c496e9_0
   - gettext=0.21.1=h8a4c099_0
+  - gfortran_impl_osx-64=12.3.0=hc328e78_3
+  - gfortran_osx-64=12.3.0=h18f7dce_1
   - giflib=5.2.1=hb7f2c08_3
   - gmp=6.3.0=h93d8f39_0
   - gnutls=3.7.9=h1951705_0
@@ -81,6 +94,7 @@ dependencies:
   - importlib_resources=6.1.1=pyhd8ed1ab_0
   - ipykernel=6.28.0=pyh3cd1d5f_0
   - ipython=8.20.0=pyh707e725_0
+  - isl=0.26=imath32_h2e86a7b_101
   - isoduration=20.11.0=pyhd8ed1ab_0
   - jasper=4.1.0=h6ff19ee_0
   - jedi=0.19.1=pyhd8ed1ab_0
@@ -105,6 +119,7 @@ dependencies:
   - krb5=1.21.2=hb884880_0
   - lame=3.100=hb7f2c08_1003
   - lcms2=2.16=ha2f27b4_0
+  - ld64_osx-64=711=hd3532be_0
   - ld_impl_linux-64=2.40=hc65bd9e_0
   - lerc=4.0.0=hb486fe8_0
   - libabseil=20230802.1=cxx17_h048a20a_0
@@ -115,6 +130,7 @@ dependencies:
   - libbrotlidec=1.1.0=h0dc2134_1
   - libbrotlienc=1.1.0=h0dc2134_1
   - libcblas=3.9.0=20_osx64_openblas
+  - libclang-cpp17=17.0.6=default_h7151d67_4
   - libcurl=8.5.0=h726d00d_0
   - libcxx=16.0.6=hd57cbcb_0
   - libdeflate=1.19=ha4e1b8e_0
@@ -124,6 +140,7 @@ dependencies:
   - libffi=3.4.2=h0d85af4_5
   - libgd=2.3.3=h0dceb68_9
   - libgfortran=5.0.0=13_2_0_h97931a8_1
+  - libgfortran-devel_osx-64=12.3.0=h0b6f5ec_3
   - libgfortran-ng=3.0.1=h93005f0_2
   - libgfortran5=13.2.0=h2873a65_1
   - libglib=2.78.3=h198397b_0
@@ -132,6 +149,7 @@ dependencies:
   - libjpeg-turbo=3.0.0=h0dc2134_1
   - liblapack=3.9.0=20_osx64_openblas
   - liblapacke=3.9.0=20_osx64_openblas
+  - libllvm17=17.0.6=hbedff68_1
   - libnghttp2=1.58.0=h64cf6d3_1
   - libopenblas=0.3.25=openmp_hfef2a42_0
   - libopencv=4.8.1=py312h989985c_5
@@ -162,12 +180,15 @@ dependencies:
   - libxml2=2.12.3=hc0ae0f7_0
   - libzlib=1.2.13=h8a1eda9_5
   - llvm-openmp=17.0.6=hb6ac08f_0
+  - llvm-tools=17.0.6=hbedff68_1
   - mafft=7.520=h2413b67_3
+  - make=4.3=h22f3db7_1
   - markupsafe=2.1.3=py312h104f124_1
   - matplotlib=3.8.2=py312hb401068_0
   - matplotlib-base=3.8.2=py312h302682c_0
   - matplotlib-inline=0.1.6=pyhd8ed1ab_0
   - mistune=3.0.2=pyhd8ed1ab_0
+  - mpc=1.3.1=h81bd1dd_0
   - mpfr=4.2.1=h0c69b56_0
   - munkres=1.1.4=pyh9f0ad1d_0
   - nbclient=0.8.0=pyhd8ed1ab_0
@@ -185,12 +206,13 @@ dependencies:
   - opencv=4.8.1=py312hbdb8196_5
   - openh264=2.4.0=h93d8f39_0
   - openjpeg=2.5.0=ha4da562_3
-  - openssl=3.2.0=hd75f5a5_1
+  - openssl=3.2.1=hd75f5a5_1
   - overrides=7.4.0=pyhd8ed1ab_0
   - p11-kit=0.24.1=h65f8906_0
   - packaging=23.2=pyhd8ed1ab_0
   - pandas=2.1.1=py312he282a81_0
   - pandocfilters=1.5.0=pyhd8ed1ab_0
+  - pango=1.50.14=h19c1c8a_2
   - parso=0.8.3=pyhd8ed1ab_0
   - pcre=8.45=he49afe7_0
   - pcre2=10.42=h0ad2156_0
@@ -247,6 +269,7 @@ dependencies:
   - pytz=2023.3.post1=py312hecd8cb5_0
   - pyyaml=6.0.1=py312h104f124_1
   - pyzmq=25.1.2=py312hc789acb_0
+  - r-base=4.3.2=h46d3641_2
   - readline=8.2=h9e318b2_1
   - referencing=0.32.1=pyhd8ed1ab_0
   - requests=2.31.0=pyhd8ed1ab_0
@@ -257,6 +280,7 @@ dependencies:
   - scipy=1.11.4=py312heccc6a5_0
   - send2trash=1.8.2=pyhd1c38e8_0
   - setuptools=68.2.2=pyhd8ed1ab_0
+  - sigtool=0.1.3=h88f4db0_0
   - six=1.16.0=pyh6c4a22f_0
   - snappy=1.1.10=h225ccf5_0
   - sniffio=1.3.0=pyhd8ed1ab_0
@@ -265,11 +289,13 @@ dependencies:
   - stack_data=0.6.2=pyhd8ed1ab_0
   - svt-av1=1.8.0=h93d8f39_0
   - sysroot_linux-64=2.12=he073ed8_16
+  - tapi=1100.0.11=h9ce4665_0
   - tbb=2021.10.0=h1c7c39f_2
   - terminado=0.18.0=pyh31c8845_0
   - threadpoolctl=3.2.0=pyha21a80b_0
   - tinycss2=1.2.1=pyhd8ed1ab_0
   - tk=8.6.13=h1abcd95_1
+  - tktable=2.10=ha166976_5
   - tomli=2.0.1=pyhd8ed1ab_0
   - tornado=6.3.3=py312h104f124_1
   - traitlets=5.14.1=pyhd8ed1ab_0
@@ -298,4 +324,4 @@ dependencies:
   - zstd=1.5.5=h829000d_0
 variables:
   CONDA_SUBDIR: osx-64
-prefix: /Users/yoss/Bioinformatics/miniforge3/envs/rosetta
+
