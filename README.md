@@ -208,6 +208,7 @@ Full list of parameters include:
 * -s PERC_SSR:           Maximum length covered by single repetitions (in percentage between 0-100) allowed for a TE not to be removed. Default=60.
 * -e EXT_NUCL           Number of nucleotides to extend each size of the element. Default=500.
 * -x NUM_ITE            Number of iterations to extend the elements. Default=16.
+* -k clust_algorithm            Clustering algorithm: cd-hit or meshclust. Default=cd-hit
 * --version             show program's version number and exit.
 
 MCHelper can be run in three different modes: Fully automatic (F), semi-automatic (S) and manual (M). The way you can control this is with the parameter **-a [F,S or M]**. Notice that the fully automatic mode will make all the decision by you and, at the end, will generate different outputs curated and non-curated sequences. In contrast, the semi-automatic mode runs the structural check and allows the user to inspect the consensus sequences that do not fit the structural requirements. The manual mode does not run the structural check and sends all the consensus sequences to manual inspection. 
