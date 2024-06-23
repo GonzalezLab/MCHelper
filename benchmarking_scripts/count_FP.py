@@ -10,7 +10,7 @@ busco_library = sys.argv[2]
 RNAs_library = sys.argv[3]+"/db/rRNA_Eukaryota.hmm"
 tools_path = sys.argv[3]+"/tools/"
 perc_ssr = 60
-cores = 32
+cores = 46
 
 try:
     output = subprocess.run(
@@ -137,5 +137,24 @@ for te in SeqIO.parse(new_ref_tes, "fasta"):
         busco_filter += 1
         deleted_seqs.append(te.id)
 
+
+"""kept_seqs_objets = [te for te in SeqIO.parse(new_ref_tes, "fasta") if te.id in kept_seqs]
+SeqIO.write(kept_seqs_objets, new_ref_tes+"_good_candidates", "fasta")
+
+output = subprocess.run(
+        ['makeblastdb', '-in', curated_tes, '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
+
+output = subprocess.run(
+    ['blastn', '-query', new_ref_tes+"_good_candidates", '-db', curated_tes, '-out',
+     new_ref_tes + "_unclasstes_vs_classtes.blast", '-num_threads', str(cores), "-outfmt", "6",
+     "-qcov_hsp_perc", "70", "-perc_identity", "70"], stdout=subprocess.PIPE, text=True)
+
+blastresult = pd.read_table(new_ref_tes + "_unclasstes_vs_classtes.blast", sep='\t',
+                                names=['qseqid', 'sseqid', 'pident', 'length', 'mismatch', 'gapopen', 'qstart',
+                                       'qend', 'sstart', 'send', 'evalue', 'bitscore'])
+tes_with_hits = []
+for x in range(blastresult.shape[0]):
+    if blastresult.loc[x, "qseqid"] not in tes_with_hits:
+        tes_with_hits.append(blastresult.loc[x, "qseqid"])"""
 
 print(str(ssr_filter)+";"+str(busco_filter)+";"+str(rna_filter)+";"+str(ssr_filter+busco_filter+rna_filter))
