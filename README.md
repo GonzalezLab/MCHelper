@@ -264,4 +264,5 @@ The rest of the files are the following:
 
 ## Citation
 if you use this software, please cite us as following:
+
 Orozco-Arias, S., Sierra, P., Durbin, R., & González, J. (2024). MCHelper automatically curates transposable element libraries across eukaryotic species. Genome Research.
