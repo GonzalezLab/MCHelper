@@ -1,14 +1,8 @@
 """
 
-Manual Curation Helper Version 1.7.0
+Manual Curation Helper Version 1.7.1
 Novelties:
-  * Added MeShClust as an alternative clustering algorithm (-k parameter)
-  * Changed cd-hit output to keep the entire sequence IDs
-  * Removed the Pandas' Future Warnings
-  * Check sequence IDs in the genome to not containing only numbers
-  * Removed TE sequences with lengths < 100 pb
-  * Added WebAgg GUI backend to work with WSL version 1 (Experimental)
-  * TE+Aid plots are now kept in PDF due to CentOS incompatibilities
+  * Added recovery mode for the BEE step
 
 """
 
@@ -26,8 +20,8 @@ from Bio.SeqRecord import SeqRecord
 import subprocess
 import cv2
 from matplotlib import pyplot as plt
-#import matplotlib
-#matplotlib.use('WebAgg')
+# import matplotlib
+# matplotlib.use('WebAgg')
 import psutil
 import glob
 import shutil
@@ -36,13 +30,16 @@ import numpy as np
 import math
 from sklearn.cluster import DBSCAN
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 dicc_orders = {2: "LTR", 3: "COPIA", 4: "GYPSY", 5: "BELPAO", 6: "ERV", 7: "TRIM", 8: "LARD", 9: "LINE", 10: "SINE",
-               11: "R2", 12: "RTE", 13: "JOCKEY", 14: "L1", 15: "I", 16: "R1", 17: "CR1", 18: "LOA", 19: "L2",  20: "PLE",
-               21: "DIRS", 22: "NGARO", 23: "VIPER", 24: "TIR", 25: "MITE", 26: "TC1MARINER",  27: "HAT", 28: "MUTATOR",
-               29: "MERLIN", 30: "TRANSIB", 31: "P", 32: "PIGGYBAC", 33: "PIFHARBINGER",  34: "CACTA", 35: "MULE",
-               36: "CMC", 37: "HELITRON", 38: "MAVERICK", 39: "CRYPTON", 40: "UNCLASSIFIED", 41: "CLASSI", 42: "CLASSII"}
+               11: "R2", 12: "RTE", 13: "JOCKEY", 14: "L1", 15: "I", 16: "R1", 17: "CR1", 18: "LOA", 19: "L2",
+               20: "PLE",
+               21: "DIRS", 22: "NGARO", 23: "VIPER", 24: "TIR", 25: "MITE", 26: "TC1MARINER", 27: "HAT", 28: "MUTATOR",
+               29: "MERLIN", 30: "TRANSIB", 31: "P", 32: "PIGGYBAC", 33: "PIFHARBINGER", 34: "CACTA", 35: "MULE",
+               36: "CMC", 37: "HELITRON", 38: "MAVERICK", 39: "CRYPTON", 40: "UNCLASSIFIED", 41: "CLASSI",
+               42: "CLASSII"}
 
 orders_superfamilies = [x for x in dicc_orders.values()]
 
@@ -56,7 +53,7 @@ def write_sequences_file(sequences, filename):
     except PermissionError:
         print("FATAL ERROR: I couldn't access the files, please check: '" + filename + "'. I don't have permissions.")
         sys.exit(0)
-    except Exception as exp :
+    except Exception as exp:
         print("FATAL ERROR: There is a unknown problem writing sequences in : '" + filename + "'.")
         print(exp)
         sys.exit(0)
@@ -137,7 +134,6 @@ def processing_gff(seqname, gff_files, pre):
 
 
 def count_flf_fasta(ref_tes, genome, cores, outputdir):
-
     if not os.path.exists(outputdir + "/fullLengthFrag.txt"):
         create_output_folders(outputdir)
 
@@ -165,7 +161,8 @@ def count_flf_fasta(ref_tes, genome, cores, outputdir):
                     count_flf += 1
                 else:
                     count_frag += 1
-            flf_df = pd.concat([flf_df, pd.DataFrame({'TE': seq_name, 'length': [te_len], 'covg': [0], 'frags': [count_frag], 'fullLgthFrags': [count_flf],
+            flf_df = pd.concat([flf_df, pd.DataFrame(
+                {'TE': seq_name, 'length': [te_len], 'covg': [0], 'frags': [count_frag], 'fullLgthFrags': [count_flf],
                  'copies': [count_frag], 'fullLgthCopies': [count_flf]})], ignore_index=True)
 
         flf_df.to_csv(outputdir + "/fullLengthFrag.txt", header=True, sep='\t', index=False)
@@ -261,31 +258,31 @@ def check_repet_input_folder(repet_input_dir, proj_name):
 
     if not os.path.exists(repet_input_dir):
         valid = False
-        reason = "FATAL ERROR: "+repet_input_dir+" does not exist. Please check the path and re-run the software"
+        reason = "FATAL ERROR: " + repet_input_dir + " does not exist. Please check the path and re-run the software"
     elif not os.path.exists(ref_tes):
         valid = False
-        reason = "FATAL ERROR: "+ref_tes+" does not exist. Please check the path and re-run the software"
+        reason = "FATAL ERROR: " + ref_tes + " does not exist. Please check the path and re-run the software"
     elif os.path.getsize(ref_tes) == 0:
         valid = False
-        reason = "FATAL ERROR: "+ref_tes+" is empty. Please check the file and re-run the software"
-    #elif not os.path.exists(flf_file):
+        reason = "FATAL ERROR: " + ref_tes + " is empty. Please check the file and re-run the software"
+    # elif not os.path.exists(flf_file):
     #    valid = False
     #    reason = "FATAL ERROR: "+flf_file+" does not exist. Please check the path and re-run the software"
-    #elif os.path.getsize(flf_file) == 0:
+    # elif os.path.getsize(flf_file) == 0:
     #    valid = False
     #    reason = "FATAL ERROR: "+flf_file+" is empty. Please check the file and re-run the software"
     elif not os.path.exists(features_table):
         valid = False
-        reason = "FATAL ERROR: "+features_table+" does not exist. Please check the path and re-run the software"
+        reason = "FATAL ERROR: " + features_table + " does not exist. Please check the path and re-run the software"
     elif os.path.getsize(features_table) == 0:
         valid = False
-        reason = "FATAL ERROR: "+features_table+" is empty. Please check the file and re-run the software"
+        reason = "FATAL ERROR: " + features_table + " is empty. Please check the file and re-run the software"
     elif not os.path.exists(plots_dir):
         valid = False
-        reason = "FATAL ERROR: "+plots_dir+" does not exist. Please check the path and re-run the software"
+        reason = "FATAL ERROR: " + plots_dir + " does not exist. Please check the path and re-run the software"
     elif not os.path.exists(gff_files):
         valid = False
-        reason = "FATAL ERROR: "+gff_files+" does not exist. Please check the path and re-run the software"
+        reason = "FATAL ERROR: " + gff_files + " does not exist. Please check the path and re-run the software"
     else:
         # In this case, everything is ok to run the curation process !!
         valid = True
@@ -315,23 +312,31 @@ def find_TRs2(te, outputdir, minLTR, minTIR, minpolyA, cores):
 
     seq_name = str(te.id).split("#")[0]
     write_sequences_file(te, outputdir + "/temp/" + seq_name + ".fa")
-    output = subprocess.run(['makeblastdb', '-in',  outputdir + "/temp/" + seq_name + ".fa", '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
-    output = subprocess.run(["blastn -query " + outputdir + "/temp/" + seq_name + ".fa -db " + outputdir + "/temp/" + seq_name + ".fa -num_threads " + str(cores) + " -outfmt \"6 qseqid qstart qend sstart send\" -word_size 11 -gapopen 5 -gapextend 2 -reward 2 -penalty -3 | sed 's/#/-/g' > " + outputdir + "/temp/" + str(seq_name) + ".blast"], shell=True)
-    blastresult = pd.read_table(outputdir + "/temp/" + str(seq_name) + ".blast", sep='\t', names=['qseqid', 'qstart', 'qend', 'sstart', 'send'],  dtype={'qseqid': str, 'qstart': int, 'qend': int, 'sstart': int, 'send': int} )
+    output = subprocess.run(['makeblastdb', '-in', outputdir + "/temp/" + seq_name + ".fa", '-dbtype', 'nucl'],
+                            stdout=subprocess.PIPE, text=True)
+    output = subprocess.run([
+                                "blastn -query " + outputdir + "/temp/" + seq_name + ".fa -db " + outputdir + "/temp/" + seq_name + ".fa -num_threads " + str(
+                                    cores) + " -outfmt \"6 qseqid qstart qend sstart send\" -word_size 11 -gapopen 5 -gapextend 2 -reward 2 -penalty -3 | sed 's/#/-/g' > " + outputdir + "/temp/" + str(
+                                    seq_name) + ".blast"], shell=True)
+    blastresult = pd.read_table(outputdir + "/temp/" + str(seq_name) + ".blast", sep='\t',
+                                names=['qseqid', 'qstart', 'qend', 'sstart', 'send'],
+                                dtype={'qseqid': str, 'qstart': int, 'qend': int, 'sstart': int, 'send': int})
     blastHits = blastresult.shape[0]
     if blastresult.shape[0] > 1:
         blastresult = blastresult[1:]
         blastresult["len"] = abs(blastresult["qend"] - blastresult["qstart"])
-        ltr_check = blastresult[(((blastresult.qend-blastresult.qstart) * (blastresult.send-blastresult.sstart)) > 0)
-                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].min(axis=1) < len(te) * 0.1)
-                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].max(axis=1) > len(te) * 0.9)]
+        ltr_check = blastresult[
+            (((blastresult.qend - blastresult.qstart) * (blastresult.send - blastresult.sstart)) > 0)
+            & (blastresult[['qstart', 'qend', 'sstart', 'send']].min(axis=1) < len(te) * 0.1)
+            & (blastresult[['qstart', 'qend', 'sstart', 'send']].max(axis=1) > len(te) * 0.9)]
         try:
             lenLTR = max(ltr_check[ltr_check.len >= minLTR].len)
         except:
             lenLTR = 0
-        tir_check = blastresult[(((blastresult.qend-blastresult.qstart) * (blastresult.send-blastresult.sstart)) < 0)
-                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].min(axis=1) < len(te) * 0.1)
-                                & (blastresult[['qstart', 'qend', 'sstart', 'send']].max(axis=1) > len(te) * 0.9)]
+        tir_check = blastresult[
+            (((blastresult.qend - blastresult.qstart) * (blastresult.send - blastresult.sstart)) < 0)
+            & (blastresult[['qstart', 'qend', 'sstart', 'send']].min(axis=1) < len(te) * 0.1)
+            & (blastresult[['qstart', 'qend', 'sstart', 'send']].max(axis=1) > len(te) * 0.9)]
         try:
             lenTIR = max(tir_check[tir_check.len >= minTIR].len)
         except:
@@ -358,7 +363,7 @@ def find_profiles(te, outputdir, ref_profiles):
     output = subprocess.run(
         ['hmmscan', '--tblout', outputdir + "/" + seq_name + "_profiles_found.hmm", '-E', '10', '--noali', '--cpu',
          '1', ref_profiles, outputdir + "/" + seq_name + "_putative_te_orf.fa"],
-         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
 
     result = ""
     struc_domains = ""
@@ -448,9 +453,9 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
         end_per_thread = []
 
         # indexing the Pfam database if needed
-        if not os.path.exists(ref_profiles+".h3m"):
+        if not os.path.exists(ref_profiles + ".h3m"):
             output = subprocess.run(['hmmpress', ref_profiles],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
+                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
 
         for p in range(cores):
             if p < remain:
@@ -466,7 +471,8 @@ def build_class_table_parallel(ref_tes, cores, outputdir, blastn_db, blastx_db, 
         pool = multiprocessing.Pool(processes=cores)
         create_output_folders(outputdir + "/temp")
         localresults = [pool.apply_async(build_class_table,
-                                         args=[tes[ini_per_thread[x]:end_per_thread[x]], ref_profiles, outputdir, blastn_db,
+                                         args=[tes[ini_per_thread[x]:end_per_thread[x]], ref_profiles, outputdir,
+                                               blastn_db,
                                                blastx_db, do_blast, cores]) for x in range(cores)]
 
         local_dfs = [p.get() for p in localresults]
@@ -533,7 +539,6 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
             else:  # it's actually an order
                 superfamily = "NA"
 
-
         if superfamily in superfamilies:
             # superfamily found !!!
             sFamily = superfamily
@@ -578,7 +583,7 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
             order = "NA"
             sFamily = "NA"
         else:
-            #print("WARNING: I didn't find the superfamily, neither the order: "+order_given+"/"+superfamily)
+            # print("WARNING: I didn't find the superfamily, neither the order: "+order_given+"/"+superfamily)
             classTE = "Unclassified"
             order = "Unclassified"
             sFamily = "Unclassified"
@@ -593,11 +598,11 @@ def build_class_table(ref_tes, ref_profiles, outputdir, blastn_db, blastx_db, do
         terminals = ''
         terminals_list = []
         if lenLTR > 0:
-            terminals_list.append("termLTR: "+str(lenLTR))
+            terminals_list.append("termLTR: " + str(lenLTR))
         if lenTIR > 0:
-            terminals_list.append("termTIR: "+str(lenTIR))
+            terminals_list.append("termTIR: " + str(lenTIR))
         if lenPolyA > 0:
-            terminals_list.append("polyAtail: "+str(lenPolyA))
+            terminals_list.append("polyAtail: " + str(lenPolyA))
         if len(terminals_list) > 0:
             terminals = 'TermRepeats: ' + ' '.join(terminals_list) + ';'
 
@@ -640,13 +645,13 @@ def count_domains_by_order(profiles, order):
                           or '_ATPase_' in x or '_PhageINT_' in x])
     elif order == "LTR":
         right_doms = len([x for x in profiles.split(",") if
-                        '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x])
+                          '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x])
         other_doms = len([x for x in profiles.split(",") if '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x
                           or '_REP_' in x or '_OTU_' in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x or '_PhageINT_' in x])
 
     elif order == "DIRS":
         right_doms = len([x for x in profiles.split(",") if
-                        '_GAG_' in x or '_RT_' in x or '_RNaseH_' in x or '_PhageINT_' in x])
+                          '_GAG_' in x or '_RT_' in x or '_RNaseH_' in x or '_PhageINT_' in x])
         other_doms = len([x for x in profiles.split(",") if '_AP_' in x or '_INT_' in x or '_ENV_' in x or '_EN_' in x
                           or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x or '_SET_'
                           in x or '_Prp' in x or '_ATPase_' in x])
@@ -665,7 +670,8 @@ def count_domains_by_order(profiles, order):
                           or '_Tase_' in x or '_Prp' in x or '_ATPase_' in x or '_PhageINT_' in x])
 
     elif order == "MAVERICK":
-        right_doms = len([x for x in profiles.split(",") if '_Prp' in x or '_ATPase_' in x or '_INT_' in x or '_AP_' in x])
+        right_doms = len(
+            [x for x in profiles.split(",") if '_Prp' in x or '_ATPase_' in x or '_INT_' in x or '_AP_' in x])
         other_doms = len([x for x in profiles.split(",") if
                           '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or '_RNaseH_' in x or '_ENV_' in x
                           or '_EN_' in x or '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_' in x
@@ -689,9 +695,10 @@ def inferring_domains(input_profiles):
         # Class I or II ?
         class2_doms = len(
             [x for x in profiles.split(",") if '_Tase_' in x or '_HEL_' in x or '_RPA_' in x or '_REP_' in x or '_OTU_'
-             in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x  or '_PhageINT_' in x])
-        class1_doms = len([x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or
-                          '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x])
+             in x or '_SET_' in x or '_Prp' in x or '_ATPase_' in x or '_PhageINT_' in x])
+        class1_doms = len(
+            [x for x in profiles.split(",") if '_GAG_' in x or '_AP_' in x or '_INT_' in x or '_RT_' in x or
+             '_RNaseH_' in x or '_ENV_' in x or '_EN_' in x])
 
         if class1_doms > 0 and class2_doms == 0:
             # Retrotransposon !
@@ -728,7 +735,8 @@ def inferring_domains(input_profiles):
     return inferred, new_class
 
 
-def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copies, orders, minFLNA, kept_seqs_record, ref_tes, automatic):
+def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copies, orders, minFLNA, kept_seqs_record,
+                        ref_tes, automatic):
     status = -1  # 0 = delete, 1 = keep, -1 = Manual Inspection classified module, -3 = unclassified module
     reason = ""
     superFamily = str(struc_table.at[i, "sFamily"])
@@ -820,9 +828,11 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
                     reason = "Marked as incomplete TE for don't having any domains neither LTRs!"
             else:
                 if automatic != 'F':
-                    reason = "Sent to manual inspection for don't having at least " + str(minDomLTR) + " domains and LTRs!"
+                    reason = "Sent to manual inspection for don't having at least " + str(
+                        minDomLTR) + " domains and LTRs!"
                 else:
-                    reason = "Marked as incomplete TE for don't having at least " + str(minDomLTR) + " domains and LTRs!"
+                    reason = "Marked as incomplete TE for don't having at least " + str(
+                        minDomLTR) + " domains and LTRs!"
             status = -1
 
         if status_ltr:
@@ -888,7 +898,7 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
                         reason = "Marked as incomplete TE because having non-TIR domains !"
             else:
                 if num_copies[struc_table.at[i, "Seq_name"]][0] >= minFLNA or num_copies[struc_table.at[i, "Seq_name"]][
-                1] >= minFLNA:
+                    1] >= minFLNA:
                     keep_seqs.append(struc_table.at[i, "Seq_name"])
                     kept_seqs_record.append([x for x in SeqIO.parse(ref_tes, "fasta") if
                                              str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]][0])
@@ -900,10 +910,10 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
                     status = -1
                     if automatic != 'F':
                         reason = "Sent to manual inspection because having TIRs, no domains but less than " + str(
-                        minFLNA) + " full-length fragments or copies !"
+                            minFLNA) + " full-length fragments or copies !"
                     else:
                         reason = "Marked as incomplete TE because having TIRs, no domains but less than " + str(
-                        minFLNA) + " full-length fragments or copies !"
+                            minFLNA) + " full-length fragments or copies !"
         else:
             # no profiles and no TIRs
             status = -1
@@ -950,7 +960,7 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
                     reason = "Sent to manual inspection for having non-Helitron domains"
                 else:
                     reason = "Marked as incomplete TE for having non-Helitron domains"
-        elif "helitronExtremities: " in struc_table.at[i, "struct"] :
+        elif "helitronExtremities: " in struc_table.at[i, "struct"]:
             keep_seqs.append(struc_table.at[i, "Seq_name"])
             kept_seqs_record.append([x for x in SeqIO.parse(ref_tes, "fasta") if
                                      str(x.id).split("#")[0] == struc_table.at[i, "Seq_name"]][0])
@@ -991,7 +1001,8 @@ def decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copi
     return status, reason
 
 
-def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, struc_table, te_aid, repet, automatic, pre, plots_dir,
+def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, struc_table, te_aid, repet, automatic, pre,
+                      plots_dir,
                       gff_files, min_perc_model, seqs_to_module3, keep_seqs, orders, kept_seqs_record, non_curated,
                       num_copies):
     if te_aid == 'Y':
@@ -1001,11 +1012,13 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
     ele_number = 0
     orders_incomplete = []
     for i in range(struc_table.shape[0]):
-        if (automatic == 'M' or struc_table.at[i, "Seq_name"] in seqs_to_mi) and struc_table.at[i, "Seq_name"] in seqID_list:
+        if (automatic == 'M' or struc_table.at[i, "Seq_name"] in seqs_to_mi) and struc_table.at[
+            i, "Seq_name"] in seqID_list:
             if automatic != 'F':
                 codings = struc_table.at[i, "coding"].replace("coding=(", " ").replace(")", "")
                 codigs = codings.split(";")
-                print("[" + str(ele_number + 1) + "/" + str(struc_table.shape[0]) + "] Seq Name: " + str(struc_table.at[i, "Seq_name"]))
+                print("[" + str(ele_number + 1) + "/" + str(struc_table.shape[0]) + "] Seq Name: " + str(
+                    struc_table.at[i, "Seq_name"]))
                 print("Length: " + str(struc_table.at[i, "length"]))
                 print("Class: " + str(struc_table.at[i, "class"]) + " / " + str(
                     struc_table.at[i, "order"]) + " / " + str(struc_table.at[i, "sFamily"]))
@@ -1036,7 +1049,8 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                         plt.title("REPET")
 
                         # obtaining the positions of Blastn, tBlastn y blastx from GFF:
-                        posBltn, postBlasx, posBlastx, posTR = processing_gff(struc_table.at[i, "Seq_name"], gff_files, pre)
+                        posBltn, postBlasx, posBlastx, posTR = processing_gff(struc_table.at[i, "Seq_name"], gff_files,
+                                                                              pre)
 
                         # ploting gff files
                         ax = fig.add_subplot(rows, columns, 2)
@@ -1052,8 +1066,10 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                         ax.set_xlabel('TE consensus')
                         ax.set_title('REPET GFF files')
 
-                        if os.path.exists(outputdir + '/MSA_plots/' + struc_table.at[i, "Seq_name"] + '.copies.cialign_output.png'):
-                            Image2 = cv2.imread(outputdir + '/MSA_plots/' + struc_table.at[i, "Seq_name"] + '.copies.cialign_output.png')
+                        if os.path.exists(outputdir + '/MSA_plots/' + struc_table.at[
+                            i, "Seq_name"] + '.copies.cialign_output.png'):
+                            Image2 = cv2.imread(outputdir + '/MSA_plots/' + struc_table.at[
+                                i, "Seq_name"] + '.copies.cialign_output.png')
                             fig.add_subplot(rows, columns, 3)
                             # showing image
                             plt.imshow(Image2)
@@ -1124,10 +1140,10 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                             # Saving pages in jpeg format
                             for page in pages:
                                 page.save(outputdir + '/te_aid/' + struc_table.at[
-                                        i, "Seq_name"] + '.fa.c2g.jpeg', 'JPEG')
+                                    i, "Seq_name"] + '.fa.c2g.jpeg', 'JPEG')
 
                             Image2 = cv2.imread(outputdir + '/te_aid/' + struc_table.at[
-                                    i, "Seq_name"] + '.fa.c2g.jpeg')
+                                i, "Seq_name"] + '.fa.c2g.jpeg')
 
                             # Adds a subplot at the 2nd position
                             fig.add_subplot(rows, columns, pos_te_aid)
@@ -1141,7 +1157,8 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                             if os.path.exists(outputdir + '/MSA_plots/' + struc_table.at[
                                 i, "Seq_name"] + '.copies.cialign_output.png'):
                                 Image2 = cv2.imread(
-                                    outputdir + '/MSA_plots/' + struc_table.at[i, "Seq_name"] + '.copies.cialign_output.png')
+                                    outputdir + '/MSA_plots/' + struc_table.at[
+                                        i, "Seq_name"] + '.copies.cialign_output.png')
                                 fig.add_subplot(rows, columns, pos_te_aid + 1)
                                 # showing image
                                 plt.imshow(Image2)
@@ -1175,12 +1192,13 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                     else:
                         current_clas = orders_superfamilies.index("UNCLASSIFIED") + 2
                     keep = input(
-                            "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: COPIA, 4: "
-                    "GYPSY, 5: BELPAO, 6: ERV, 7: TRIM, 8: LARD, 9: LINE, 10: SINE, 11: R2, 12: RTE, 13: JOCKEY, 14: L1,"
-                    " 15: I, 16: R1, 17: CR1, 18: LOA, 19: L2, 20: PLE, 21: DIRS, 22: NGARO, 23: VIPER, 24: TIR, 25: MITE"
-                    ", 26: TC1MARINER,  27: HAT, 28: MUTATOR, 29: MERLIN, 30: TRANSIB, 31: P, 32: PIGGYBAC, 33: PIFHARBINGER,"
-                    "  34: CACTA, 35: MULE, 36: CMC, 37: HELITRON, 38: MAVERICK, 39: CRYPTON, 40: UNCLASSIFIED, 41: "
-                    "CLASSI, 42: CLASSII] ") or current_clas
+                        "Keep the sequence?[enter: current (" + str(
+                            current_clas) + "), 1: remove, 2: LTR, 3: COPIA, 4: "
+                                            "GYPSY, 5: BELPAO, 6: ERV, 7: TRIM, 8: LARD, 9: LINE, 10: SINE, 11: R2, 12: RTE, 13: JOCKEY, 14: L1,"
+                                            " 15: I, 16: R1, 17: CR1, 18: LOA, 19: L2, 20: PLE, 21: DIRS, 22: NGARO, 23: VIPER, 24: TIR, 25: MITE"
+                                            ", 26: TC1MARINER,  27: HAT, 28: MUTATOR, 29: MERLIN, 30: TRANSIB, 31: P, 32: PIGGYBAC, 33: PIFHARBINGER,"
+                                            "  34: CACTA, 35: MULE, 36: CMC, 37: HELITRON, 38: MAVERICK, 39: CRYPTON, 40: UNCLASSIFIED, 41: "
+                                            "CLASSI, 42: CLASSII] ") or current_clas
                     keep = int(keep)
                 except ValueError:
                     keep = -1
@@ -1197,12 +1215,13 @@ def manual_inspection(genome, outputdir, te_library, seqs_to_mi, seqID_list, str
                         else:
                             current_clas = orders_superfamilies.index("UNCLASSIFIED") + 2
                         keep = input(
-                                "Keep the sequence?[enter: current ("+str(current_clas)+"), 1: remove, 2: LTR, 3: COPIA, 4: "
-                    "GYPSY, 5: BELPAO, 6: ERV, 7: TRIM, 8: LARD, 9: LINE, 10: SINE, 11: R2, 12: RTE, 13: JOCKEY, 14: L1,"
-                    " 15: I, 16: R1, 17: CR1, 18: LOA, 19: L2, 20: PLE, 21: DIRS, 22: NGARO, 23: VIPER, 24: TIR, 25: MITE"
-                    ", 26: TC1MARINER,  27: HAT, 28: MUTATOR, 29: MERLIN, 30: TRANSIB, 31: P, 32: PIGGYBAC, 33: PIFHARBINGER,"
-                    "  34: CACTA, 35: MULE, 36: CMC, 37: HELITRON, 38: MAVERICK, 39: CRYPTON, 40: UNCLASSIFIED, 41: "
-                    "CLASSI, 42: CLASSII] ") or current_clas
+                            "Keep the sequence?[enter: current (" + str(
+                                current_clas) + "), 1: remove, 2: LTR, 3: COPIA, 4: "
+                                                "GYPSY, 5: BELPAO, 6: ERV, 7: TRIM, 8: LARD, 9: LINE, 10: SINE, 11: R2, 12: RTE, 13: JOCKEY, 14: L1,"
+                                                " 15: I, 16: R1, 17: CR1, 18: LOA, 19: L2, 20: PLE, 21: DIRS, 22: NGARO, 23: VIPER, 24: TIR, 25: MITE"
+                                                ", 26: TC1MARINER,  27: HAT, 28: MUTATOR, 29: MERLIN, 30: TRANSIB, 31: P, 32: PIGGYBAC, 33: PIFHARBINGER,"
+                                                "  34: CACTA, 35: MULE, 36: CMC, 37: HELITRON, 38: MAVERICK, 39: CRYPTON, 40: UNCLASSIFIED, 41: "
+                                                "CLASSI, 42: CLASSII] ") or current_clas
                         keep = int(keep)
                     except ValueError:
                         keep = -1
@@ -1263,10 +1282,11 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
         start_time = time.time()
         # Step1 create feature table
         if not os.path.exists(ref_profiles):
-            print("FATAL ERROR: " + ref_profiles + " does not exist. Please check that the file 'Pfam35.0.hmm' is located at db folder and re-run the software")
+            print(
+                "FATAL ERROR: " + ref_profiles + " does not exist. Please check that the file 'Pfam35.0.hmm' is located at db folder and re-run the software")
             sys.exit(0)
 
-        build_class_table_parallel(ref_tes_bee, cores, outputdir+'/classifiedModule/', blastn_db, blastx_db,
+        build_class_table_parallel(ref_tes_bee, cores, outputdir + '/classifiedModule/', blastn_db, blastx_db,
                                    ref_profiles, False)
         struc_table = pd.read_csv(outputdir + "/classifiedModule/denovoLibTEs_PC.classif", sep='\t')
         end_time = time.time()
@@ -1281,11 +1301,12 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
             kept_seqs_record.append([x for x in SeqIO.parse(ref_tes_bee, "fasta") if x.id.split("#")[0] == seq_id][0])
         end_time = time.time()
         if verbose:
-            print("MESSAGE: Total TEs kept because of hits with library: " + str(len(keep_seqs)) + " [" + str(end_time - start_time) + " seconds]")
+            print("MESSAGE: Total TEs kept because of hits with library: " + str(len(keep_seqs)) + " [" + str(
+                end_time - start_time) + " seconds]")
 
         # Step 3 Structural Check
         totalTEs = struc_table.shape[0]
-        struc_table.loc[:, "Reason"] = [""]*totalTEs
+        struc_table.loc[:, "Reason"] = [""] * totalTEs
         for i in range(struc_table.shape[0]):
             status = -1  # 0 = delete, 1 = keep, -1 = Manual Inspection, -2 = Removed
             if int(struc_table.at[i, "length"]) < 100:
@@ -1296,7 +1317,8 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
                     index_to_rem = keep_seqs.index(struc_table.at[i, "Seq_name"])
                     keep_seqs.remove(struc_table.at[i, "Seq_name"])
                     orders.pop(index_to_rem)
-                    kept_seqs_record = [teLong for teLong in kept_seqs_record if teLong.id.split("#")[0] != struc_table.at[i, "Seq_name"]]
+                    kept_seqs_record = [teLong for teLong in kept_seqs_record if
+                                        teLong.id.split("#")[0] != struc_table.at[i, "Seq_name"]]
                 status = -2
                 if verbose:
                     print("[" + str(ele_number + 1) + "/" + str(totalTEs) + "] Seq Name: " + str(
@@ -1318,14 +1340,16 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
                 codigs = codings.split(";")
 
                 # Structural checks
-                if str(struc_table.at[i, "class"]).upper() in ['UNCLASSIFIED', 'NA', 'NAN'] or str(struc_table.at[i, "order"]).upper() in ['UNCLASSIFIED', 'NA', 'NAN']:
+                if str(struc_table.at[i, "class"]).upper() in ['UNCLASSIFIED', 'NA', 'NAN'] or str(
+                        struc_table.at[i, "order"]).upper() in ['UNCLASSIFIED', 'NA', 'NAN']:
                     seqs_to_module3.append(struc_table.at[i, "Seq_name"])
                     status = -3
                     seqs_module3 += 1
                     reason = "Sent to unclassified module due to its order is unclassified or unknown !"
                 else:
                     profiles = [cod for cod in codigs if "profiles:" in cod]
-                    status, reason = decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copies, orders, minFLNA, kept_seqs_record, ref_tes_bee, automatic)
+                    status, reason = decision_tree_rules(struc_table, profiles, i, keep_seqs, minDomLTR, num_copies,
+                                                         orders, minFLNA, kept_seqs_record, ref_tes_bee, automatic)
 
                 if status == 1:
                     keep_auto += 1
@@ -1387,8 +1411,24 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
         keep_seqs, orders = [], []
 
     seqs_to_module3, keep_seqs, orders, kept_seqs_record, non_curated, orders_incomplete = manual_inspection(genome,
-    outputdir+"/classifiedModule", ref_tes_bee, seqs_to_mi, seqID_list, struc_table, te_aid, repet, automatic, pre, plots_dir, gff_files,
-    min_perc_model, seqs_to_module3, keep_seqs, orders, kept_seqs_record, non_curated, num_copies)
+                                                                                                             outputdir + "/classifiedModule",
+                                                                                                             ref_tes_bee,
+                                                                                                             seqs_to_mi,
+                                                                                                             seqID_list,
+                                                                                                             struc_table,
+                                                                                                             te_aid,
+                                                                                                             repet,
+                                                                                                             automatic,
+                                                                                                             pre,
+                                                                                                             plots_dir,
+                                                                                                             gff_files,
+                                                                                                             min_perc_model,
+                                                                                                             seqs_to_module3,
+                                                                                                             keep_seqs,
+                                                                                                             orders,
+                                                                                                             kept_seqs_record,
+                                                                                                             non_curated,
+                                                                                                             num_copies)
 
     for index in range(len(kept_seqs_record)):
         # put the order having the superfamily
@@ -1438,7 +1478,6 @@ def new_module1(plots_dir, ref_tes, gff_files, outputdir, pre, te_aid, automatic
         non_curated[index].id = new_name
         non_curated[index].description = ""
 
-
     seqs_to_module3_record = [te for te in SeqIO.parse(ref_tes_bee, "fasta") if
                               str(te.id).split("#")[0] in seqs_to_module3]
     write_sequences_file(kept_seqs_record, outputdir + "/classifiedModule/kept_seqs_classified_module_curated.fa")
@@ -1462,7 +1501,7 @@ def K2Pdistance(maf):
     distance_matrix = np.zeros((maf.shape[0], maf.shape[0]), dtype=float)
     transitions = ["AG", "GA", "CT", "TC"]
     transversions = ["AC", "CA", "AT", "TA", "GC", "CG", "GT", "TG"]
-    for i in range(maf.shape[0]-1):
+    for i in range(maf.shape[0] - 1):
         seq1 = "".join(maf.iloc[i, 1:]).upper()
         for j in range(i + 1, maf.shape[0]):
             seq2 = "".join(maf.iloc[j, 1:]).upper()
@@ -1479,7 +1518,7 @@ def K2Pdistance(maf):
                 d = 1
             distance_matrix[j][i] = distance_matrix[i][j] = d
     end = time.time()
-    #print(maf.iloc[0, 0] + ": " + str(end - start))
+    # print(maf.iloc[0, 0] + ": " + str(end - start))
     return distance_matrix
 
 
@@ -1506,9 +1545,9 @@ def read_maf(maf_file):
     # Read sequences from MAF file.
     data = []
     for sequence_id, sequence in sequences.items():
-     row = list(sequence)
-     row.insert(0, name)
-     data.append(row)
+        row = list(sequence)
+        row.insert(0, name)
+        data.append(row)
     headers = ['id'] + list(range(len(data[0]) - 1))
     df = pd.DataFrame(data, columns=headers)
     # Return data table with the name of the maf as name of the first column to pass it between functions.
@@ -1569,7 +1608,7 @@ def seq_clus(maf, min_cluster, max_sequences, cluster_factor, group_outliers, nu
                         clus = maf[clusters == i].reset_index(drop=True)
                         clus.iloc[:, 0] = name + '_s_' + str(i)
                         mafs.append(clus)
-            if (0 in set(clusters)) and (sum(clusters == 0) > mp-1) and (max(clusters) > 1) or (eps == 0.02):
+            if (0 in set(clusters)) and (sum(clusters == 0) > mp - 1) and (max(clusters) > 1) or (eps == 0.02):
                 clus = maf[clusters == 0].reset_index(drop=True)
                 clus.iloc[:, 0] = name + '_s_0'
                 mafs.append(clus)
@@ -1615,9 +1654,10 @@ def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold, num_
         # next (rm) position forms the consensus too.
         r['lm'] = 0
         for i in range(1, r.shape[0]):
-            r.at[i, 'lm'] = np.nansum((r.iloc[i, :seqs] == r.at[i, 'base']) & (r.iloc[i - 1, :seqs] == r.at[i - 1, 'base'])) / seqs
+            r.at[i, 'lm'] = np.nansum(
+                (r.iloc[i, :seqs] == r.at[i, 'base']) & (r.iloc[i - 1, :seqs] == r.at[i - 1, 'base'])) / seqs
         r['rm'] = r['lm'].shift(-1)
-        r.loc[r.shape[0]-1, 'rm'] = 0
+        r.loc[r.shape[0] - 1, 'rm'] = 0
 
         m1 = r.loc[r['lm'] > 0.5]['lm'].mean()
         sd1 = r.loc[r['lm'] > 0.5]['lm'].std()
@@ -1626,7 +1666,7 @@ def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold, num_
         min_r = r[(r['lm'] >= cutpoint1) | (r['rm'] >= cutpoint1)]
         # Correct edges for low number of seqs (need more confidence -> more consecutive bases)
         # Take the edges that match to this rule
-        confidence_needed = 20//seqs + 1
+        confidence_needed = 20 // seqs + 1
 
         # To calculate where is the 5' edge to cut
         v = min_r.iloc[0:confidence_needed]['rm'] >= cutpoint1
@@ -1666,20 +1706,25 @@ def process_maf(r, min_plurality, fasta_table_ite, te_class, end_threshold, num_
             min_l = minmin_r.shape[0]
             end_l_te = r[r['ID'] < minmin_r.loc[0, 'ID']].shape[0] - np.sum(
                 (r[r['ID'] < minmin_r.loc[0, 'ID']]['res'] + r[r['ID'] < minmin_r.loc[0, 'ID']]['mb']) == seqs) - (
-                                  np.sum(r[r['ID'] < minmin_r.loc[0, 'ID']]['res']) / seqs) > end_threshold
+                               np.sum(r[r['ID'] < minmin_r.loc[0, 'ID']]['res']) / seqs) > end_threshold
             end_r_te = r[r['ID'] > minmin_r.loc[min_l - 1, 'ID']].shape[0] - np.sum((r[r['ID'] > minmin_r.loc[
                 min_l - 1, 'ID']]['res'] + r[r['ID'] > minmin_r.loc[min_l - 1, 'ID']]['mb']) == seqs) - (
-                                  np.sum(r[r['ID'] > minmin_r.loc[min_l - 1, 'ID']]['res']) / seqs) > end_threshold
+                               np.sum(r[r['ID'] > minmin_r.loc[min_l - 1, 'ID']]['res']) / seqs) > end_threshold
 
             # add the consensus to the fasta_table
-            fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": name, "cons": s, "cons_size": [len(s)], "class": te_class, "subfamilies": [num_subfamilies], "end_l": end_l_te, "end_r":  end_r_te})], ignore_index=True)
+            fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame(
+                {"seq": name, "cons": s, "cons_size": [len(s)], "class": te_class, "subfamilies": [num_subfamilies],
+                 "end_l": end_l_te, "end_r": end_r_te})], ignore_index=True)
         else:
             # the MSA doesn't have the enough contiguity so, I won't extend it
-            print("WARNING: Sequence "+name+" couldn't be processed because the MSA didn't have enough contiguity. I will discard it")
+            print(
+                "WARNING: Sequence " + name + " couldn't be processed because the MSA didn't have enough contiguity. I will discard it")
     return fasta_table_ite
 
 
-def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, outputdir, minBlastHits, cores, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies):
+def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, outputdir, minBlastHits, cores,
+                                         min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers,
+                                         min_plurality, end_threshold, max_num_subfamilies):
     create_output_folders(outputdir)
 
     print('MESSAGE: Starting with BEE step ...')
@@ -1690,22 +1735,39 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
             ['makeblastdb', '-in', genome, '-dbtype', 'nucl'], stdout=subprocess.PIPE, text=True)
 
     if os.path.getsize(genome) == 0:
-        print("FATAL ERROR: "+genome+" is empty. Please check the file and re-run the software")
+        print("FATAL ERROR: " + genome + " is empty. Please check the file and re-run the software")
         sys.exit(0)
     elif os.path.getsize(ref_tes) == 0:
-        print("FATAL ERROR: "+ref_tes+" is empty. Please check the file and re-run the software")
+        print("FATAL ERROR: " + ref_tes + " is empty. Please check the file and re-run the software")
         sys.exit(0)
 
-    ite = 0
-    all_finished = False
-    tes = [te for te in SeqIO.parse(ref_tes, "fasta")]
-    # Fasta table for the sequences will be extended
-    fasta_table = pd.DataFrame(columns=["seq", "cons_size", "class", "subfamilies", "end_l", "end_r"])
-    for i in range(len(tes)):
-        fasta_table = pd.concat([fasta_table, pd.DataFrame(
-            {"seq": tes[i].id.split("#")[0], "cons": str(tes[i].seq).lower(),
-             "cons_size": [len(tes[i].seq)], "class": str(tes[i].id).split("#")[1], "subfamilies": 0, "end_l": False,
-             "end_r": False})], ignore_index=True)
+    archivos = glob.glob(outputdir + "/extension_file_tmp_*.csv")
+    if len(archivos) > 0:  # We found a recovering point. Starting from that
+        last_iteration = max(archivos, key=lambda x: int(x.split("_")[-1].split(".")[0]))
+        ite = int(last_iteration.split("_")[-1].split(".")[0]) - 1
+
+        # Leer el archivo con pandas
+        fasta_table = pd.read_csv(last_iteration)
+        if fasta_table[~((fasta_table['end_l'] == True) & (fasta_table['end_r'] == True))].shape[0] == 0:
+            all_finished = True
+        else:
+            all_finished = False
+        print(
+            "MESSAGE: a recovering point for the BEE extension was found. Re-starting from iteration: " + str(ite + 1))
+    else:  # It is not a recovering point, seems like a new BEE execution, starting from zero
+        all_finished = False
+        ite = 0
+        tes = [te for te in SeqIO.parse(ref_tes, "fasta")]
+        # Fasta table for the sequences will be extended
+        fasta_table = pd.DataFrame(columns=["seq", "cons_size", "class", "subfamilies", "end_l", "end_r"])
+
+        for i in range(len(tes)):
+            fasta_table = pd.concat([fasta_table, pd.DataFrame(
+                {"seq": tes[i].id.split("#")[0], "cons": str(tes[i].seq).lower(),
+                 "cons_size": [len(tes[i].seq)], "class": str(tes[i].id).split("#")[1], "subfamilies": 0,
+                 "end_l": False,
+                 "end_r": False})], ignore_index=True)
+
     while ite < num_ite and not all_finished:
         start_time = time.time()
         n = fasta_table.shape[0]
@@ -1726,7 +1788,8 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
         # Run in parallel the checking
         pool = multiprocessing.Pool(processes=cores)
         localresults = [pool.apply_async(extension_by_saturation,
-                                         args=[genome, fasta_table.loc[ini_per_thread[x]:end_per_thread[x]-1, :], exe_nucl,
+                                         args=[genome, fasta_table.loc[ini_per_thread[x]:end_per_thread[x] - 1, :],
+                                               exe_nucl,
                                                outputdir, min_perc_model, min_cluster, max_sequences,
                                                cluster_factor, group_outliers, min_plurality, end_threshold,
                                                max_num_subfamilies, minBlastHits]) for x in range(cores)]
@@ -1739,7 +1802,12 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
 
         if verbose:
             end_time = time.time()
-            print("MESSAGE: iteration  " + str(ite + 1) + "/" + str(num_ite) + " done ["+str(end_time-start_time)+" seconds]. Generated " + str(final_seqs.shape[0]) + " sequences.")
+            print("MESSAGE: iteration  " + str(ite + 1) + "/" + str(num_ite) + " done [" + str(
+                end_time - start_time) + " seconds]. Generated " + str(final_seqs.shape[0]) + " sequences.")
+
+        # saving the iteration results to re-starting
+        final_seqs.to_csv(outputdir + "/extension_file_tmp_" + str(ite + 1) + ".csv", index=False)
+
         ite += 1
         fasta_table = final_seqs
         if fasta_table[~((fasta_table['end_l'] == True) & (fasta_table['end_r'] == True))].shape[0] == 0:
@@ -1747,7 +1815,8 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
 
     merged_results = []
     for index in range(fasta_table.shape[0]):
-        final_seq = SeqRecord(Seq(fasta_table.loc[index, "cons"]), id=fasta_table.loc[index, "seq"]+"#"+fasta_table.loc[index, "class"])
+        final_seq = SeqRecord(Seq(fasta_table.loc[index, "cons"]),
+                              id=fasta_table.loc[index, "seq"] + "#" + fasta_table.loc[index, "class"])
         merged_results.append(final_seq)
 
     # refine TE extension, removing over-extended regions
@@ -1780,7 +1849,9 @@ def run_extension_by_saturation_parallel(genome, ref_tes, exe_nucl, num_ite, out
     write_sequences_file(final_results, outputdir + "/extended_cons.fa")
 
 
-def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_model, min_cluster, max_sequences, cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies, minBlastHits):
+def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_model, min_cluster, max_sequences,
+                            cluster_factor, group_outliers, min_plurality, end_threshold, max_num_subfamilies,
+                            minBlastHits):
     fasta_table_ite = pd.DataFrame(columns=["seq", "cons_size", "class", "end_l", "end_r"])
     if fasta_table.shape[0] > 0:
         fasta_table = fasta_table.reset_index()
@@ -1796,12 +1867,14 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
                 output = subprocess.run(
                     ['blastn', '-query', outputdir + "/" + str(seq_name) + ".consensus.fasta", '-db',
                      genome, '-out', outputdir + "/" + str(seq_name) + ".blast", '-num_threads', "1",
-                     "-outfmt", "6 sseqid sstart send length pident bitscore", "-evalue", "1e-20"], stdout=subprocess.PIPE, text=True)
+                     "-outfmt", "6 sseqid sstart send length pident bitscore", "-evalue", "1e-20"],
+                    stdout=subprocess.PIPE, text=True)
                 delete_files(outputdir + "/" + str(seq_name) + ".consensus.fasta")
 
                 # Second step EXTRACT and EXTEND
                 blastresult = pd.read_table(outputdir + "/" + str(seq_name) + ".blast", sep='\t',
-                                        names=['sseqid', 'sstart', 'send', 'length', 'pident', 'bitscore'], nrows=200)
+                                            names=['sseqid', 'sstart', 'send', 'length', 'pident', 'bitscore'],
+                                            nrows=200)
                 blastresult = blastresult.sort_values(by=['bitscore', 'pident', 'length'],
                                                       ascending=[False, False, False])
                 delete_files(outputdir + "/" + str(seq_name) + ".blast")
@@ -1822,7 +1895,8 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
                     subject_seq = blastresult.at[hit, 'sseqid']
                     ini_hit = int(blastresult.at[hit, 'sstart'])
                     end_hit = int(blastresult.at[hit, 'send'])
-                    if float(blastresult.at[hit, 'length']) > float(fasta_table.loc[index, "cons_size"]) * min_perc_model:
+                    if float(blastresult.at[hit, 'length']) > float(
+                            fasta_table.loc[index, "cons_size"]) * min_perc_model:
                         scaff_seq = [x.seq for x in SeqIO.parse(genome, 'fasta') if
                                      str(x.id).split(" ")[0] == subject_seq]
                         if len(scaff_seq) > 0:
@@ -1852,8 +1926,10 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
                                         end_hit) + "_" + str(hit) + "\n" + scaff_seq[ini_hit:end_hit].lower() + "\n")
                             else:
                                 result_file.write(
-                                    ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_" + str(hit)
-                                    + "_reversed\n" + str(Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
+                                    ">copy_" + str(subject_seq) + "_" + str(ini_hit) + "_" + str(end_hit) + "_" + str(
+                                        hit)
+                                    + "_reversed\n" + str(
+                                        Seq(scaff_seq[ini_hit:end_hit].lower()).reverse_complement()) + "\n")
                         else:
                             print(
                                 'WARNING: A subject id (sseqid in blast output file) was not found in the genome, please check:')
@@ -1874,23 +1950,34 @@ def extension_by_saturation(genome, fasta_table, exe_nucl, outputdir, min_perc_m
                         mafft_output = open(outputdir + "/" + str(seq_name) + ".copies.mafft", "w")
                         mafft_output.write(mafft_comm_output)
                         mafft_output.close()
-                        del mafft_comm_output   # clean the variable
+                        del mafft_comm_output  # clean the variable
 
                         mafft_df = read_maf(outputdir + "/" + str(seq_name) + ".copies.mafft")
                         delete_files(outputdir + "/" + str(seq_name) + ".copies.mafft")
-                        maffts_df_list = seq_clus(mafft_df, min_cluster, max_sequences, cluster_factor, group_outliers, fasta_table.loc[index, "subfamilies"], max_num_subfamilies)
+                        maffts_df_list = seq_clus(mafft_df, min_cluster, max_sequences, cluster_factor, group_outliers,
+                                                  fasta_table.loc[index, "subfamilies"], max_num_subfamilies)
                         if len(maffts_df_list) > 1:
-                            fasta_table.loc[index, "subfamilies"] += len(maffts_df_list)  # increase the number of created subfamilies
+                            fasta_table.loc[index, "subfamilies"] += len(
+                                maffts_df_list)  # increase the number of created subfamilies
 
                         for mafft in maffts_df_list:
-                            fasta_table_ite = process_maf(mafft, min_plurality, fasta_table_ite, te_class, end_threshold, fasta_table.loc[index, "subfamilies"])
+                            fasta_table_ite = process_maf(mafft, min_plurality, fasta_table_ite, te_class,
+                                                          end_threshold, fasta_table.loc[index, "subfamilies"])
                 else:
                     # Model doesn't have enough copies to be extended
-                    fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "subfamilies": fasta_table.loc[index, "subfamilies"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
+                    fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame(
+                        {"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"],
+                         "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"],
+                         "subfamilies": fasta_table.loc[index, "subfamilies"], "end_l": True, "end_r": True})], axis=0,
+                                                ignore_index=True)
                 delete_files(outputdir + "/" + str(seq_name) + '.copies.fa')
             else:
                 # Model is complete
-                fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame({"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"], "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"], "subfamilies": fasta_table.loc[index, "subfamilies"], "end_l": True, "end_r": True})], axis=0, ignore_index=True)
+                fasta_table_ite = pd.concat([fasta_table_ite, pd.DataFrame(
+                    {"seq": fasta_table.loc[index, "seq"], "cons": fasta_table.loc[index, "cons"],
+                     "cons_size": [fasta_table.loc[index, "cons_size"]], "class": fasta_table.loc[index, "class"],
+                     "subfamilies": fasta_table.loc[index, "subfamilies"], "end_l": True, "end_r": True})], axis=0,
+                                            ignore_index=True)
 
     return fasta_table_ite
 
@@ -1899,8 +1986,8 @@ def refine_extension(tes_to_refine, genome, outputdir, id_thread):
     te_refined = []
     for te in tes_to_refine:
         # set values for query, db, and evalue variables
-        write_sequences_file([te], outputdir+"/torefine.fa_"+str(id_thread))
-        query = outputdir+"/torefine.fa_"+str(id_thread)
+        write_sequences_file([te], outputdir + "/torefine.fa_" + str(id_thread))
+        query = outputdir + "/torefine.fa_" + str(id_thread)
         cons_len = len(str(te.seq))
 
         # run blastn command and read output into pandas dataframe
@@ -1950,7 +2037,7 @@ def filter_bad_candidates(new_ref_tes, perc_ssr, outputdir, tools_path, busco_li
         print("FATAL ERROR: " + new_ref_tes + " is empty. Please check the file and re-run the software")
         sys.exit(0)
     elif os.path.getsize(busco_library) == 0:
-        print("FATAL ERROR: "+busco_library+" is empty. Please check the file and re-run the software")
+        print("FATAL ERROR: " + busco_library + " is empty. Please check the file and re-run the software")
         sys.exit(0)
 
     deleted_seqs = []
@@ -1963,12 +2050,12 @@ def filter_bad_candidates(new_ref_tes, perc_ssr, outputdir, tools_path, busco_li
             [tools_path + '/trf409.linux64', new_ref_tes, '2', '3', '5', '80', '10', '20', '15', '-h', '-d'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     except Exception as exp:
-        print("FATAL ERROR: I couldn't execute properly the TRF program. Please check the error: "+exp.args)
+        print("FATAL ERROR: I couldn't execute properly the TRF program. Please check the error: " + exp.args)
 
     os.chdir(current_path)
     # Search for single repeats in TEs
     dicc_sr_pos = {}
-    with open(outputdir + "/"+os.path.basename(new_ref_tes)+".2.3.5.80.10.20.15.dat", 'r') as inFile:
+    with open(outputdir + "/" + os.path.basename(new_ref_tes) + ".2.3.5.80.10.20.15.dat", 'r') as inFile:
         nbInSeq = 0
         for line in inFile:
             row = line.split(" ")
@@ -2013,7 +2100,7 @@ def filter_bad_candidates(new_ref_tes, perc_ssr, outputdir, tools_path, busco_li
         dicc_sr[sat] = sum_bp
 
     # Search for matches with References/BUSCO genes
-    if not os.path.exists(busco_library+".h3m"):
+    if not os.path.exists(busco_library + ".h3m"):
         output = subprocess.run(['hmmpress', busco_library],
                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
 
@@ -2061,7 +2148,8 @@ def filter_bad_candidates(new_ref_tes, perc_ssr, outputdir, tools_path, busco_li
             if te.id in dicc_sr.keys():
                 te_len = len(str(te.seq))
                 lenSR = dicc_sr[te.id]
-                if ((lenSR * 100) / te_len) < perc_ssr:  # It hasn't less than the given threshold of SSR in its sequence
+                if ((
+                            lenSR * 100) / te_len) < perc_ssr:  # It hasn't less than the given threshold of SSR in its sequence
                     kept_seqs.append(te)
                 else:
                     deleted_seqs.append(te)
@@ -2091,7 +2179,8 @@ def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, min
     keep_seqs, orders = run_blast(library_path, ref_tes, cores, perc_ident, perc_cover, min_len_unc)
 
     # BLASTn with internal reference TE database
-    keep_seqs_internal, orders_internal = run_blast(internal_library, ref_tes, cores, perc_ident, perc_cover, min_len_unc)
+    keep_seqs_internal, orders_internal = run_blast(internal_library, ref_tes, cores, perc_ident, perc_cover,
+                                                    min_len_unc)
 
     for te_index in range(len(keep_seqs_internal)):
         if keep_seqs_internal[te_index] not in keep_seqs:
@@ -2119,7 +2208,8 @@ def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, min
             profiles = [cod for cod in codigs if "profiles:" in cod]
             inferred, new_class = inferring_domains(profiles)
             if inferred:
-                te_selected = [x for x in SeqIO.parse(ref_tes, "fasta") if x.id.split("#")[0] == struc_table.at[i, "Seq_name"]]
+                te_selected = [x for x in SeqIO.parse(ref_tes, "fasta") if
+                               x.id.split("#")[0] == struc_table.at[i, "Seq_name"]]
                 te_selected[0].id = te_selected[0].id.split("#")[0]
                 te_selected[0].description = ""
                 keep_seqs_records.append(te_selected[0])
@@ -2127,14 +2217,16 @@ def module3(ref_tes, library_path, cores, outputdir, perc_ident, perc_cover, min
                 num_infered_tes += 1
             else:
                 if "termLTR: " in struc_table.at[i, "struct"]:
-                    te_selected = [x for x in SeqIO.parse(ref_tes, "fasta") if x.id.split("#")[0] == struc_table.at[i, "Seq_name"]]
+                    te_selected = [x for x in SeqIO.parse(ref_tes, "fasta") if
+                                   x.id.split("#")[0] == struc_table.at[i, "Seq_name"]]
                     te_selected[0].id = te_selected[0].id.split("#")[0] + "_unconfirmed"
                     te_selected[0].description = ""
                     keep_seqs_records.append(te_selected[0])
                     orders.append(orders_superfamilies.index("LTR") + 2)
                     num_structural_tes += 1
                 elif "termTIR: " in struc_table.at[i, "struct"]:
-                    te_selected = [x for x in SeqIO.parse(ref_tes, "fasta") if x.id.split("#")[0] == struc_table.at[i, "Seq_name"]]
+                    te_selected = [x for x in SeqIO.parse(ref_tes, "fasta") if
+                                   x.id.split("#")[0] == struc_table.at[i, "Seq_name"]]
                     te_selected[0].id = te_selected[0].id.split("#")[0] + "_unconfirmed"
                     te_selected[0].description = ""
                     keep_seqs_records.append(te_selected[0])
@@ -2239,7 +2331,7 @@ def run_te_aid_parallel(te_aid_path, genome, ref_tes, outputdir, cores, min_perc
                         file_name = os.path.basename(file)
                         shutil.move(file, outputdir + "/te_aid/" + file_name)
                 except:
-                    print("WARNING: The file "+file+" did not have any pages. Skipping TE+Aid plot ...")
+                    print("WARNING: The file " + file + " did not have any pages. Skipping TE+Aid plot ...")
                 pattern = "*.copies.cialign_output.png"
                 files = glob.glob(outputdir + "/te_aid_" + str(i) + "/" + pattern)
                 for file in files:
@@ -2269,7 +2361,7 @@ def run_te_aid(te_aid_path, genome, outputdir, tes, min_perc_model):
         try:
             output = subprocess.run(
                 [te_aid_path + '/TE-Aid', '-q', outputdir + "/" + str(seq_name) + ".fa", '-g', genome, '-o', outputdir],
-                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
             status = 1
         except:
@@ -2358,12 +2450,14 @@ def run_blast(library_path, ref_tes, cores, perc_identity, perc_cov, min_len):
 
     if not os.path.exists(library_path + ".nhr"):
         output = subprocess.run(
-            ['makeblastdb', '-in', library_path, '-dbtype', 'nucl'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
+            ['makeblastdb', '-in', library_path, '-dbtype', 'nucl'], stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL, text=True)
 
     if not os.path.exists(ref_tes + ".blast"):
         output = subprocess.run(
             ['blastn', '-query', ref_tes, '-db', library_path, '-out', ref_tes + ".blast", '-num_threads', str(cores),
-             "-outfmt", "6 qseqid sseqid length", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity), "-max_hsps", "1"],
+             "-outfmt", "6 qseqid sseqid length", "-qcov_hsp_perc", str(perc_cov), "-perc_identity", str(perc_identity),
+             "-max_hsps", "1"],
             stdout=subprocess.PIPE, text=True)
     else:
         print("WARNING: Blast output already exists, skipping BLASTn....")
@@ -2403,7 +2497,8 @@ def run_cdhit(ref_tes, outputdir, cores, identity, coverage):
 
     if not os.path.exists(outputdir + "/non_redundant_lib.fa"):
         output = subprocess.run(
-            ['cd-hit-est', '-i', ref_tes, '-o', outputdir + '/non_redundant_lib.fa', '-c', str(identity), '-aS', str(coverage), '-G', '0', '-g' , '1', '-b', '500', '-T', str(cores), '-M', '0', '-d', '0'],
+            ['cd-hit-est', '-i', ref_tes, '-o', outputdir + '/non_redundant_lib.fa', '-c', str(identity), '-aS',
+             str(coverage), '-G', '0', '-g', '1', '-b', '500', '-T', str(cores), '-M', '0', '-d', '0'],
             stdout=subprocess.PIPE, text=True)
     else:
         print("WARNING: cd-hit-est output already exists, skipping cd-hit-est....")
@@ -2416,7 +2511,8 @@ def run_meshclust(ref_tes, outputdir, cores, identity, coverage):
 
     if not os.path.exists(outputdir + "/non_redundant_lib.fa"):
         output = subprocess.run(
-            ['meshclust', '-d', ref_tes, '-o', outputdir + '/non_redundant_lib.fa.clust', '-t', str(identity), '-c', str(cores), '-a', 'no'],
+            ['meshclust', '-d', ref_tes, '-o', outputdir + '/non_redundant_lib.fa.clust', '-t', str(identity), '-c',
+             str(cores), '-a', 'no'],
             stdout=subprocess.DEVNULL, text=True)
     else:
         print("WARNING: meshclust output already exists, skipping cd-hit-est....")
@@ -2479,7 +2575,8 @@ if __name__ == '__main__':
     print("#                                                                       #")
     print("#                             MCHelper                                  #")
     print("#   Instructions:  Execute the program, press q to close the graph and  #")
-    print("#     press a number 2-"+str(len(orders_superfamilies)+1)+" if you want to keep the TE, or 1 otherwise.   #")
+    print("#     press a number 2-" + str(
+        len(orders_superfamilies) + 1) + " if you want to keep the TE, or 1 otherwise.   #")
     print("#                                                                       #")
     print("#########################################################################\n")
 
@@ -2525,7 +2622,6 @@ if __name__ == '__main__':
                         help='Clustering algorithm: cd-hit or meshclust. Default=cd-hit')
     parser.add_argument('--version', action='version', version='MCHelper version 1.7.0')
 
-
     options = parser.parse_args()
     module_user = options.module_user
     input_dir = options.input_dir
@@ -2556,7 +2652,8 @@ if __name__ == '__main__':
         module = 123
         print("MESSAGE: Missing module (-r) parameter, using by default: " + module_user)
     elif module_user.upper() not in ['A', 'C', 'U', 'E', 'T', 'M', '3333']:  # 3333 for debugging only
-        print('FATAL ERROR: module (-r parameter) must be A (all steps), C (only classified TEs), U (TE classification module), E (Consensus extension module), T (TE_Aid in parallel) or M (Manual Inspection module)')
+        print(
+            'FATAL ERROR: module (-r parameter) must be A (all steps), C (only classified TEs), U (TE classification module), E (Consensus extension module), T (TE_Aid in parallel) or M (Manual Inspection module)')
         sys.exit(0)
     else:
         if module_user.upper() == 'A':
@@ -2576,7 +2673,7 @@ if __name__ == '__main__':
 
     if outputdir is None:
         outputdir = os.getcwd()
-        print('MESSAGE: Output directory will be '+outputdir)
+        print('MESSAGE: Output directory will be ' + outputdir)
     elif not os.path.exists(outputdir):
         create_output_folders(outputdir)
         outputdir = os.path.abspath(outputdir)
@@ -2606,7 +2703,7 @@ if __name__ == '__main__':
         perc_ssr = 60
         print("MESSAGE: Missing -s parameter, using by default: " + str(perc_ssr))
     elif not perc_ssr.isnumeric():
-        print('FATAL ERROR: -s must be numeric, but I received: '+str(perc_ssr))
+        print('FATAL ERROR: -s must be numeric, but I received: ' + str(perc_ssr))
         sys.exit(0)
     elif int(perc_ssr) < 0 or int(perc_ssr) > 100:
         print('FATAL ERROR: -s must be between 0 and 100')
@@ -2618,7 +2715,7 @@ if __name__ == '__main__':
         ext_nucl = 500
         print("MESSAGE: Missing -e parameter, using by default: " + str(ext_nucl))
     elif not ext_nucl.isnumeric():
-        print('FATAL ERROR: -e must be numeric, but I received: '+str(ext_nucl))
+        print('FATAL ERROR: -e must be numeric, but I received: ' + str(ext_nucl))
         sys.exit(0)
     elif int(ext_nucl) < 1 or int(ext_nucl) > 5000:
         print('FATAL ERROR: -e must be between 1 and 5000')
@@ -2630,7 +2727,7 @@ if __name__ == '__main__':
         num_ite = 16
         print("MESSAGE: Missing -x parameter, using by default: " + str(num_ite))
     elif not num_ite.isnumeric():
-        print('FATAL ERROR: -x must be numeric, but I received: '+str(num_ite))
+        print('FATAL ERROR: -x must be numeric, but I received: ' + str(num_ite))
         sys.exit(0)
     elif int(num_ite) < 0 or int(num_ite) > 100:
         print('FATAL ERROR: -x must be between 0 and 100')
@@ -2653,14 +2750,16 @@ if __name__ == '__main__':
     elif clustering_alg.lower() == 'meshclust':
         path = shutil.which("meshclust")
         if path is None:
-            print('FATAL ERROR: meshclust was not find in your environment. Please add the meshclust path to your PATH variable.')
+            print(
+                'FATAL ERROR: meshclust was not find in your environment. Please add the meshclust path to your PATH variable.')
             sys.exit(0)
         else:
             print("MESSAGE: Using " + str(clustering_alg) + " as clustering algorithm")
     elif clustering_alg.lower() == 'cd-hit':
         path = shutil.which("cd-hit")
         if path is None:
-            print('FATAL ERROR: cd-hit was not find in your environment. Please install cd-hit in your conda environment.')
+            print(
+                'FATAL ERROR: cd-hit was not find in your environment. Please install cd-hit in your conda environment.')
             sys.exit(0)
         else:
             print("MESSAGE: Using " + str(clustering_alg) + " as clustering algorithm")
@@ -2726,7 +2825,8 @@ if __name__ == '__main__':
                 gff_files = input_dir + "/gff_reversed"
 
                 if checkChrNames(genome) is False:
-                    print("FATAL ERROR: The provided genome ("+genome+") has sequences IDs containing only numbers. Please renamed them to contain letters and numbers (e.g. >Chr1 instead of >1).")
+                    print(
+                        "FATAL ERROR: The provided genome (" + genome + ") has sequences IDs containing only numbers. Please renamed them to contain letters and numbers (e.g. >Chr1 instead of >1).")
                     sys.exit(0)
             else:
                 print(reason_valid)
@@ -2752,10 +2852,12 @@ if __name__ == '__main__':
                 features_table = outputdir + "/classifiedModule/denovoLibTEs_PC.classif"
 
                 if checkChrNames(genome) is False:
-                    print("FATAL ERROR: The provided genome ("+genome+") has sequences IDs containing only numbers. Please renamed them to contain letters and numbers (e.g. >Chr1 instead of >1).")
+                    print(
+                        "FATAL ERROR: The provided genome (" + genome + ") has sequences IDs containing only numbers. Please renamed them to contain letters and numbers (e.g. >Chr1 instead of >1).")
                     sys.exit(0)
             elif check == -2:
-                print('FATAL ERROR: There are sequences with duplicated IDs. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
+                print(
+                    'FATAL ERROR: There are sequences with duplicated IDs. Please check them in the file: ' + outputdir + '/sequences_with_problems.txt')
                 sys.exit(0)
             else:
                 print(
@@ -2813,14 +2915,16 @@ if __name__ == '__main__':
             ############################################################################################################
             if not os.path.exists(outputdir + "/classifiedModule/extended_cons.fa"):
                 start_time = time.time()
-                run_extension_by_saturation_parallel(genome, ref_tes_non_redundat, ext_nucl, num_ite, outputdir+ "/classifiedModule/", minBlastHits, cores,
-                                                         min_perc_model, min_cluster, max_sequences, cluster_factor,
-                                                         group_outliers, min_plurality, end_threshold, max_num_subfamilies)
+                run_extension_by_saturation_parallel(genome, ref_tes_non_redundat, ext_nucl, num_ite,
+                                                     outputdir + "/classifiedModule/", minBlastHits, cores,
+                                                     min_perc_model, min_cluster, max_sequences, cluster_factor,
+                                                     group_outliers, min_plurality, end_threshold, max_num_subfamilies)
                 delete_files(outputdir + "/non_redundant_lib.fa")
                 ref_tes = outputdir + "/classifiedModule/extended_cons.fa"
                 end_time = time.time()
                 if verbose:
-                    print("MESSAGE: The sequences were extended successfully [" + str(end_time - start_time) + " seconds]")
+                    print("MESSAGE: The sequences were extended successfully [" + str(
+                        end_time - start_time) + " seconds]")
             else:
                 delete_files(outputdir + "/non_redundant_lib.fa")
                 ref_tes = outputdir + "/classifiedModule/extended_cons.fa"
@@ -2832,13 +2936,17 @@ if __name__ == '__main__':
             ############################################################################################################
             start_time = time.time()
             flf_file = count_flf_fasta(ref_tes, genome, cores, outputdir + "/classifiedModule")
-            new_ref_tes, num_copies = filter_flf(ref_tes, flf_file, minFullLenFragments, outputdir+"/classifiedModule/")
+            new_ref_tes, num_copies = filter_flf(ref_tes, flf_file, minFullLenFragments,
+                                                 outputdir + "/classifiedModule/")
             end_time = time.time()
             if verbose:
-                print("MESSAGE: The library was reduced to " + str(len(list(SeqIO.parse(new_ref_tes, 'fasta')))) + " after FLF filtering [" + str(end_time - start_time) + " seconds]")
+                print("MESSAGE: The library was reduced to " + str(
+                    len(list(SeqIO.parse(new_ref_tes, 'fasta')))) + " after FLF filtering [" + str(
+                    end_time - start_time) + " seconds]")
 
             if len(list(SeqIO.parse(new_ref_tes, 'fasta'))) == 0:
-                print("FATAL ERROR: There is no TEs with at least "+str(minFullLenFragments)+" full length copies in the genome.")
+                print("FATAL ERROR: There is no TEs with at least " + str(
+                    minFullLenFragments) + " full length copies in the genome.")
                 sys.exit(0)
 
             ############################################################################################################
@@ -2846,17 +2954,22 @@ if __name__ == '__main__':
             ############################################################################################################
             if not os.path.exists(outputdir + "/classifiedModule/putative_TEs.fa"):
                 start_time = time.time()
-                new_ref_tes, deleted_seqs = filter_bad_candidates(new_ref_tes, perc_ssr, outputdir+"/classifiedModule/", tools_path, busco_library, rnas_db, cores)
+                new_ref_tes, deleted_seqs = filter_bad_candidates(new_ref_tes, perc_ssr,
+                                                                  outputdir + "/classifiedModule/", tools_path,
+                                                                  busco_library, rnas_db, cores)
                 end_time = time.time()
                 if verbose:
-                    print("MESSAGE: The library was reduced to " + str(len(list(SeqIO.parse(new_ref_tes, 'fasta')))) + " after SSR, genes and RNA filtering [" + str(end_time - start_time) + " seconds]")
+                    print("MESSAGE: The library was reduced to " + str(
+                        len(list(SeqIO.parse(new_ref_tes, 'fasta')))) + " after SSR, genes and RNA filtering [" + str(
+                        end_time - start_time) + " seconds]")
 
                 if len(list(SeqIO.parse(new_ref_tes, 'fasta'))) == 0:
                     print("FATAL ERROR: After filtering false positive TEs, there is no elements in the library.")
                     sys.exit(0)
             else:
                 if verbose:
-                    print("MESSAGE: The False Positive filtering was already run, please verify or change the output directory")
+                    print(
+                        "MESSAGE: The False Positive filtering was already run, please verify or change the output directory")
 
             ############################################################################################################
             # Fifth step: Structural checks, BEE method, and Visualize plots
@@ -2876,7 +2989,8 @@ if __name__ == '__main__':
                     new_ref_library.append(te)
 
             if os.path.exists(outputdir + "/classifiedModule/kept_seqs_classified_module_non_curated.fa"):
-                for te in SeqIO.parse(outputdir + "/classifiedModule/kept_seqs_classified_module_non_curated.fa", "fasta"):
+                for te in SeqIO.parse(outputdir + "/classifiedModule/kept_seqs_classified_module_non_curated.fa",
+                                      "fasta"):
                     new_ref_library.append(te)
 
             if len(new_ref_library) > 0:
@@ -2932,7 +3046,8 @@ if __name__ == '__main__':
                     run_extension_by_saturation_parallel(genome, module3_seqs_file, ext_nucl, num_ite,
                                                          outputdir + "/unclassifiedModule/", minBlastHits, cores,
                                                          min_perc_model, min_cluster, max_sequences, cluster_factor,
-                                                         group_outliers, min_plurality, end_threshold, max_num_subfamilies)
+                                                         group_outliers, min_plurality, end_threshold,
+                                                         max_num_subfamilies)
                     end_time = time.time()
                     if verbose:
                         print("MESSAGE: The sequences were extended successfully [" + str(
@@ -2945,7 +3060,8 @@ if __name__ == '__main__':
                     # Second step: Filter elements with not enough FLF copies in the genome
                     ########################################################################################################
                     flf_file = count_flf_fasta(extendedSeqs, genome, cores, outputdir + "/unclassifiedModule")
-                    module3_seqs_file, num_copies = filter_flf(extendedSeqs, flf_file, FLF_UNCLASS, outputdir + "/unclassifiedModule/")
+                    module3_seqs_file, num_copies = filter_flf(extendedSeqs, flf_file, FLF_UNCLASS,
+                                                               outputdir + "/unclassifiedModule/")
                     end_time = time.time()
                     if verbose:
                         print("MESSAGE: The library was reduced to " + str(
@@ -2957,8 +3073,9 @@ if __name__ == '__main__':
                     ############################################################################################################
                     start_time = time.time()
                     module3_seqs_file, deleted_seqs = filter_bad_candidates(module3_seqs_file, perc_ssr,
-                                                                      outputdir + "/unclassifiedModule/", tools_path,
-                                                                      busco_library, rnas_db, cores)
+                                                                            outputdir + "/unclassifiedModule/",
+                                                                            tools_path,
+                                                                            busco_library, rnas_db, cores)
                     end_time = time.time()
                     if verbose:
                         print("MESSAGE: The library was reduced to " + str(len(list(
@@ -2999,12 +3116,13 @@ if __name__ == '__main__':
                 # Fourth step: process the sequences, BLASTn againts a given curated library, inferred classifications,
                 # and create outputs
                 ########################################################################################################
-                module3(extendedSeqs, ref_library_module3, cores, outputdir, perc_ident, perc_cover, min_len_unc, library_path)
+                module3(extendedSeqs, ref_library_module3, cores, outputdir, perc_ident, perc_cover, min_len_unc,
+                        library_path)
             else:
                 if module == 123:
                     print("WARNING: Unclassified module didn't run because classified module didn't find any TE")
                 else:
-                    print("WARNING: "+ref_library_module3+" is empty")
+                    print("WARNING: " + ref_library_module3 + " is empty")
 
     ####################################################################################################################
     # BEE module
@@ -3085,7 +3203,7 @@ if __name__ == '__main__':
             sys.exit(0)
         elif input_type.upper() not in ['FASTA', 'REPET']:
             print(
-                'FATAL ERROR: Unknown value ('+input_type+') in the input type parameter (--input_type). Values must be fasta or repet')
+                'FATAL ERROR: Unknown value (' + input_type + ') in the input type parameter (--input_type). Values must be fasta or repet')
             sys.exit(0)
         else:
             input_type = input_type.lower()
@@ -3164,8 +3282,22 @@ if __name__ == '__main__':
         # Second step: Manual Inspection of all the sequences
         ########################################################################################################
         seqs_to_module3, keep_seqs, orders, kept_seqs_record, non_curated, orders_incomplete = manual_inspection(genome,
-        outputdir, user_library, user_library, seqID_list, struc_table, te_aid, use_repet, "M", proj_name, plots_dir,
-        gff_files, min_perc_model, [], [], [], [], [], num_copies)
+                                                                                                                 outputdir,
+                                                                                                                 user_library,
+                                                                                                                 user_library,
+                                                                                                                 seqID_list,
+                                                                                                                 struc_table,
+                                                                                                                 te_aid,
+                                                                                                                 use_repet,
+                                                                                                                 "M",
+                                                                                                                 proj_name,
+                                                                                                                 plots_dir,
+                                                                                                                 gff_files,
+                                                                                                                 min_perc_model,
+                                                                                                                 [], [],
+                                                                                                                 [], [],
+                                                                                                                 [],
+                                                                                                                 num_copies)
 
         ########################################################################################################
         # Third step: Save results
@@ -3235,8 +3367,8 @@ if __name__ == '__main__':
         print("Debugging....")
         """build_class_table_parallel(user_library, cores, outputdir,
                                    blastn_db, blastx_db, ref_profiles, False)"""
-        run_te_aid_parallel(tools_path + "/TE-Aid-master/", genome, user_library, outputdir + "/", cores, min_perc_model)
-
+        run_te_aid_parallel(tools_path + "/TE-Aid-master/", genome, user_library, outputdir + "/", cores,
+                            min_perc_model)
 
     ####################################################################################################################
     # Writing the final results
@@ -3246,12 +3378,14 @@ if __name__ == '__main__':
             for te in SeqIO.parse(outputdir + "/classifiedModule/kept_seqs_classified_module_curated.fa", "fasta"):
                 final_seqs.append(te)
         except FileNotFoundError:
-            print("WARNING: the file " + outputdir + "/classifiedModule/kept_seqs_classified_module_curated.fa was not created. Please check.")
+            print(
+                "WARNING: the file " + outputdir + "/classifiedModule/kept_seqs_classified_module_curated.fa was not created. Please check.")
         try:
             for te in SeqIO.parse(outputdir + "/classifiedModule/kept_seqs_classified_module_non_curated.fa", "fasta"):
                 final_seqs.append(te)
         except FileNotFoundError:
-            print("WARNING: the file " + outputdir + "/classifiedModule/kept_seqs_classified_module_non_curated.fa was not created. Please check.")
+            print(
+                "WARNING: the file " + outputdir + "/classifiedModule/kept_seqs_classified_module_non_curated.fa was not created. Please check.")
         delete_files(outputdir + "/classifiedModule/non_redundant_lib.fa")
         delete_files(outputdir + "/classifiedModule/non_redundant_lib.fa.clstr")
     if module in [3, 123]:
@@ -3259,7 +3393,8 @@ if __name__ == '__main__':
             for te in SeqIO.parse(outputdir + "/unclassifiedModule/kept_seqs_unclassified_module.fa", "fasta"):
                 final_seqs.append(te)
         except FileNotFoundError:
-            print("WARNING: the file " + outputdir + "/unclassifiedModule/kept_seqs_unclassified_module.fa was not created. Please check.")
+            print(
+                "WARNING: the file " + outputdir + "/unclassifiedModule/kept_seqs_unclassified_module.fa was not created. Please check.")
 
     # Reduce the final redundancy
     if len(final_seqs) > 0:
