@@ -3,6 +3,7 @@
 Manual Curation Helper Version 1.7.1
 Novelties:
   * Added recovery mode for the BEE step
+  * Corrected bug when fail opening the TE+Aid plot in manual inspection module
 
 """
 
