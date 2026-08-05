@@ -55,6 +55,7 @@ wget https://urgi.versailles.inrae.fr/download/repet/profiles/ProfilesBankForREP
 tar xvf ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm.tar.gz
 mv ProfilesBankForREPET_Pfam35.0_GypsyDB.hmm Pfam35.0.hmm
 ```
+Please check that the file was downloaded properly, since some users have reported ([issue #18](https://github.com/GonzalezLab/MCHelper/issues/18)) that the file now has a "making sure you're not a bot" validation. If this is your case, please download the file manually, move it to the folder MCHelper/db, decompress it (using the tar xvf command), and rename it with the mv command.
 
 And that's it. You have now installed MCHelper.
 
