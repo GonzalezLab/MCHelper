@@ -4,6 +4,7 @@ Manual Curation Helper Version 1.7.1
 Novelties:
   * Added recovery mode for the BEE step
   * Corrected bug when fail opening the TE+Aid plot in manual inspection module
+  * changed the file denovoLibTEs_PC.classif to report domains locations
 
 """
 
@@ -354,49 +355,98 @@ def find_profiles(te, outputdir, ref_profiles):
                     # Maverick
                     '_Prp': 0, '_ATPase_': 0}
     seq_name = str(te.id).split("#")[0]
-    write_sequences_file(te, outputdir + "/" + seq_name + "_putative_te.fa")
+    te_file = outputdir + "/" + seq_name + "_putative_te.fa"
+    orf_file = outputdir + "/" + seq_name + "_putative_te_orf.fa"
+    profiles_file = outputdir + "/" + seq_name + "_profiles_found.hmm"
+    write_sequences_file(te, te_file)
 
     output = subprocess.run(
-        ['getorf', '-sequence', outputdir + "/" + seq_name + "_putative_te.fa", '-minsize', '300', '-outseq',
-         outputdir + "/" + seq_name + "_putative_te_orf.fa"],
+        ['getorf', '-sequence', te_file, '-minsize', '300', '-outseq', orf_file],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
 
+    # getorf reports the coordinates of each translated ORF in its FASTA
+    # description (for example, "[123 - 987]" or "[987 - 123]").  Keep
+    # these coordinates so HMMER amino-acid positions can be projected back
+    # onto the original TE nucleotide sequence.
+    orf_coordinates = {}
+    if os.path.exists(orf_file):
+        for orf_record in SeqIO.parse(orf_file, "fasta"):
+            coordinates = re.search(r'\[(\d+)\s*-\s*(\d+)\]', orf_record.description)
+            if coordinates:
+                orf_coordinates[orf_record.id] = (int(coordinates.group(1)), int(coordinates.group(2)))
+
     output = subprocess.run(
-        ['hmmscan', '--tblout', outputdir + "/" + seq_name + "_profiles_found.hmm", '-E', '10', '--noali', '--cpu',
-         '1', ref_profiles, outputdir + "/" + seq_name + "_putative_te_orf.fa"],
+        ['hmmscan', '--domtblout', profiles_file, '-E', '10', '--noali', '--cpu',
+         '1', ref_profiles, orf_file],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
 
     result = ""
     struc_domains = ""
 
-    if os.path.exists(outputdir + "/" + seq_name + "_profiles_found.hmm"):
-        command = 'grep -v "^#" ' + outputdir + '/' + seq_name + '_profiles_found.hmm | wc -l'
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-        hits = int(process.stdout.read())
-        if hits > 0:
-            command = 'grep -v "^#" ' + outputdir + '/' + seq_name + '_profiles_found.hmm | sed "s/_RVT_/_RT_/g" | awk \'{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$10}\' > ' + outputdir + "/" + seq_name + "_profiles_found.hmm_formatted"
-            process = subprocess.Popen(command, shell=True)
-            process.communicate()
+    if os.path.exists(profiles_file):
+        hits = []
+        with open(profiles_file) as profiles_handle:
+            for line in profiles_handle:
+                if line.startswith('#') or not line.strip():
+                    continue
 
-            hmm_results = pd.read_table(outputdir + "/" + seq_name + "_profiles_found.hmm_formatted", sep='\t',
-                                        names=['domain', 'acc', 'orf', 'acc_orf', 'evalue', 'score', 'A', 'B', 'C',
-                                               'D'])
+                # HMMER --domtblout columns 18 and 19 are the start and end
+                # of the domain alignment in the query ORF (1-based amino-acid
+                # coordinates).  A maximum split preserves any description in
+                # the final optional column without affecting the fixed fields.
+                fields = line.strip().split(maxsplit=22)
+                if len(fields) < 22 or fields[3] not in orf_coordinates:
+                    continue
+
+                try:
+                    orf_start, orf_end = orf_coordinates[fields[3]]
+                    ali_from = int(fields[17])
+                    ali_to = int(fields[18])
+
+                    if orf_start <= orf_end:
+                        domain_first_nt = orf_start + (ali_from - 1) * 3
+                        domain_last_nt = orf_start + ali_to * 3 - 1
+                    else:
+                        domain_first_nt = orf_start - (ali_from - 1) * 3
+                        domain_last_nt = orf_start - ali_to * 3 + 1
+
+                    hits.append({
+                        'domain': fields[0].replace('_RVT_', '_RT_'),
+                        'orf': fields[3],
+                        'evalue': float(fields[6]),
+                        'score': float(fields[7]),
+                        'domain_evalue': float(fields[12]),
+                        'te_start': max(1, min(domain_first_nt, domain_last_nt)),
+                        'te_end': min(len(te), max(domain_first_nt, domain_last_nt))
+                    })
+                except ValueError:
+                    continue
+
+        if hits:
+            hmm_results = pd.DataFrame(hits)
             hasDomains = False
+            positioned_domains = []
             for domain in domains_dict.keys():
-                best_hit = hmm_results[hmm_results.domain.str.contains(domain)].reset_index()
+                best_hit = hmm_results[hmm_results.domain.str.contains(domain, regex=False)].sort_values(
+                    by=['evalue', 'domain_evalue', 'score'], ascending=[True, True, False]).reset_index(drop=True)
                 if best_hit.shape[0] > 0:
                     hasDomains = True
                     domains_dict[domain] = best_hit.loc[0, 'evalue']
                     result += best_hit.loc[0, 'domain'] + ": " + str(best_hit.loc[0, 'evalue']) + ", "
-                    struc_domains += domain.replace("_", "") + " "
+                    positioned_domains.append((int(best_hit.loc[0, 'te_start']),
+                                               int(best_hit.loc[0, 'te_end']),
+                                               domain.replace("_", "")))
 
             if hasDomains:
                 result = "profiles: " + result[:-2]
-            delete_files(outputdir + "/" + seq_name + "_profiles_found.hmm_formatted")
-        delete_files(outputdir + "/" + seq_name + "_profiles_found.hmm")
+                positioned_domains.sort(key=lambda hit: (hit[0], hit[1], hit[2]))
+                struc_domains = " ".join(
+                    domain + "(" + str(start) + "-" + str(end) + ")"
+                    for start, end, domain in positioned_domains) + " "
+        delete_files(profiles_file)
 
-    delete_files(outputdir + "/" + seq_name + "_putative_te_orf.fa")
-    delete_files(outputdir + "/" + seq_name + "_putative_te.fa")
+    delete_files(orf_file)
+    delete_files(te_file)
 
     return result, struc_domains
 
